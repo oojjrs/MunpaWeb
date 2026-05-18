@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111827">
+    <title>MunpaWeb</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="topbar">
+        <div>
+          <h1>MunpaWeb</h1>
+          <p id="saveState">Loading save...</p>
+        </div>
+        <div class="actions">
+          <button id="newRun" type="button">New Run</button>
+          <button id="saveRun" type="button">Save</button>
+        </div>
+      </header>
+
+      <section class="stage" aria-label="Game stage">
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
