@@ -19,13 +19,37 @@ const founderNameDisplay = document.querySelector("#founderNameDisplay");
 const founderMeta = document.querySelector("#founderMeta");
 const discipleList = document.querySelector("#discipleList");
 
-const APP_VERSION = "v16";
+const APP_VERSION = "v20";
 const SAVE_KEY = "munpaweb:save:local";
+
+const founderNamePools = {
+  male: [
+    "한무진",
+    "백도윤",
+    "남궁휘",
+    "문서하",
+    "진태율",
+    "강하준",
+    "유건",
+    "서도겸"
+  ],
+  female: [
+    "서란",
+    "유청하",
+    "진소월",
+    "문설아",
+    "하연",
+    "백아린",
+    "남궁서윤",
+    "강유화"
+  ]
+};
 
 const portraits = [
   {
     id: "founder-male-01",
     image: "./assets/portraits/founders/founder-male-01.png",
+    namePool: "male",
     colors: {
       face: "#d8b38a",
       hair: "#172019",
@@ -38,6 +62,7 @@ const portraits = [
   {
     id: "founder-female-01",
     image: "./assets/portraits/founders/founder-female-01.png",
+    namePool: "female",
     colors: {
       face: "#d7aa91",
       hair: "#241923",
@@ -47,17 +72,6 @@ const portraits = [
       bgB: "#a66d7b"
     }
   }
-];
-
-const founderNames = [
-  "한무진",
-  "서란",
-  "유청하",
-  "백도윤",
-  "진소월",
-  "남궁휘",
-  "문설아",
-  "하연"
 ];
 
 const sectNames = [
@@ -86,6 +100,7 @@ const newGameSeed = {
 let selectedPortraitId = portraits[0].id;
 let currentSave = null;
 let activeView = null;
+let founderNameTouched = false;
 
 function cloneSeed() {
   return JSON.parse(JSON.stringify(newGameSeed));
@@ -215,6 +230,9 @@ function renderPortraitOptions() {
       button.append(preview);
       button.addEventListener("click", () => {
         selectedPortraitId = portrait.id;
+        if (!founderNameTouched) {
+          pickRandomName();
+        }
         renderPortraitOptions();
       });
 
@@ -224,8 +242,11 @@ function renderPortraitOptions() {
 }
 
 function pickRandomName() {
-  const name = founderNames[Math.floor(Math.random() * founderNames.length)];
+  const portrait = portraits.find((item) => item.id === selectedPortraitId) ?? portraits[0];
+  const names = founderNamePools[portrait.namePool] ?? founderNamePools.male;
+  const name = names[Math.floor(Math.random() * names.length)];
   founderNameInput.value = name;
+  founderNameTouched = false;
 }
 
 function pickRandomSectName() {
@@ -316,6 +337,7 @@ newGameButton.addEventListener("click", () => {
   clearSave();
   currentSave = null;
   selectedPortraitId = portraits[0].id;
+  founderNameTouched = false;
   pickRandomSectName();
   pickRandomName();
   renderPortraitOptions();
@@ -334,10 +356,15 @@ continueGameButton.addEventListener("click", () => {
 
 randomNameButton.addEventListener("click", pickRandomName);
 randomSectNameButton.addEventListener("click", pickRandomSectName);
+founderNameInput.addEventListener("input", () => {
+  founderNameTouched = true;
+});
 
 founderForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const founderName = founderNameInput.value.trim() || founderNames[0];
+  const fallbackPortrait = portraits.find((item) => item.id === selectedPortraitId) ?? portraits[0];
+  const fallbackNames = founderNamePools[fallbackPortrait.namePool] ?? founderNamePools.male;
+  const founderName = founderNameInput.value.trim() || fallbackNames[0];
   const sectNameValue = sectNameInput.value.trim() || sectNames[0];
 
   startNewGame(founderName, sectNameValue, { historyMode: "replace" }).catch(() => {

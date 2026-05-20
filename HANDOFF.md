@@ -82,7 +82,11 @@ Preferred technical direction:
 - Primary mobile actions that complete a step, such as character creation confirmation, should span the available form width for left- and right-handed reach.
 - Mobile layouts must fit the visible viewport without document-level scrolling. Use `dvh/svh` viewport units and keep scrolling inside intentional internal panes only.
 - Founder/player portrait assets live under `assets/portraits/founders/`; disciple portrait assets should use a separate portrait subfolder.
+- Founder/player name pools should follow the selected portrait group. When the founder portrait changes, refresh the random name from that portrait's pool only if the player has not manually edited the name field.
 - Service worker updates should be user-friendly on mobile: use network-first fetch for app files and auto-activate/reload once per app version when a new worker takes control.
+- One-way information that the player cannot act on should be visually quiet, such as muted/dimmed text or lower-emphasis placement, while remaining comfortably readable.
+- Interactive objects must be visually distinct from non-interactive information. Buttons, selectable options, and tappable controls need clear borders, contrast, hover/focus/pressed states, and cursor affordance.
+- Maintain a semantic color set with light/dark variants. Use tokens for surface, text, muted text, border, action, action hover, panel, and menu colors instead of scattering raw colors across UI rules.
 
 ## Local Verification
 
