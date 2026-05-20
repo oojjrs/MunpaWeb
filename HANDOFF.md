@@ -82,6 +82,7 @@ Preferred technical direction:
 - Primary mobile actions that complete a step, such as character creation confirmation, should span the available form width for left- and right-handed reach.
 - Mobile layouts must fit the visible viewport without document-level scrolling. Use `dvh/svh` viewport units and keep scrolling inside intentional internal panes only.
 - Founder/player portrait assets live under `assets/portraits/founders/`; disciple portrait assets should use a separate portrait subfolder.
+- Service worker updates should be user-friendly on mobile: use network-first fetch for app files and auto-activate/reload once per app version when a new worker takes control.
 
 ## Local Verification
 

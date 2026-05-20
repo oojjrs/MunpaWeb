@@ -19,6 +19,7 @@ const founderNameDisplay = document.querySelector("#founderNameDisplay");
 const founderMeta = document.querySelector("#founderMeta");
 const discipleList = document.querySelector("#discipleList");
 
+const APP_VERSION = "v16";
 const SAVE_KEY = "munpaweb:save:local";
 
 const portraits = [
@@ -365,8 +366,56 @@ window.addEventListener("popstate", (event) => {
   returnToWelcome({ historyMode: "none" });
 });
 
+function reloadForNewVersion() {
+  const reloadKey = "munpaweb:reloadedForVersion";
+
+  if (sessionStorage.getItem(reloadKey) === APP_VERSION) {
+    return;
+  }
+
+  sessionStorage.setItem(reloadKey, APP_VERSION);
+  location.reload();
+}
+
+function watchServiceWorkerUpdates(registration) {
+  if (registration.waiting) {
+    registration.waiting.postMessage({ type: "SKIP_WAITING" });
+  }
+
+  registration.addEventListener("updatefound", () => {
+    const newWorker = registration.installing;
+
+    if (!newWorker) {
+      return;
+    }
+
+    newWorker.addEventListener("statechange", () => {
+      if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+        newWorker.postMessage({ type: "SKIP_WAITING" });
+      }
+    });
+  });
+}
+
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
+  let refreshing = false;
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) {
+      return;
+    }
+
+    refreshing = true;
+    reloadForNewVersion();
+  });
+
+  navigator.serviceWorker
+    .register("./sw.js")
+    .then((registration) => {
+      watchServiceWorkerUpdates(registration);
+      registration.update().catch(() => {});
+    })
+    .catch(() => {});
 }
 
 boot();
