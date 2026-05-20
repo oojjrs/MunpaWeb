@@ -80,6 +80,7 @@ Preferred technical direction:
 - Fixed-format visual choices such as portraits must use stable square dimensions. Do not allow labels, hover states, or image loading to resize the selection grid.
 - Icon-only controls must be visually centered, have accessible labels/tooltips, and use familiar symbols instead of text when the action is compact or repeated.
 - Primary mobile actions that complete a step, such as character creation confirmation, should span the available form width for left- and right-handed reach.
+- Mobile layouts must fit the visible viewport without document-level scrolling. Use `dvh/svh` viewport units and keep scrolling inside intentional internal panes only.
 - Founder/player portrait assets live under `assets/portraits/founders/`; disciple portrait assets should use a separate portrait subfolder.
 
 ## Local Verification

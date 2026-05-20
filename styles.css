@@ -1,4 +1,5 @@
 :root {
+  --app-height: 100vh;
   color: #172019;
   background: #e7e2d5;
   font-family:
@@ -6,13 +7,31 @@
     sans-serif;
 }
 
+@supports (height: 100svh) {
+  :root {
+    --app-height: 100svh;
+  }
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-height: 100dvh;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
+html {
+  height: var(--app-height);
+  overflow: hidden;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  height: var(--app-height);
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgba(33, 45, 36, 0.08), transparent 260px),
     #e7e2d5;
@@ -39,15 +58,19 @@ button:hover {
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .welcome-view,
 .founder-view,
 .game-view {
   width: min(100%, 520px);
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .welcome-view,
@@ -61,6 +84,7 @@ button:hover {
 .founder-view {
   align-content: start;
   background: #f8f5ed;
+  overflow-y: auto;
 }
 
 .welcome-copy {
@@ -471,14 +495,14 @@ button:hover {
   .welcome-view,
   .founder-view,
   .game-view {
-    min-height: calc(100vh - 48px);
+    height: 100%;
+    min-height: 0;
     border-radius: 10px;
     overflow: hidden;
   }
 
-  .welcome-view,
   .founder-view {
-    min-height: calc(100vh - 48px);
+    overflow-y: auto;
   }
 }
 
