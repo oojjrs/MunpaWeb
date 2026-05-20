@@ -1,10 +1,12 @@
-const CACHE_NAME = "munpaweb-shell-v1";
+const CACHE_NAME = "munpaweb-shell-v14";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./src/app.js",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./assets/portraits/founders/founder-male-01.png",
+  "./assets/portraits/founders/founder-female-01.png"
 ];
 
 self.addEventListener("install", (event) => {

@@ -68,6 +68,19 @@ Preferred technical direction:
 - Do not overwrite user changes.
 - Keep the app static unless the user explicitly chooses a server/backend.
 - Prefer simple browser-native technology until the game requirements justify adding a build system.
+- Before UI/layout work, reread the Active UI Guidelines below and keep them consistent across screens.
+
+## Active UI Guidelines
+
+- Treat the app as a browser SPA: every user-visible screen transition must update `history.pushState` or `history.replaceState`, and `popstate` must restore the appropriate screen. Do not rely on visible in-app back buttons for normal navigation.
+- Do not leave transient setup screens behind completed flows in browser history. When a setup step creates or commits a save, replace the setup history entry with the resulting game screen so Back returns to the prior stable screen.
+- Keep destructive or save-reset actions away from high-frequency bottom menu areas. Use clear confirmation before clearing save data.
+- Korean text must avoid awkward one-character orphan lines. Prefer shorter copy, `word-break: keep-all`, `overflow-wrap: break-word`, and balanced/pretty wrapping where supported.
+- Avoid Korean particle bugs by choosing UI copy that does not require runtime `은/는`, `이/가`, or `을/를` selection. Do not display fallback forms like `은(는)` or `이(가)`.
+- Fixed-format visual choices such as portraits must use stable square dimensions. Do not allow labels, hover states, or image loading to resize the selection grid.
+- Icon-only controls must be visually centered, have accessible labels/tooltips, and use familiar symbols instead of text when the action is compact or repeated.
+- Primary mobile actions that complete a step, such as character creation confirmation, should span the available form width for left- and right-handed reach.
+- Founder/player portrait assets live under `assets/portraits/founders/`; disciple portrait assets should use a separate portrait subfolder.
 
 ## Local Verification
 

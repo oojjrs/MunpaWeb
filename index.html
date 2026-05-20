@@ -3,26 +3,115 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#111827">
-    <title>MunpaWeb</title>
+    <meta name="theme-color" content="#172019">
+    <title>문파전승</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <main class="game-shell">
-      <header class="topbar">
-        <div>
-          <h1>MunpaWeb</h1>
-          <p id="saveState">Loading save...</p>
+    <main id="app" class="app-shell" aria-live="polite">
+      <section id="welcomeView" class="welcome-view">
+        <div class="welcome-copy">
+          <p class="kicker">Munpa Legacy</p>
+          <h1>문파전승</h1>
+          <p>제자를 기르고 수련시켜 다음 세대에 문파의 이름을 잇습니다.</p>
         </div>
-        <div class="actions">
-          <button id="newRun" type="button">New Run</button>
-          <button id="saveRun" type="button">Save</button>
+        <div class="welcome-actions">
+          <button id="continueGame" class="secondary-action" type="button" hidden>계속하기</button>
+          <button id="newGame" class="primary-action" type="button">새 게임</button>
         </div>
-      </header>
+      </section>
 
-      <section class="stage" aria-label="Game stage">
-        <canvas id="gameCanvas" width="960" height="540"></canvas>
+      <section id="founderView" class="founder-view" hidden>
+        <header class="creation-header">
+          <p class="kicker">개파조사</p>
+          <h1>첫 인물을 정하세요</h1>
+        </header>
+
+        <form id="founderForm" class="founder-form">
+          <fieldset class="portrait-picker">
+            <legend>초상화</legend>
+            <div id="portraitOptions" class="portrait-options"></div>
+          </fieldset>
+
+          <label class="name-field" for="sectNameInput">
+            <span>문파 이름</span>
+            <div class="name-row">
+              <input id="sectNameInput" name="sectName" type="text" maxlength="12" autocomplete="off">
+              <button id="randomSectName" class="icon-action" type="button" aria-label="문파 이름 무작위" title="문파 이름 무작위">
+                <svg class="dice-icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                  <circle cx="8" cy="8" r="1.6"></circle>
+                  <circle cx="16" cy="8" r="1.6"></circle>
+                  <circle cx="8" cy="16" r="1.6"></circle>
+                  <circle cx="16" cy="16" r="1.6"></circle>
+                  <circle cx="12" cy="12" r="1.6"></circle>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <label class="name-field" for="founderName">
+            <span>개파조사 이름</span>
+            <div class="name-row">
+              <input id="founderName" name="founderName" type="text" maxlength="12" autocomplete="off">
+              <button id="randomName" class="icon-action" type="button" aria-label="이름 무작위" title="이름 무작위">
+                <svg class="dice-icon" aria-hidden="true" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                  <circle cx="8" cy="8" r="1.6"></circle>
+                  <circle cx="16" cy="8" r="1.6"></circle>
+                  <circle cx="8" cy="16" r="1.6"></circle>
+                  <circle cx="16" cy="16" r="1.6"></circle>
+                  <circle cx="12" cy="12" r="1.6"></circle>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <button class="primary-action" type="submit">개파하기</button>
+        </form>
+      </section>
+
+      <section id="gameView" class="game-view" hidden>
+        <header class="fixed-status">
+          <div class="sect-header">
+            <div>
+              <p class="kicker">현재 문파</p>
+              <h1 id="sectName">-</h1>
+            </div>
+            <div class="header-actions">
+              <p id="saveState" class="save-state">저장 확인 중</p>
+              <button id="returnWelcome" class="secondary-action compact-action" type="button">처음으로</button>
+            </div>
+          </div>
+
+          <article class="founder-card" aria-label="개파조사">
+            <div id="founderPortrait" class="portrait portrait-small"></div>
+            <div>
+              <p class="kicker">개파조사</p>
+              <h3 id="founderNameDisplay">-</h3>
+              <p id="founderMeta">-</p>
+            </div>
+          </article>
+        </header>
+
+        <div class="status-pane">
+          <section class="scene-panel" aria-label="문파 상태">
+            <div class="scene-text">
+              <p id="seasonText">입문 첫날</p>
+              <h2 id="mainStatus">문파를 정비하는 중입니다</h2>
+            </div>
+            <div class="disciple-list" aria-label="제자 목록">
+              <h3>제자</h3>
+              <div id="discipleList"></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="menu-bar" aria-label="게임 메뉴">
+          <button type="button">메뉴1</button>
+          <button type="button">메뉴2</button>
+        </nav>
       </section>
     </main>
 
