@@ -68,13 +68,15 @@
 
 html {
   height: var(--app-height);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
   margin: 0;
   height: var(--app-height);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background:
     linear-gradient(180deg, var(--color-page-glow), transparent 260px),
     var(--color-page);

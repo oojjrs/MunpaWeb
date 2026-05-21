@@ -30,7 +30,7 @@ const founderModal = document.querySelector("#founderModal");
 const closeFounderModalButton = document.querySelector("#closeFounderModal");
 const founderDetail = document.querySelector("#founderDetail");
 
-const APP_VERSION = "v21";
+const APP_VERSION = "v22";
 const SAVE_KEY = "munpaweb:save:local";
 const FOUNDER_AGE = 35;
 const MAX_LIFESPAN = 120;

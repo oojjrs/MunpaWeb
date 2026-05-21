@@ -1,4 +1,4 @@
-const CACHE_NAME = "munpaweb-shell-v21";
+const CACHE_NAME = "munpaweb-shell-v22";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,15 +18,34 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((names) =>
-      Promise.all(
+    caches.keys().then((names) => {
+      const hadPreviousShell = names.some(
+        (name) => name.startsWith("munpaweb-shell-") && name !== CACHE_NAME
+      );
+
+      return Promise.all(
         names
           .filter((name) => name !== CACHE_NAME)
           .map((name) => caches.delete(name))
       )
-    )
+        .then(() => self.clients.claim())
+        .then(() => {
+          if (!hadPreviousShell) {
+            return undefined;
+          }
+
+          return self.clients
+            .matchAll({ type: "window", includeUncontrolled: true })
+            .then((clients) =>
+              Promise.all(
+                clients.map((client) =>
+                  "navigate" in client ? client.navigate(client.url) : undefined
+                )
+              )
+            );
+        });
+    })
   );
-  self.clients.claim();
 });
 
 self.addEventListener("message", (event) => {
