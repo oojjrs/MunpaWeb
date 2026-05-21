@@ -689,10 +689,49 @@ button:disabled:hover {
   font-size: 1rem;
 }
 
+.founder-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 999px;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .founder-card p:not(.kicker) {
   margin-top: 2px;
   color: var(--color-text-muted);
   font-size: 0.82rem;
+}
+
+.founder-card p.health-excellent {
+  color: #2f6f4f;
+}
+
+.founder-card p.health-stable {
+  color: #4f7567;
+  font-weight: 700;
+}
+
+.founder-card p.health-weak {
+  color: #9a682f;
+  font-weight: 800;
+}
+
+.founder-card p.health-critical {
+  color: #a13131;
+  font-weight: 900;
 }
 
 .time-card {
@@ -1110,13 +1149,9 @@ button:disabled:hover {
     font-size: 0.78rem;
   }
 
-  .hud-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .time-card {
-    min-width: 0;
-    text-align: left;
+    min-width: 76px;
+    padding-inline: 8px;
   }
 
   .bulk-actions,

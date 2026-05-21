@@ -47,7 +47,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v49";
+const APP_VERSION = "v52";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
 const FOUNDER_AGE = 35;
@@ -448,6 +448,19 @@ function formatTime(sect) {
   return `${sect.foundedYear}년 ${seasons[sect.seasonIndex] ?? sect.season}`;
 }
 
+function getHealthTone(health) {
+  if (health >= 80) {
+    return "excellent";
+  }
+  if (health >= 50) {
+    return "stable";
+  }
+  if (health > 10) {
+    return "weak";
+  }
+  return "critical";
+}
+
 function randomInt(min, max) {
   return min + Math.floor(Math.random() * (max - min + 1));
 }
@@ -479,7 +492,9 @@ function renderGame(save, options = {}) {
 
   applyPortraitColors(founderPortrait, currentSave.founder.portrait);
   founderNameDisplay.textContent = currentSave.founder.name;
-  founderMeta.textContent = `${currentSave.founder.age}세`;
+  founderMeta.classList.remove("health-excellent", "health-stable", "health-weak", "health-critical");
+  founderMeta.classList.add(`health-${getHealthTone(currentSave.founder.health)}`);
+  founderMeta.textContent = `${currentSave.founder.age}세 · 건강 ${currentSave.founder.health}`;
 
   renderDisciples();
   renderFounderDetail();
@@ -719,14 +734,20 @@ function renderFounderDetail() {
   applyPortraitColors(portrait, currentSave.founder.portrait);
 
   const identity = document.createElement("div");
+  const labelRow = document.createElement("div");
+  labelRow.className = "founder-label-row";
   const role = document.createElement("p");
   role.className = "kicker";
   role.textContent = currentSave.founder.role;
+  const leaderBadge = document.createElement("span");
+  leaderBadge.className = "role-badge";
+  leaderBadge.textContent = "장문인";
+  labelRow.append(role, leaderBadge);
   const name = document.createElement("h3");
   name.textContent = currentSave.founder.name;
   const meta = document.createElement("p");
   meta.textContent = `${currentSave.founder.age}세`;
-  identity.append(role, name, meta);
+  identity.append(labelRow, name, meta);
   profile.append(portrait, identity);
 
   const vitalRow = document.createElement("div");

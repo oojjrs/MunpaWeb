@@ -1,4 +1,4 @@
-const CACHE_NAME = "munpaweb-shell-v49";
+const CACHE_NAME = "munpaweb-shell-v52";
 const APP_SHELL = [
   "./",
   "./index.html",
