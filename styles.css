@@ -864,15 +864,24 @@ button:disabled:hover {
 
 @media (max-width: 420px) {
   .sect-header {
-    display: grid;
+    gap: 10px;
   }
 
   .save-state {
-    text-align: left;
+    max-width: 9.5rem;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    text-align: right;
   }
 
   .header-actions {
-    justify-items: start;
+    justify-items: end;
+  }
+
+  .compact-action {
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: 0.78rem;
   }
 
   .hud-row {
