@@ -47,7 +47,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v48";
+const APP_VERSION = "v49";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
 const FOUNDER_AGE = 35;
@@ -1274,6 +1274,12 @@ async function boot() {
         return;
       }
       await writeSave(normalized);
+      if (history.state?.view === "welcome") {
+        currentSave = normalized;
+        currentRecords = await readRecords();
+        showWelcome({ historyMode: "replace" });
+        return;
+      }
       renderGame(normalized, { historyMode: "replace" });
       return;
     }
