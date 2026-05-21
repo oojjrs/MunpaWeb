@@ -715,23 +715,36 @@ button:disabled:hover {
   font-size: 0.82rem;
 }
 
-.founder-card p.health-excellent {
-  color: #2f6f4f;
-}
-
-.founder-card p.health-stable {
-  color: #4f7567;
-  font-weight: 700;
-}
-
-.founder-card p.health-weak {
-  color: #9a682f;
+.health-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
   font-weight: 800;
+  line-height: 1;
 }
 
-.founder-card p.health-critical {
-  color: #a13131;
-  font-weight: 900;
+.health-chip.health-excellent {
+  background: #fffdf8;
+}
+
+.health-chip.health-stable {
+  background: #fff1df;
+  border-color: #e2c4a3;
+}
+
+.health-chip.health-weak {
+  background: #ffd2c2;
+  border-color: #d99682;
+}
+
+.health-chip.health-critical {
+  background: #f0a1a1;
+  border-color: #bd6666;
 }
 
 .time-card {

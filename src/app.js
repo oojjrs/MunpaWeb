@@ -47,7 +47,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v52";
+const APP_VERSION = "v53";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
 const FOUNDER_AGE = 35;
@@ -492,9 +492,10 @@ function renderGame(save, options = {}) {
 
   applyPortraitColors(founderPortrait, currentSave.founder.portrait);
   founderNameDisplay.textContent = currentSave.founder.name;
-  founderMeta.classList.remove("health-excellent", "health-stable", "health-weak", "health-critical");
-  founderMeta.classList.add(`health-${getHealthTone(currentSave.founder.health)}`);
-  founderMeta.textContent = `${currentSave.founder.age}세 · 건강 ${currentSave.founder.health}`;
+  const healthText = document.createElement("span");
+  healthText.className = `health-chip health-${getHealthTone(currentSave.founder.health)}`;
+  healthText.textContent = `건강 ${currentSave.founder.health}`;
+  founderMeta.replaceChildren(`${currentSave.founder.age}세 · `, healthText);
 
   renderDisciples();
   renderFounderDetail();
