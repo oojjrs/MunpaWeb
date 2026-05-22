@@ -24,8 +24,6 @@ const founderNameDisplay = document.querySelector("#founderNameDisplay");
 const founderMeta = document.querySelector("#founderMeta");
 const discipleList = document.querySelector("#discipleList");
 const openRecruitmentButton = document.querySelector("#openRecruitment");
-const cancelRecruitmentButton = document.querySelector("#cancelRecruitment");
-const confirmRecruitmentButton = document.querySelector("#confirmRecruitment");
 const recruitmentModal = document.querySelector("#recruitmentModal");
 const recruitmentPanel = document.querySelector("#recruitmentPanel");
 const candidateList = document.querySelector("#candidateList");
@@ -48,10 +46,11 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v59";
+const APP_VERSION = "v64";
 const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
+const WELCOME_LOCK_KEY = "munpaweb:welcomeSaveStartedAt";
 const FOUNDER_AGE = 35;
 const MAX_LIFESPAN = 120;
 const CANDIDATE_LIFESPAN = 80;
@@ -153,6 +152,7 @@ let currentRecords = [];
 let activeView = null;
 let founderNameTouched = false;
 let pendingRecruitment = null;
+let activeRecruitmentIndex = 0;
 let founderModalHistoryOpen = false;
 let recruitmentModalHistoryOpen = false;
 let cheatModalHistoryOpen = false;
@@ -285,6 +285,9 @@ function updateHistory(view, historyMode) {
 
 function showWelcome({ historyMode = "push" } = {}) {
   activeView = "welcome";
+  if (currentSave && !currentSave.ended) {
+    sessionStorage.setItem(WELCOME_LOCK_KEY, currentSave.startedAt ?? "");
+  }
   deploymentMeta.textContent = `현재 버전 ${APP_VERSION} · 배포 ${DEPLOYED_AT}`;
   continueGameButton.hidden = !currentSave || Boolean(currentSave.ended);
   viewRecordsButton.hidden = currentRecords.length === 0;
@@ -503,6 +506,7 @@ function updateCheatVisibility(isGameActive) {
 }
 
 function renderGame(save, options = {}) {
+  sessionStorage.removeItem(WELCOME_LOCK_KEY);
   currentSave = normalizeSave(save);
 
   if (currentSave.ended) {
@@ -1056,76 +1060,101 @@ function renderCandidates() {
     return;
   }
 
-  candidateList.replaceChildren(
-    ...candidates.map((candidate) => {
-      const card = document.createElement("article");
-      card.className = "candidate-card";
+  activeRecruitmentIndex = Math.min(Math.max(activeRecruitmentIndex, 0), candidates.length - 1);
+  const candidate = candidates[activeRecruitmentIndex];
 
-      const portrait = document.createElement("div");
-      portrait.className = "portrait portrait-small candidate-portrait";
-      applyPortraitColors(portrait, candidate.portrait);
+  const progress = document.createElement("div");
+  progress.className = "candidate-progress";
+  const counter = document.createElement("strong");
+  counter.textContent = `${activeRecruitmentIndex + 1} / ${candidates.length}`;
+  const dots = document.createElement("div");
+  dots.className = "candidate-dots";
+  candidates.forEach((item, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = `candidate-dot ${item.decision}`;
+    dot.setAttribute("aria-label", `${index + 1}번째 후보 보기`);
+    dot.setAttribute("aria-current", String(index === activeRecruitmentIndex));
+    dot.addEventListener("click", () => {
+      activeRecruitmentIndex = index;
+      renderCandidates();
+    });
+    dots.append(dot);
+  });
+  progress.append(counter, dots);
 
-      const decision = document.createElement("span");
-      decision.className = `decision-pill ${candidate.decision}`;
-      decision.textContent = getDecisionLabel(candidate.decision);
+  const card = document.createElement("article");
+  card.className = "candidate-card candidate-focus-card";
 
-      const summary = document.createElement("div");
-      summary.className = "candidate-summary";
+  const portrait = document.createElement("div");
+  portrait.className = "portrait candidate-portrait";
+  applyPortraitColors(portrait, candidate.portrait);
 
-      const identity = document.createElement("div");
-      identity.className = "candidate-identity";
+  const summary = document.createElement("div");
+  summary.className = "candidate-summary";
 
-      const name = document.createElement("strong");
-      name.textContent = candidate.name;
+  const identity = document.createElement("div");
+  identity.className = "candidate-identity";
 
-      const meta = document.createElement("div");
-      meta.className = "candidate-meta";
+  const name = document.createElement("strong");
+  name.textContent = candidate.name;
 
-      const age = document.createElement("p");
-      age.className = "candidate-stat";
-      age.textContent = `${candidate.age}세`;
+  const meta = document.createElement("div");
+  meta.className = "candidate-meta";
 
-      const lifespan = document.createElement("span");
-      lifespan.className = "lifespan-chip";
-      lifespan.textContent = `수명 ${candidate.lifespan}`;
-      meta.append(age, lifespan);
-      identity.append(name, meta);
+  const age = document.createElement("p");
+  age.className = "candidate-stat";
+  age.textContent = `${candidate.age}세`;
 
-      const detailButton = document.createElement("button");
-      detailButton.className = "secondary-action compact-action";
-      detailButton.type = "button";
-      detailButton.textContent = "상세";
-      detailButton.setAttribute("aria-label", `${candidate.name} 상세 정보 열기`);
-      detailButton.addEventListener("click", () => {
-        openCandidateDetail(candidate);
-      });
+  meta.append(age);
+  identity.append(name, meta);
+  summary.append(identity);
 
-      summary.append(identity, detailButton);
+  const recruitButton = document.createElement("button");
+  recruitButton.className = "primary-action";
+  recruitButton.type = "button";
+  recruitButton.textContent = "모집";
+  recruitButton.addEventListener("click", () => {
+    recruitCandidate(candidate.id).catch(() => {});
+  });
 
-      const actions = document.createElement("div");
-      actions.className = "decision-actions";
-      ["defer", "reject", "accept"].forEach((value) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.dataset.decision = value;
-        button.textContent = getDecisionLabel(value);
-        button.setAttribute("aria-pressed", String(candidate.decision === value));
-        button.addEventListener("click", () => {
-          candidate.decision = value;
-          renderCandidates();
-        });
-        actions.append(button);
-      });
-
-      portrait.append(decision);
-      card.append(portrait, summary, actions);
-      return card;
-    })
+  const stats = document.createElement("div");
+  stats.className = "candidate-detail-stats";
+  stats.append(
+    createDetailItem("수명", `${candidate.lifespan}`, "수명은 10/20/30/40/50처럼 10 단위로 표현합니다. 수명을 넘어간 나이부터 확률적으로 건강 수치를 감소시키며, 건강이 0이 되면 사망합니다. 수명은 늘거나 줄어들 수 있습니다."),
+    createDetailItem("건강", `${candidate.health}`, "", "important")
   );
+
+  card.append(portrait, summary, stats, recruitButton);
+
+  const nav = document.createElement("div");
+  nav.className = "candidate-nav";
+  const previous = document.createElement("button");
+  previous.className = "secondary-action";
+  previous.type = "button";
+  previous.textContent = "이전";
+  previous.disabled = activeRecruitmentIndex === 0;
+  previous.addEventListener("click", () => {
+    activeRecruitmentIndex -= 1;
+    renderCandidates();
+  });
+  const next = document.createElement("button");
+  next.className = "secondary-action";
+  next.type = "button";
+  next.textContent = "다음";
+  next.disabled = activeRecruitmentIndex === candidates.length - 1;
+  next.addEventListener("click", () => {
+    activeRecruitmentIndex += 1;
+    renderCandidates();
+  });
+  nav.append(previous, next);
+
+  candidateList.replaceChildren(progress, card, nav);
 }
 
 function openRecruitment({ historyMode = "push" } = {}) {
   pendingRecruitment = structuredClone(currentSave.recruitment.candidates);
+  activeRecruitmentIndex = 0;
   recruitmentModal.hidden = false;
   renderCandidates();
 
@@ -1136,16 +1165,16 @@ function openRecruitment({ historyMode = "push" } = {}) {
 }
 
 function closeRecruitment({ reset = true, historyMode = "none" } = {}) {
-  if (reset) {
-    pendingRecruitment = null;
-  }
-  recruitmentModal.hidden = true;
-
   if (historyMode === "back" && recruitmentModalHistoryOpen) {
     recruitmentModalHistoryOpen = false;
     history.back();
     return;
   }
+
+  if (reset) {
+    pendingRecruitment = null;
+  }
+  recruitmentModal.hidden = true;
 
   recruitmentModalHistoryOpen = false;
 }
@@ -1182,62 +1211,54 @@ function openFounderModal({ historyMode = "push" } = {}) {
   }
 }
 
-function openCandidateDetail(candidate, { historyMode = "push" } = {}) {
-  renderCharacterDetail(candidate, {
-    title: "후보 상세",
-    role: "제자 후보",
-    badge: getDecisionLabel(candidate.decision)
-  });
-  founderModal.classList.add("stacked-modal");
-  founderModal.hidden = false;
-
-  if (historyMode === "push" && !founderModalHistoryOpen) {
-    founderModalHistoryOpen = true;
-    history.pushState({ view: "game", modal: "candidate-detail", candidateId: candidate.id }, "", location.href);
-  }
-}
-
 function closeFounderModal({ historyMode = "none" } = {}) {
-  founderModal.hidden = true;
-  founderModal.classList.remove("stacked-modal");
-
   if (historyMode === "back" && founderModalHistoryOpen) {
     founderModalHistoryOpen = false;
     history.back();
     return;
   }
 
+  founderModal.hidden = true;
+  founderModal.classList.remove("stacked-modal");
+
   founderModalHistoryOpen = false;
 }
 
-async function confirmRecruitment() {
+async function recruitCandidate(candidateId) {
   if (!pendingRecruitment) {
     return;
   }
 
-  const accepted = pendingRecruitment.filter((candidate) => candidate.decision === "accept");
-  const deferred = pendingRecruitment.filter((candidate) => candidate.decision === "defer");
+  const candidateIndex = pendingRecruitment.findIndex((candidate) => candidate.id === candidateId);
+  if (candidateIndex === -1) {
+    return;
+  }
 
-  currentSave.disciples.push(
-    ...accepted.map((candidate) => ({
-      id: candidate.id,
-      name: candidate.name,
-      age: candidate.age,
-      lifespan: candidate.lifespan,
-      health: STARTING_HEALTH,
-      portrait: candidate.portrait,
-      dead: false,
-      stage: "입문",
-      trait: "신입"
-    }))
-  );
-  currentSave.stats.recruitedCount += accepted.length;
-  currentSave.recruitment.candidates = deferred.map((candidate) => ({ ...candidate, decision: "defer" }));
-  currentSave.log.push(`제자 모집: 합격 ${accepted.length}명, 유예 ${deferred.length}명`);
-  pendingRecruitment = null;
-  closeRecruitment({ reset: false, historyMode: "back" });
+  const [candidate] = pendingRecruitment.splice(candidateIndex, 1);
+  currentSave.disciples.push({
+    id: candidate.id,
+    name: candidate.name,
+    age: candidate.age,
+    lifespan: candidate.lifespan,
+    health: STARTING_HEALTH,
+    portrait: candidate.portrait,
+    dead: false,
+    stage: "입문",
+    trait: "신입"
+  });
+  currentSave.stats.recruitedCount += 1;
+  currentSave.recruitment.candidates = pendingRecruitment.map((item) => ({ ...item, decision: "defer" }));
+  currentSave.log.push(`제자 모집: ${candidate.name} 입문`);
   await writeSave(currentSave);
   renderGame(currentSave, { historyMode: "none" });
+
+  if (pendingRecruitment.length === 0) {
+    closeRecruitment({ reset: false, historyMode: "back" });
+    return;
+  }
+
+  activeRecruitmentIndex = Math.min(candidateIndex, pendingRecruitment.length - 1);
+  renderCandidates();
 }
 
 async function advanceTurn() {
@@ -1372,7 +1393,10 @@ async function boot() {
         return;
       }
       await writeSave(normalized);
-      if (history.state?.view === "welcome") {
+      if (
+        history.state?.view === "welcome" &&
+        sessionStorage.getItem(WELCOME_LOCK_KEY) === (normalized.startedAt ?? "")
+      ) {
         currentSave = normalized;
         currentRecords = await readRecords();
         showWelcome({ historyMode: "replace" });
@@ -1461,10 +1485,6 @@ founderForm.addEventListener("submit", (event) => {
 });
 
 openRecruitmentButton.addEventListener("click", openRecruitment);
-cancelRecruitmentButton.addEventListener("click", () => closeRecruitment({ historyMode: "back" }));
-confirmRecruitmentButton.addEventListener("click", () => {
-  confirmRecruitment().catch(() => {});
-});
 endTurnButton.addEventListener("click", () => {
   advanceTurn().catch(() => {});
 });
@@ -1478,20 +1498,6 @@ closeCheatsButton.addEventListener("click", () => {
 document.querySelectorAll("[data-cheat-action]").forEach((button) => {
   button.addEventListener("click", () => {
     runCheat(button.dataset.cheatAction).catch(() => {});
-  });
-});
-
-document.querySelectorAll("[data-bulk-decision]").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!pendingRecruitment) {
-      return;
-    }
-
-    pendingRecruitment = pendingRecruitment.map((candidate) => ({
-      ...candidate,
-      decision: button.dataset.bulkDecision
-    }));
-    renderCandidates();
   });
 });
 
@@ -1549,15 +1555,6 @@ window.addEventListener("popstate", (event) => {
       if (event.state?.modal === "recruitment") {
         recruitmentModalHistoryOpen = true;
         openRecruitment({ historyMode: "none" });
-      }
-      if (event.state?.modal === "candidate-detail") {
-        recruitmentModalHistoryOpen = true;
-        openRecruitment({ historyMode: "none" });
-        const candidate = pendingRecruitment?.find((item) => item.id === event.state?.candidateId);
-        if (candidate) {
-          founderModalHistoryOpen = true;
-          openCandidateDetail(candidate, { historyMode: "none" });
-        }
       }
       if (event.state?.modal === "cheats") {
         cheatModalHistoryOpen = true;
