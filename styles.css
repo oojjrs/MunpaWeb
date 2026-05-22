@@ -204,6 +204,13 @@ button:disabled:hover {
   gap: 10px;
 }
 
+.deployment-meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 .primary-action,
 .secondary-action {
   width: 100%;
@@ -821,9 +828,11 @@ button:disabled:hover {
 }
 
 .recruitment-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   width: min(100%, 500px);
   max-height: min(720px, 92vh);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .cheat-panel {
@@ -887,6 +896,14 @@ button:disabled:hover {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.recruitment-footer {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+}
+
 .bulk-actions button,
 .decision-actions button {
   min-height: 38px;
@@ -894,49 +911,114 @@ button:disabled:hover {
   font-size: 0.86rem;
 }
 
+.bulk-actions button[data-bulk-decision],
+.decision-actions button[data-decision] {
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+
+.bulk-actions button[data-bulk-decision="defer"],
+.decision-actions button[data-decision="defer"] {
+  color: var(--color-text-muted);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
+}
+
+.bulk-actions button[data-bulk-decision="reject"],
+.decision-actions button[data-decision="reject"] {
+  background: #f1dddd;
+  border-color: #c89494;
+}
+
+.bulk-actions button[data-bulk-decision="accept"],
+.decision-actions button[data-decision="accept"] {
+  background: #dcefe4;
+  border-color: #74a889;
+}
+
 .candidate-list {
   display: grid;
+  align-content: start;
   gap: 10px;
+  min-height: 0;
+  margin-inline: -4px;
+  padding: 0 4px 4px;
+  overflow-y: auto;
 }
 
 .candidate-card {
+  position: relative;
   display: grid;
-  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 12px;
   padding: 12px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-surface);
 }
 
+.candidate-portrait {
+  grid-row: 1 / 3;
+  width: 104px;
+  min-width: 104px;
+  height: 104px;
+}
+
 .candidate-summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 12px;
-  align-items: center;
-}
-
-.candidate-summary > div {
-  display: flex;
-  min-width: 0;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
-.candidate-summary strong {
+.candidate-identity {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.candidate-summary strong,
+.candidate-identity strong {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: 1rem;
 }
 
+.candidate-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
 .candidate-stat {
-  grid-column: 1 / -1;
   margin: 0;
   color: var(--color-text);
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 900;
+  white-space: nowrap;
+}
+
+.lifespan-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-raised);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .decision-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
   flex: 0 0 auto;
   border: 1px solid var(--color-border);
   border-radius: 999px;
@@ -960,14 +1042,15 @@ button:disabled:hover {
 }
 
 .decision-actions {
+  grid-column: 2;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
 .decision-actions button[aria-pressed="true"] {
-  border-color: var(--color-focus);
-  box-shadow: inset 0 0 0 2px var(--color-focus);
+  font-weight: 900;
+  filter: saturate(1.08) brightness(0.98);
 }
 
 .modal-backdrop {
@@ -978,6 +1061,10 @@ button:disabled:hover {
   padding: 18px;
   background: rgba(0, 0, 0, 0.42);
   z-index: 10;
+}
+
+.modal-backdrop.stacked-modal {
+  z-index: 12;
 }
 
 .modal-panel {
@@ -1167,18 +1254,19 @@ button:disabled:hover {
     padding-inline: 8px;
   }
 
-  .bulk-actions,
-  .decision-actions,
-  .confirm-actions {
-    grid-template-columns: 1fr;
+  .candidate-card {
+    gap: 8px 10px;
+    padding: 10px;
+  }
+
+  .candidate-portrait {
+    width: 88px;
+    min-width: 88px;
+    height: 88px;
   }
 
   .candidate-summary {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .candidate-summary .compact-action {
-    width: 100%;
+    gap: 6px;
   }
 
   .detail-stat-row {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "munpaweb-shell-v53";
+const CACHE_NAME = "munpaweb-shell-v59";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,7 +6,17 @@ const APP_SHELL = [
   "./src/app.js",
   "./manifest.webmanifest",
   "./assets/portraits/founders/founder-male-01.png",
-  "./assets/portraits/founders/founder-female-01.png"
+  "./assets/portraits/founders/founder-female-01.png",
+  "./assets/portraits/disciples/disciple-male-01.svg",
+  "./assets/portraits/disciples/disciple-male-02.svg",
+  "./assets/portraits/disciples/disciple-male-03.svg",
+  "./assets/portraits/disciples/disciple-male-04.svg",
+  "./assets/portraits/disciples/disciple-male-05.svg",
+  "./assets/portraits/disciples/disciple-female-01.svg",
+  "./assets/portraits/disciples/disciple-female-02.svg",
+  "./assets/portraits/disciples/disciple-female-03.svg",
+  "./assets/portraits/disciples/disciple-female-04.svg",
+  "./assets/portraits/disciples/disciple-female-05.svg"
 ];
 
 self.addEventListener("install", (event) => {

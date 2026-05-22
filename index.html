@@ -21,6 +21,7 @@
           <button id="viewRecords" class="secondary-action" type="button" hidden>기록 보기</button>
           <button id="newGame" class="primary-action" type="button">새 게임</button>
         </div>
+        <p id="deploymentMeta" class="deployment-meta">-</p>
       </section>
 
       <section id="founderView" class="founder-view" hidden>
@@ -173,20 +174,21 @@
               <p class="kicker">제자 모집</p>
               <h2 id="recruitmentModalTitle">후보 판정</h2>
             </div>
-            <button id="closeRecruitment" class="secondary-action compact-action" type="button">닫기</button>
-          </div>
-
-          <div class="bulk-actions" aria-label="전체 판정">
-            <button data-bulk-decision="defer" type="button">전체 유예</button>
-            <button data-bulk-decision="reject" type="button">전체 불합격</button>
-            <button data-bulk-decision="accept" type="button">전체 합격</button>
           </div>
 
           <div id="candidateList" class="candidate-list"></div>
 
-          <div class="confirm-actions">
-            <button id="cancelRecruitment" class="secondary-action" type="button">취소</button>
-            <button id="confirmRecruitment" class="primary-action" type="button">확인</button>
+          <div class="recruitment-footer">
+            <div class="bulk-actions" aria-label="전체 판정">
+              <button data-bulk-decision="defer" type="button">전체 유예</button>
+              <button data-bulk-decision="reject" type="button">전체 불합격</button>
+              <button data-bulk-decision="accept" type="button">전체 합격</button>
+            </div>
+
+            <div class="confirm-actions">
+              <button id="cancelRecruitment" class="secondary-action" type="button">취소</button>
+              <button id="confirmRecruitment" class="primary-action" type="button">확인</button>
+            </div>
           </div>
         </section>
       </div>

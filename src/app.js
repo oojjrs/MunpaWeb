@@ -6,6 +6,7 @@ const recordsView = document.querySelector("#recordsView");
 const continueGameButton = document.querySelector("#continueGame");
 const viewRecordsButton = document.querySelector("#viewRecords");
 const newGameButton = document.querySelector("#newGame");
+const deploymentMeta = document.querySelector("#deploymentMeta");
 const founderForm = document.querySelector("#founderForm");
 const portraitOptions = document.querySelector("#portraitOptions");
 const sectNameInput = document.querySelector("#sectNameInput");
@@ -23,7 +24,6 @@ const founderNameDisplay = document.querySelector("#founderNameDisplay");
 const founderMeta = document.querySelector("#founderMeta");
 const discipleList = document.querySelector("#discipleList");
 const openRecruitmentButton = document.querySelector("#openRecruitment");
-const closeRecruitmentButton = document.querySelector("#closeRecruitment");
 const cancelRecruitmentButton = document.querySelector("#cancelRecruitment");
 const confirmRecruitmentButton = document.querySelector("#confirmRecruitment");
 const recruitmentModal = document.querySelector("#recruitmentModal");
@@ -36,6 +36,7 @@ const closeCheatsButton = document.querySelector("#closeCheats");
 const cheatSidebar = document.querySelector("#cheatSidebar");
 const cheatSummary = document.querySelector("#cheatSummary");
 const founderModal = document.querySelector("#founderModal");
+const founderModalTitle = document.querySelector("#founderModalTitle");
 const closeFounderModalButton = document.querySelector("#closeFounderModal");
 const founderDetail = document.querySelector("#founderDetail");
 const endingTitle = document.querySelector("#endingTitle");
@@ -47,11 +48,13 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v53";
+const APP_VERSION = "v59";
+const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
 const FOUNDER_AGE = 35;
 const MAX_LIFESPAN = 120;
+const CANDIDATE_LIFESPAN = 80;
 const STARTING_HEALTH = 100;
 const seasons = ["봄", "여름", "가을", "겨울"];
 const declineByOverYear = [0, 2, 3, 4, 5, 6, 8, 10, 12];
@@ -102,6 +105,21 @@ const portraits = [
     }
   }
 ];
+
+const disciplePortraits = [
+  { id: "disciple-male-01", image: "./assets/portraits/disciples/disciple-male-01.svg", gender: "male", colors: { face: "#d7b082", hair: "#171b16", robe: "#45634e", robeDark: "#273b2f", bgA: "#e7eadb", bgB: "#9aae8a" } },
+  { id: "disciple-male-02", image: "./assets/portraits/disciples/disciple-male-02.svg", gender: "male", colors: { face: "#c99a72", hair: "#2a1d19", robe: "#355a68", robeDark: "#203844", bgA: "#dfe9e9", bgB: "#7d9ca4" } },
+  { id: "disciple-male-03", image: "./assets/portraits/disciples/disciple-male-03.svg", gender: "male", colors: { face: "#e0ba8f", hair: "#201719", robe: "#6a5542", robeDark: "#3f3128", bgA: "#eee4d3", bgB: "#b29472" } },
+  { id: "disciple-male-04", image: "./assets/portraits/disciples/disciple-male-04.svg", gender: "male", colors: { face: "#d2a37d", hair: "#111b1e", robe: "#4b5872", robeDark: "#2b3448", bgA: "#dde3ee", bgB: "#8996b1" } },
+  { id: "disciple-male-05", image: "./assets/portraits/disciples/disciple-male-05.svg", gender: "male", colors: { face: "#c78f68", hair: "#251b12", robe: "#5e4f7d", robeDark: "#39304f", bgA: "#e8e0ee", bgB: "#9581ad" } },
+  { id: "disciple-female-01", image: "./assets/portraits/disciples/disciple-female-01.svg", gender: "female", colors: { face: "#d7a98d", hair: "#231923", robe: "#8a5969", robeDark: "#543642", bgA: "#eee1e4", bgB: "#b98796" } },
+  { id: "disciple-female-02", image: "./assets/portraits/disciples/disciple-female-02.svg", gender: "female", colors: { face: "#e0b792", hair: "#161a20", robe: "#3f6f67", robeDark: "#274740", bgA: "#dcebe5", bgB: "#83aaa0" } },
+  { id: "disciple-female-03", image: "./assets/portraits/disciples/disciple-female-03.svg", gender: "female", colors: { face: "#cfa07a", hair: "#2a1d1d", robe: "#7d6541", robeDark: "#4c3d2a", bgA: "#ede5d3", bgB: "#b79e68" } },
+  { id: "disciple-female-04", image: "./assets/portraits/disciples/disciple-female-04.svg", gender: "female", colors: { face: "#d9ad9a", hair: "#201625", robe: "#566586", robeDark: "#333d58", bgA: "#e1e6f0", bgB: "#8b98bd" } },
+  { id: "disciple-female-05", image: "./assets/portraits/disciples/disciple-female-05.svg", gender: "female", colors: { face: "#c99277", hair: "#1a1716", robe: "#7b4f4a", robeDark: "#4c302e", bgA: "#eee0da", bgB: "#aa7d72" } }
+];
+
+const allPortraits = [...portraits, ...disciplePortraits];
 
 const sectNames = ["청운문", "월영문", "백하문", "무결문", "비연문", "창송문", "한화문", "천류문"];
 
@@ -170,7 +188,8 @@ function normalizeDisciple(disciple = {}) {
     health,
     dead: Boolean(disciple.dead) || health <= 0,
     stage: disciple.stage ?? "입문",
-    trait: disciple.trait ?? "평범"
+    trait: disciple.trait ?? "평범",
+    portrait: disciple.portrait ?? disciplePortraits[0].id
   };
 }
 
@@ -266,6 +285,7 @@ function updateHistory(view, historyMode) {
 
 function showWelcome({ historyMode = "push" } = {}) {
   activeView = "welcome";
+  deploymentMeta.textContent = `현재 버전 ${APP_VERSION} · 배포 ${DEPLOYED_AT}`;
   continueGameButton.hidden = !currentSave || Boolean(currentSave.ended);
   viewRecordsButton.hidden = currentRecords.length === 0;
   welcomeView.hidden = false;
@@ -355,7 +375,7 @@ function showRecords({ historyMode = "push" } = {}) {
 }
 
 function applyPortraitColors(element, portraitId) {
-  const portrait = portraits.find((item) => item.id === portraitId) ?? portraits[0];
+  const portrait = allPortraits.find((item) => item.id === portraitId) ?? portraits[0];
   element.style.setProperty("--face", portrait.colors.face);
   element.style.setProperty("--hair", portrait.colors.hair);
   element.style.setProperty("--robe", portrait.colors.robe);
@@ -417,11 +437,15 @@ function clampAge(age) {
 
 function createCandidates(count = 5) {
   const shuffled = [...candidateNamePool].sort(() => Math.random() - 0.5);
+  const shuffledPortraits = [...disciplePortraits].sort(() => Math.random() - 0.5);
   return Array.from({ length: count }, (_, index) =>
     normalizeCandidate({
       id: crypto.randomUUID(),
       name: shuffled[index] ?? `후보 ${index + 1}`,
       age: 5 + Math.floor(Math.random() * 11),
+      lifespan: CANDIDATE_LIFESPAN,
+      health: STARTING_HEALTH,
+      portrait: shuffledPortraits[index % shuffledPortraits.length].id,
       decision: "defer"
     })
   );
@@ -432,6 +456,9 @@ function normalizeCandidate(candidate) {
     id: candidate.id ?? crypto.randomUUID(),
     name: candidate.name ?? "이름 없는 후보",
     age: clampAge(candidate.age),
+    lifespan: Number.isFinite(candidate.lifespan) ? candidate.lifespan : CANDIDATE_LIFESPAN,
+    health: Number.isFinite(candidate.health) ? candidate.health : STARTING_HEALTH,
+    portrait: candidate.portrait ?? disciplePortraits[0].id,
     decision: ["defer", "reject", "accept"].includes(candidate.decision) ? candidate.decision : "defer"
   };
 }
@@ -726,28 +753,33 @@ function renderDisciples() {
   );
 }
 
-function renderFounderDetail() {
+function renderCharacterDetail(character, { title = character.role ?? "상세 정보", role = character.role ?? "인물", badge = "" } = {}) {
+  founderModalTitle.textContent = title;
+
   const profile = document.createElement("article");
   profile.className = "founder-card detail-character";
 
   const portrait = document.createElement("div");
   portrait.className = "portrait portrait-small";
-  applyPortraitColors(portrait, currentSave.founder.portrait);
+  applyPortraitColors(portrait, character.portrait);
 
   const identity = document.createElement("div");
   const labelRow = document.createElement("div");
   labelRow.className = "founder-label-row";
-  const role = document.createElement("p");
-  role.className = "kicker";
-  role.textContent = currentSave.founder.role;
-  const leaderBadge = document.createElement("span");
-  leaderBadge.className = "role-badge";
-  leaderBadge.textContent = "장문인";
-  labelRow.append(role, leaderBadge);
+  const roleText = document.createElement("p");
+  roleText.className = "kicker";
+  roleText.textContent = role;
+  labelRow.append(roleText);
+  if (badge) {
+    const badgeNode = document.createElement("span");
+    badgeNode.className = "role-badge";
+    badgeNode.textContent = badge;
+    labelRow.append(badgeNode);
+  }
   const name = document.createElement("h3");
-  name.textContent = currentSave.founder.name;
+  name.textContent = character.name;
   const meta = document.createElement("p");
-  meta.textContent = `${currentSave.founder.age}세`;
+  meta.textContent = `${character.age}세`;
   identity.append(labelRow, name, meta);
   profile.append(portrait, identity);
 
@@ -756,16 +788,24 @@ function renderFounderDetail() {
   vitalRow.append(
     createDetailItem(
       "수명",
-      `${currentSave.founder.lifespan}`,
+      `${character.lifespan}`,
       "수명은 10/20/30/40/50처럼 10 단위로 표현합니다. 수명을 넘어간 나이부터 확률적으로 건강 수치를 감소시키며, 건강이 0이 되면 사망합니다. 수명은 늘거나 줄어들 수 있습니다."
     ),
-    createDetailItem("건강", `${currentSave.founder.health}`, "", "important")
+    createDetailItem("건강", `${character.health}`, "", "important")
   );
 
   founderDetail.replaceChildren(
     profile,
     vitalRow
   );
+}
+
+function renderFounderDetail() {
+  renderCharacterDetail(currentSave.founder, {
+    title: currentSave.founder.role,
+    role: currentSave.founder.role,
+    badge: "장문인"
+  });
 }
 
 function createDetailItem(label, value, tooltip = "", tone = "") {
@@ -981,8 +1021,7 @@ function promoteSuccessor() {
   const [successor] = currentSave.disciples.splice(successorIndex, 1);
   currentSave.founder = {
     ...successor,
-    role: "장문인",
-    portrait: currentSave.founder.portrait
+    role: "장문인"
   };
   currentSave.stats.successionCount += 1;
   currentSave.stats.leaderLineage.push({
@@ -1022,35 +1061,53 @@ function renderCandidates() {
       const card = document.createElement("article");
       card.className = "candidate-card";
 
-      const summary = document.createElement("div");
-      summary.className = "candidate-summary";
+      const portrait = document.createElement("div");
+      portrait.className = "portrait portrait-small candidate-portrait";
+      applyPortraitColors(portrait, candidate.portrait);
 
-      const title = document.createElement("div");
-      const name = document.createElement("strong");
-      name.textContent = candidate.name;
       const decision = document.createElement("span");
       decision.className = `decision-pill ${candidate.decision}`;
       decision.textContent = getDecisionLabel(candidate.decision);
-      title.append(name, decision);
+
+      const summary = document.createElement("div");
+      summary.className = "candidate-summary";
+
+      const identity = document.createElement("div");
+      identity.className = "candidate-identity";
+
+      const name = document.createElement("strong");
+      name.textContent = candidate.name;
+
+      const meta = document.createElement("div");
+      meta.className = "candidate-meta";
 
       const age = document.createElement("p");
       age.className = "candidate-stat";
-      age.textContent = `나이 ${candidate.age}세`;
+      age.textContent = `${candidate.age}세`;
+
+      const lifespan = document.createElement("span");
+      lifespan.className = "lifespan-chip";
+      lifespan.textContent = `수명 ${candidate.lifespan}`;
+      meta.append(age, lifespan);
+      identity.append(name, meta);
 
       const detailButton = document.createElement("button");
       detailButton.className = "secondary-action compact-action";
       detailButton.type = "button";
-      detailButton.disabled = true;
       detailButton.textContent = "상세";
-      detailButton.setAttribute("aria-label", "후보 상세 화면은 추후 추가 예정");
+      detailButton.setAttribute("aria-label", `${candidate.name} 상세 정보 열기`);
+      detailButton.addEventListener("click", () => {
+        openCandidateDetail(candidate);
+      });
 
-      summary.append(title, age, detailButton);
+      summary.append(identity, detailButton);
 
       const actions = document.createElement("div");
       actions.className = "decision-actions";
       ["defer", "reject", "accept"].forEach((value) => {
         const button = document.createElement("button");
         button.type = "button";
+        button.dataset.decision = value;
         button.textContent = getDecisionLabel(value);
         button.setAttribute("aria-pressed", String(candidate.decision === value));
         button.addEventListener("click", () => {
@@ -1060,7 +1117,8 @@ function renderCandidates() {
         actions.append(button);
       });
 
-      card.append(summary, actions);
+      portrait.append(decision);
+      card.append(portrait, summary, actions);
       return card;
     })
   );
@@ -1115,6 +1173,7 @@ function closeCheats({ historyMode = "none" } = {}) {
 
 function openFounderModal({ historyMode = "push" } = {}) {
   renderFounderDetail();
+  founderModal.classList.remove("stacked-modal");
   founderModal.hidden = false;
 
   if (historyMode === "push" && !founderModalHistoryOpen) {
@@ -1123,8 +1182,24 @@ function openFounderModal({ historyMode = "push" } = {}) {
   }
 }
 
+function openCandidateDetail(candidate, { historyMode = "push" } = {}) {
+  renderCharacterDetail(candidate, {
+    title: "후보 상세",
+    role: "제자 후보",
+    badge: getDecisionLabel(candidate.decision)
+  });
+  founderModal.classList.add("stacked-modal");
+  founderModal.hidden = false;
+
+  if (historyMode === "push" && !founderModalHistoryOpen) {
+    founderModalHistoryOpen = true;
+    history.pushState({ view: "game", modal: "candidate-detail", candidateId: candidate.id }, "", location.href);
+  }
+}
+
 function closeFounderModal({ historyMode = "none" } = {}) {
   founderModal.hidden = true;
+  founderModal.classList.remove("stacked-modal");
 
   if (historyMode === "back" && founderModalHistoryOpen) {
     founderModalHistoryOpen = false;
@@ -1148,8 +1223,9 @@ async function confirmRecruitment() {
       id: candidate.id,
       name: candidate.name,
       age: candidate.age,
-      lifespan: MAX_LIFESPAN,
+      lifespan: candidate.lifespan,
       health: STARTING_HEALTH,
+      portrait: candidate.portrait,
       dead: false,
       stage: "입문",
       trait: "신입"
@@ -1385,7 +1461,6 @@ founderForm.addEventListener("submit", (event) => {
 });
 
 openRecruitmentButton.addEventListener("click", openRecruitment);
-closeRecruitmentButton.addEventListener("click", () => closeRecruitment({ historyMode: "back" }));
 cancelRecruitmentButton.addEventListener("click", () => closeRecruitment({ historyMode: "back" }));
 confirmRecruitmentButton.addEventListener("click", () => {
   confirmRecruitment().catch(() => {});
@@ -1452,13 +1527,13 @@ window.addEventListener("popstate", (event) => {
     return;
   }
 
-  if (!recruitmentModal.hidden) {
-    closeRecruitment();
+  if (!founderModal.hidden) {
+    closeFounderModal();
     return;
   }
 
-  if (!founderModal.hidden) {
-    closeFounderModal();
+  if (!recruitmentModal.hidden) {
+    closeRecruitment();
     return;
   }
 
@@ -1474,6 +1549,15 @@ window.addEventListener("popstate", (event) => {
       if (event.state?.modal === "recruitment") {
         recruitmentModalHistoryOpen = true;
         openRecruitment({ historyMode: "none" });
+      }
+      if (event.state?.modal === "candidate-detail") {
+        recruitmentModalHistoryOpen = true;
+        openRecruitment({ historyMode: "none" });
+        const candidate = pendingRecruitment?.find((item) => item.id === event.state?.candidateId);
+        if (candidate) {
+          founderModalHistoryOpen = true;
+          openCandidateDetail(candidate, { historyMode: "none" });
+        }
       }
       if (event.state?.modal === "cheats") {
         cheatModalHistoryOpen = true;
