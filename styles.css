@@ -1011,10 +1011,11 @@ button:disabled:hover {
 
 .candidate-nav {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
+.candidate-nav .primary-action,
 .candidate-nav .secondary-action {
   max-width: none;
 }
@@ -1024,11 +1025,6 @@ button:disabled:hover {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   width: 100%;
-}
-
-.candidate-card > .primary-action {
-  width: 100%;
-  max-width: none;
 }
 
 .modal-backdrop {

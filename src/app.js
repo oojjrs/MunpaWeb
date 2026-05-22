@@ -46,7 +46,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v64";
+const APP_VERSION = "v65";
 const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
@@ -1110,14 +1110,6 @@ function renderCandidates() {
   identity.append(name, meta);
   summary.append(identity);
 
-  const recruitButton = document.createElement("button");
-  recruitButton.className = "primary-action";
-  recruitButton.type = "button";
-  recruitButton.textContent = "모집";
-  recruitButton.addEventListener("click", () => {
-    recruitCandidate(candidate.id).catch(() => {});
-  });
-
   const stats = document.createElement("div");
   stats.className = "candidate-detail-stats";
   stats.append(
@@ -1125,7 +1117,7 @@ function renderCandidates() {
     createDetailItem("건강", `${candidate.health}`, "", "important")
   );
 
-  card.append(portrait, summary, stats, recruitButton);
+  card.append(portrait, summary, stats);
 
   const nav = document.createElement("div");
   nav.className = "candidate-nav";
@@ -1138,6 +1130,13 @@ function renderCandidates() {
     activeRecruitmentIndex -= 1;
     renderCandidates();
   });
+  const recruitButton = document.createElement("button");
+  recruitButton.className = "primary-action";
+  recruitButton.type = "button";
+  recruitButton.textContent = "모집";
+  recruitButton.addEventListener("click", () => {
+    recruitCandidate(candidate.id).catch(() => {});
+  });
   const next = document.createElement("button");
   next.className = "secondary-action";
   next.type = "button";
@@ -1147,7 +1146,7 @@ function renderCandidates() {
     activeRecruitmentIndex += 1;
     renderCandidates();
   });
-  nav.append(previous, next);
+  nav.append(previous, recruitButton, next);
 
   candidateList.replaceChildren(progress, card, nav);
 }
