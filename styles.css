@@ -787,11 +787,27 @@ button:disabled:hover {
 
 .disciple-card {
   display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
   gap: 6px;
   padding: 14px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
+  color: var(--color-text);
   background: var(--color-surface-raised);
+  text-align: left;
+}
+
+.disciple-card:hover {
+  color: var(--color-text);
+  background: var(--color-panel);
+}
+
+.disciple-identity {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
 }
 
 .disciple-card strong {

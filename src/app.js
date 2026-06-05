@@ -46,7 +46,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v65";
+const APP_VERSION = "v68";
 const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
@@ -75,6 +75,11 @@ const candidateNamePool = [
   "소명",
   "연서"
 ];
+
+const candidateNamePools = {
+  male: ["무겸", "하겸", "도윤", "서진", "태윤", "지후", "건우", "현준"],
+  female: ["소율", "아린", "하린", "서연", "유하", "지아", "나린", "채윤"]
+};
 
 const portraits = [
   {
@@ -105,18 +110,36 @@ const portraits = [
   }
 ];
 
-const disciplePortraits = [
-  { id: "disciple-male-01", image: "./assets/portraits/disciples/disciple-male-01.svg", gender: "male", colors: { face: "#d7b082", hair: "#171b16", robe: "#45634e", robeDark: "#273b2f", bgA: "#e7eadb", bgB: "#9aae8a" } },
-  { id: "disciple-male-02", image: "./assets/portraits/disciples/disciple-male-02.svg", gender: "male", colors: { face: "#c99a72", hair: "#2a1d19", robe: "#355a68", robeDark: "#203844", bgA: "#dfe9e9", bgB: "#7d9ca4" } },
-  { id: "disciple-male-03", image: "./assets/portraits/disciples/disciple-male-03.svg", gender: "male", colors: { face: "#e0ba8f", hair: "#201719", robe: "#6a5542", robeDark: "#3f3128", bgA: "#eee4d3", bgB: "#b29472" } },
-  { id: "disciple-male-04", image: "./assets/portraits/disciples/disciple-male-04.svg", gender: "male", colors: { face: "#d2a37d", hair: "#111b1e", robe: "#4b5872", robeDark: "#2b3448", bgA: "#dde3ee", bgB: "#8996b1" } },
-  { id: "disciple-male-05", image: "./assets/portraits/disciples/disciple-male-05.svg", gender: "male", colors: { face: "#c78f68", hair: "#251b12", robe: "#5e4f7d", robeDark: "#39304f", bgA: "#e8e0ee", bgB: "#9581ad" } },
-  { id: "disciple-female-01", image: "./assets/portraits/disciples/disciple-female-01.svg", gender: "female", colors: { face: "#d7a98d", hair: "#231923", robe: "#8a5969", robeDark: "#543642", bgA: "#eee1e4", bgB: "#b98796" } },
-  { id: "disciple-female-02", image: "./assets/portraits/disciples/disciple-female-02.svg", gender: "female", colors: { face: "#e0b792", hair: "#161a20", robe: "#3f6f67", robeDark: "#274740", bgA: "#dcebe5", bgB: "#83aaa0" } },
-  { id: "disciple-female-03", image: "./assets/portraits/disciples/disciple-female-03.svg", gender: "female", colors: { face: "#cfa07a", hair: "#2a1d1d", robe: "#7d6541", robeDark: "#4c3d2a", bgA: "#ede5d3", bgB: "#b79e68" } },
-  { id: "disciple-female-04", image: "./assets/portraits/disciples/disciple-female-04.svg", gender: "female", colors: { face: "#d9ad9a", hair: "#201625", robe: "#566586", robeDark: "#333d58", bgA: "#e1e6f0", bgB: "#8b98bd" } },
-  { id: "disciple-female-05", image: "./assets/portraits/disciples/disciple-female-05.svg", gender: "female", colors: { face: "#c99277", hair: "#1a1716", robe: "#7b4f4a", robeDark: "#4c302e", bgA: "#eee0da", bgB: "#aa7d72" } }
+const discipleGenders = ["male", "female"];
+const disciplePortraitAgeStages = [
+  { age: 8, file: "age-08.png" },
+  { age: 16, file: "age-16.png" },
+  { age: 30, file: "age-30s.png" },
+  { age: 50, file: "age-50s.png" },
+  { age: 70, file: "age-70s.png" }
 ];
+const disciplePortraitGroups = {
+  male: {
+    base: "disciple-male-01",
+    colors: { face: "#d7b082", hair: "#171b16", robe: "#45634e", robeDark: "#273b2f", bgA: "#e7eadb", bgB: "#9aae8a" }
+  },
+  female: {
+    base: "disciple-female-01",
+    colors: { face: "#d7a98d", hair: "#231923", robe: "#8a5969", robeDark: "#543642", bgA: "#eee1e4", bgB: "#b98796" }
+  }
+};
+const disciplePortraits = discipleGenders.flatMap((gender) =>
+  disciplePortraitAgeStages.map((stage, index) => {
+    const group = disciplePortraitGroups[gender];
+    return {
+      id: `disciple-${gender}-${String(index + 1).padStart(2, "0")}`,
+      image: `./assets/portraits/disciples/${group.base}/${stage.file}`,
+      gender,
+      age: stage.age,
+      colors: group.colors
+    };
+  })
+);
 
 const allPortraits = [...portraits, ...disciplePortraits];
 
@@ -132,7 +155,8 @@ const newGameSeed = {
   founder: null,
   disciples: [],
   recruitment: {
-    candidates: []
+    candidates: [],
+    acceptedCandidates: []
   },
   stats: {
     recruitedCount: 0,
@@ -154,6 +178,7 @@ let founderNameTouched = false;
 let pendingRecruitment = null;
 let activeRecruitmentIndex = 0;
 let founderModalHistoryOpen = false;
+let activeDetailDiscipleId = null;
 let recruitmentModalHistoryOpen = false;
 let cheatModalHistoryOpen = false;
 
@@ -177,19 +202,55 @@ function normalizeFounder(founder = {}) {
   };
 }
 
+function normalizeDiscipleGender(gender, portraitId) {
+  if (discipleGenders.includes(gender)) {
+    return gender;
+  }
+  if (typeof portraitId === "string" && portraitId.includes("female")) {
+    return "female";
+  }
+  return "male";
+}
+
+function getDisciplePortraitAge(age) {
+  if (age <= 12) {
+    return 8;
+  }
+  if (age <= 20) {
+    return 16;
+  }
+  if (age <= 40) {
+    return 30;
+  }
+  if (age <= 60) {
+    return 50;
+  }
+  return 70;
+}
+
+function getDisciplePortraitId(gender, age) {
+  const normalizedGender = normalizeDiscipleGender(gender);
+  const portraitAge = getDisciplePortraitAge(age);
+  const portraitIndex = Math.max(0, disciplePortraitAgeStages.findIndex((stage) => stage.age === portraitAge));
+  return `disciple-${normalizedGender}-${String(portraitIndex + 1).padStart(2, "0")}`;
+}
+
 function normalizeDisciple(disciple = {}) {
   const health = Number.isFinite(disciple.health) ? disciple.health : STARTING_HEALTH;
+  const age = Number.isFinite(disciple.age) ? disciple.age : 10;
+  const gender = normalizeDiscipleGender(disciple.gender, disciple.portrait);
 
   return {
     id: disciple.id ?? crypto.randomUUID(),
     name: disciple.name ?? "이름 없는 제자",
-    age: Number.isFinite(disciple.age) ? disciple.age : 10,
+    age,
     lifespan: Number.isFinite(disciple.lifespan) ? disciple.lifespan : MAX_LIFESPAN,
     health,
     dead: Boolean(disciple.dead) || health <= 0,
     stage: disciple.stage ?? "입문",
     trait: disciple.trait ?? "평범",
-    portrait: disciple.portrait ?? disciplePortraits[0].id
+    gender,
+    portrait: getDisciplePortraitId(gender, age)
   };
 }
 
@@ -206,9 +267,8 @@ function normalizeSave(save) {
     ? save.disciples.map(normalizeDisciple)
     : [];
   migrated.recruitment = {
-    candidates: Array.isArray(save?.recruitment?.candidates)
-      ? save.recruitment.candidates.map(normalizeCandidate)
-      : createCandidates()
+    candidates: normalizeRecruitmentCandidates(save?.recruitment?.candidates),
+    acceptedCandidates: normalizeAcceptedCandidates(save?.recruitment?.acceptedCandidates)
   };
   migrated.stats = {
     recruitedCount: Number.isFinite(save?.stats?.recruitedCount) ? save.stats.recruitedCount : migrated.disciples.length,
@@ -434,36 +494,113 @@ function pickRandomSectName() {
   sectNameInput.value = name;
 }
 
-function clampAge(age) {
-  return Math.min(15, Math.max(5, Number(age) || 5));
+function pickCandidateName(gender, excludedNames = []) {
+  const names = candidateNamePools[gender] ?? candidateNamePools.male;
+  const availableNames = names.filter((name) => !excludedNames.includes(name));
+  const pool = availableNames.length > 0 ? availableNames : names;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function createCandidates(count = 5) {
-  const shuffled = [...candidateNamePool].sort(() => Math.random() - 0.5);
-  const shuffledPortraits = [...disciplePortraits].sort(() => Math.random() - 0.5);
-  return Array.from({ length: count }, (_, index) =>
-    normalizeCandidate({
+function isCandidateNameForGender(name, gender) {
+  return (candidateNamePools[gender] ?? []).includes(name);
+}
+
+function clampAge(age) {
+  return Math.max(8, Number(age) || 8);
+}
+
+function createCandidates(count = 2) {
+  const usedNames = [];
+  return Array.from({ length: count }, (_, index) => {
+    const gender = discipleGenders[index % discipleGenders.length];
+    const age = 8 + Math.floor(Math.random() * 5);
+    const name = pickCandidateName(gender, usedNames);
+    usedNames.push(name);
+    return normalizeCandidate({
       id: crypto.randomUUID(),
-      name: shuffled[index] ?? `후보 ${index + 1}`,
-      age: 5 + Math.floor(Math.random() * 11),
+      name,
+      age,
       lifespan: CANDIDATE_LIFESPAN,
       health: STARTING_HEALTH,
-      portrait: shuffledPortraits[index % shuffledPortraits.length].id,
+      gender,
       decision: "defer"
-    })
-  );
+    });
+  });
 }
 
 function normalizeCandidate(candidate) {
+  const age = clampAge(candidate.age);
+  const gender = normalizeDiscipleGender(candidate.gender, candidate.portrait);
+
   return {
     id: candidate.id ?? crypto.randomUUID(),
     name: candidate.name ?? "이름 없는 후보",
-    age: clampAge(candidate.age),
+    age,
     lifespan: Number.isFinite(candidate.lifespan) ? candidate.lifespan : CANDIDATE_LIFESPAN,
     health: Number.isFinite(candidate.health) ? candidate.health : STARTING_HEALTH,
-    portrait: candidate.portrait ?? disciplePortraits[0].id,
+    gender,
+    portrait: getDisciplePortraitId(gender, age),
     decision: ["defer", "reject", "accept"].includes(candidate.decision) ? candidate.decision : "defer"
   };
+}
+
+function normalizeRecruitmentCandidates(candidates) {
+  if (!Array.isArray(candidates)) {
+    return createCandidates();
+  }
+
+  const usedNames = [];
+  return candidates.map((candidate, index) => {
+    const gender = normalizeDiscipleGender(candidate.gender, candidate.portrait) ?? discipleGenders[index % discipleGenders.length];
+    const name = isCandidateNameForGender(candidate.name, gender)
+      ? candidate.name
+      : pickCandidateName(gender, usedNames);
+    usedNames.push(name);
+
+    return normalizeCandidate({
+      ...candidate,
+      id: candidate.id ?? crypto.randomUUID(),
+      name,
+      age: Number.isFinite(candidate.age) ? candidate.age : 8 + Math.floor(Math.random() * 5),
+      gender,
+      lifespan: Number.isFinite(candidate.lifespan) ? candidate.lifespan : CANDIDATE_LIFESPAN,
+      health: Number.isFinite(candidate.health) ? candidate.health : STARTING_HEALTH,
+      decision: candidate.decision ?? "defer"
+    });
+  });
+}
+
+function normalizeAcceptedCandidates(candidates) {
+  return Array.isArray(candidates) ? candidates.map(normalizeCandidate) : [];
+}
+
+function createDiscipleFromCandidate(candidate) {
+  return {
+    id: candidate.id,
+    name: candidate.name,
+    age: candidate.age,
+    lifespan: candidate.lifespan,
+    health: STARTING_HEALTH,
+    gender: candidate.gender,
+    portrait: getDisciplePortraitId(candidate.gender, candidate.age),
+    dead: false,
+    stage: "입문",
+    trait: "신입"
+  };
+}
+
+function admitAcceptedCandidates() {
+  const acceptedCandidates = currentSave.recruitment.acceptedCandidates ?? [];
+  if (acceptedCandidates.length === 0) {
+    return;
+  }
+
+  currentSave.disciples.push(...acceptedCandidates.map(createDiscipleFromCandidate));
+  currentSave.stats.recruitedCount += acceptedCandidates.length;
+  acceptedCandidates.forEach((candidate) => {
+    currentSave.log.push(`제자 모집: ${candidate.name} 입문`);
+  });
+  currentSave.recruitment.acceptedCandidates = [];
 }
 
 function getDecisionLabel(decision) {
@@ -508,6 +645,7 @@ function updateCheatVisibility(isGameActive) {
 function renderGame(save, options = {}) {
   sessionStorage.removeItem(WELCOME_LOCK_KEY);
   currentSave = normalizeSave(save);
+  admitAcceptedCandidates();
 
   if (currentSave.ended) {
     renderEnding(currentSave, options);
@@ -731,6 +869,33 @@ function createMajorEventsBlock(events) {
   return block;
 }
 
+function createDiscipleCard(disciple) {
+  const card = document.createElement("button");
+  card.className = "disciple-card";
+  card.type = "button";
+  card.setAttribute("aria-label", `${disciple.name} 상세 정보 열기`);
+  card.addEventListener("click", () => {
+    openDiscipleModal(disciple.id);
+  });
+
+  const portrait = document.createElement("div");
+  portrait.className = "portrait portrait-small disciple-portrait";
+  applyPortraitColors(portrait, disciple.portrait);
+
+  const identity = document.createElement("div");
+  identity.className = "disciple-identity";
+
+  const name = document.createElement("strong");
+  name.textContent = disciple.name;
+
+  const meta = document.createElement("span");
+  meta.textContent = `${disciple.age}세 · ${disciple.stage} · ${disciple.trait}`;
+
+  identity.append(name, meta);
+  card.append(portrait, identity);
+  return card;
+}
+
 function renderDisciples() {
   if (currentSave.disciples.length === 0) {
     const empty = document.createElement("p");
@@ -741,19 +906,7 @@ function renderDisciples() {
   }
 
   discipleList.replaceChildren(
-    ...currentSave.disciples.map((disciple) => {
-      const card = document.createElement("article");
-      card.className = "disciple-card";
-
-      const name = document.createElement("strong");
-      name.textContent = disciple.name;
-
-      const meta = document.createElement("span");
-      meta.textContent = `${disciple.age}세 · ${disciple.stage} · ${disciple.trait}`;
-
-      card.append(name, meta);
-      return card;
-    })
+    ...currentSave.disciples.map(createDiscipleCard)
   );
 }
 
@@ -805,11 +958,28 @@ function renderCharacterDetail(character, { title = character.role ?? "상세 �
 }
 
 function renderFounderDetail() {
+  activeDetailDiscipleId = null;
   renderCharacterDetail(currentSave.founder, {
     title: currentSave.founder.role,
     role: currentSave.founder.role,
     badge: "장문인"
   });
+}
+
+function renderDiscipleDetail(discipleId) {
+  const disciple = currentSave.disciples.find((item) => item.id === discipleId);
+  if (!disciple) {
+    renderFounderDetail();
+    return false;
+  }
+
+  activeDetailDiscipleId = disciple.id;
+  renderCharacterDetail(disciple, {
+    title: "제자 상세",
+    role: disciple.stage ?? "제자",
+    badge: disciple.trait ?? ""
+  });
+  return true;
 }
 
 function createDetailItem(label, value, tooltip = "", tone = "") {
@@ -1210,6 +1380,20 @@ function openFounderModal({ historyMode = "push" } = {}) {
   }
 }
 
+function openDiscipleModal(discipleId, { historyMode = "push" } = {}) {
+  if (!renderDiscipleDetail(discipleId)) {
+    return;
+  }
+
+  founderModal.classList.remove("stacked-modal");
+  founderModal.hidden = false;
+
+  if (historyMode === "push" && !founderModalHistoryOpen) {
+    founderModalHistoryOpen = true;
+    history.pushState({ view: "game", modal: "disciple", discipleId }, "", location.href);
+  }
+}
+
 function closeFounderModal({ historyMode = "none" } = {}) {
   if (historyMode === "back" && founderModalHistoryOpen) {
     founderModalHistoryOpen = false;
@@ -1220,6 +1404,7 @@ function closeFounderModal({ historyMode = "none" } = {}) {
   founderModal.hidden = true;
   founderModal.classList.remove("stacked-modal");
 
+  activeDetailDiscipleId = null;
   founderModalHistoryOpen = false;
 }
 
@@ -1234,17 +1419,7 @@ async function recruitCandidate(candidateId) {
   }
 
   const [candidate] = pendingRecruitment.splice(candidateIndex, 1);
-  currentSave.disciples.push({
-    id: candidate.id,
-    name: candidate.name,
-    age: candidate.age,
-    lifespan: candidate.lifespan,
-    health: STARTING_HEALTH,
-    portrait: candidate.portrait,
-    dead: false,
-    stage: "입문",
-    trait: "신입"
-  });
+  currentSave.disciples.push(createDiscipleFromCandidate(candidate));
   currentSave.stats.recruitedCount += 1;
   currentSave.recruitment.candidates = pendingRecruitment.map((item) => ({ ...item, decision: "defer" }));
   currentSave.log.push(`제자 모집: ${candidate.name} 입문`);
@@ -1268,10 +1443,16 @@ async function advanceTurn() {
   if (previousSeasonIndex === seasons.length - 1) {
     currentSave.sect.foundedYear += 1;
     currentSave.founder.age += 1;
-    currentSave.disciples = currentSave.disciples.map((disciple) => ({
-      ...disciple,
-      age: disciple.age + 1
-    }));
+    currentSave.disciples = currentSave.disciples.map((disciple) => {
+      const age = disciple.age + 1;
+      const gender = normalizeDiscipleGender(disciple.gender, disciple.portrait);
+      return {
+        ...disciple,
+        age,
+        gender,
+        portrait: getDisciplePortraitId(gender, age)
+      };
+    });
   }
 
   const founderHealthChange = applyLifespanHealthChange(currentSave.founder);
@@ -1285,6 +1466,10 @@ async function advanceTurn() {
     }
   }
 
+  admitAcceptedCandidates();
+  if (currentSave.recruitment.candidates.length === 0) {
+    currentSave.recruitment.candidates = createCandidates();
+  }
   resolveSectContinuity();
   currentSave.log.push(`${formatTime(currentSave.sect)} 도래`);
   if (currentSave.ended) {
@@ -1550,6 +1735,10 @@ window.addEventListener("popstate", (event) => {
       if (event.state?.modal === "founder") {
         founderModalHistoryOpen = true;
         openFounderModal({ historyMode: "none" });
+      }
+      if (event.state?.modal === "disciple") {
+        founderModalHistoryOpen = true;
+        openDiscipleModal(event.state.discipleId, { historyMode: "none" });
       }
       if (event.state?.modal === "recruitment") {
         recruitmentModalHistoryOpen = true;
