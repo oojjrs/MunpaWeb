@@ -46,11 +46,14 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v68";
+const APP_VERSION = "v78";
 const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
 const WELCOME_LOCK_KEY = "munpaweb:welcomeSaveStartedAt";
+const DESKTOP_LAYOUT_WIDTH = 1920;
+const DESKTOP_LAYOUT_HEIGHT = 1080;
+const DESKTOP_LAYOUT_QUERY = "(min-width: 1024px)";
 const FOUNDER_AGE = 35;
 const MAX_LIFESPAN = 120;
 const CANDIDATE_LIFESPAN = 80;
@@ -85,6 +88,10 @@ const portraits = [
   {
     id: "founder-male-01",
     image: "./assets/portraits/founders/founder-male-01.png",
+    ageImages: [
+      { age: 50, image: "./assets/portraits/founders/founder-male-01-age-50s.png" },
+      { age: 70, image: "./assets/portraits/founders/founder-male-01-age-70s.png" }
+    ],
     namePool: "male",
     colors: {
       face: "#d8b38a",
@@ -98,6 +105,10 @@ const portraits = [
   {
     id: "founder-female-01",
     image: "./assets/portraits/founders/founder-female-01.png",
+    ageImages: [
+      { age: 50, image: "./assets/portraits/founders/founder-female-01-age-50s.png" },
+      { age: 70, image: "./assets/portraits/founders/founder-female-01-age-70s.png" }
+    ],
     namePool: "female",
     colors: {
       face: "#d7aa91",
@@ -182,6 +193,20 @@ let activeDetailDiscipleId = null;
 let recruitmentModalHistoryOpen = false;
 let cheatModalHistoryOpen = false;
 
+function updateAppScale() {
+  if (!window.matchMedia(DESKTOP_LAYOUT_QUERY).matches) {
+    document.documentElement.style.setProperty("--app-scale", "1");
+    return;
+  }
+
+  const scale = Math.min(
+    window.innerWidth / DESKTOP_LAYOUT_WIDTH,
+    window.innerHeight / DESKTOP_LAYOUT_HEIGHT
+  );
+
+  document.documentElement.style.setProperty("--app-scale", Math.max(scale, 0.1).toFixed(4));
+}
+
 function cloneSeed() {
   return structuredClone(newGameSeed);
 }
@@ -233,6 +258,18 @@ function getDisciplePortraitId(gender, age) {
   const portraitAge = getDisciplePortraitAge(age);
   const portraitIndex = Math.max(0, disciplePortraitAgeStages.findIndex((stage) => stage.age === portraitAge));
   return `disciple-${normalizedGender}-${String(portraitIndex + 1).padStart(2, "0")}`;
+}
+
+function getPortraitImage(portrait, age = null) {
+  if (!Number.isFinite(age) || !Array.isArray(portrait.ageImages)) {
+    return portrait.image;
+  }
+
+  const ageImage = portrait.ageImages
+    .filter((item) => age >= item.age)
+    .at(-1);
+
+  return ageImage?.image ?? portrait.image;
 }
 
 function normalizeDisciple(disciple = {}) {
@@ -437,7 +474,7 @@ function showRecords({ historyMode = "push" } = {}) {
   updateHistory(activeView, historyMode);
 }
 
-function applyPortraitColors(element, portraitId) {
+function applyPortraitColors(element, portraitId, age = null) {
   const portrait = allPortraits.find((item) => item.id === portraitId) ?? portraits[0];
   element.style.setProperty("--face", portrait.colors.face);
   element.style.setProperty("--hair", portrait.colors.hair);
@@ -446,8 +483,10 @@ function applyPortraitColors(element, portraitId) {
   element.style.setProperty("--bg-a", portrait.colors.bgA);
   element.style.setProperty("--bg-b", portrait.colors.bgB);
 
-  if (portrait.image) {
-    element.style.setProperty("--portrait-image", `url("${portrait.image}")`);
+  const image = getPortraitImage(portrait, age);
+
+  if (image) {
+    element.style.setProperty("--portrait-image", `url("${image}")`);
     element.classList.add("portrait-image");
   } else {
     element.style.removeProperty("--portrait-image");
@@ -455,29 +494,87 @@ function applyPortraitColors(element, portraitId) {
   }
 }
 
+function createPortraitPreview(portraitId, age = null) {
+  const preview = document.createElement("span");
+  preview.className = "portrait";
+  applyPortraitColors(preview, portraitId, age);
+  return preview;
+}
+
+function createFounderAgePreview(portrait) {
+  const stages = [
+    { label: "시작", age: FOUNDER_AGE },
+    { label: "50대", age: 50 },
+    { label: "70대", age: 70 }
+  ];
+
+  const previewList = document.createElement("span");
+  previewList.className = "portrait-life-preview";
+  previewList.setAttribute("aria-hidden", "true");
+
+  previewList.replaceChildren(
+    ...stages.map((stage) => {
+      const item = document.createElement("span");
+      item.className = "portrait-age-card";
+
+      const label = document.createElement("span");
+      label.className = "portrait-age-label";
+      label.textContent = stage.label;
+
+      item.append(createPortraitPreview(portrait.id, stage.age), label);
+      return item;
+    })
+  );
+
+  return previewList;
+}
+
+function createSelectedPortraitPreview(portrait) {
+  const previewPanel = document.createElement("div");
+  previewPanel.className = "portrait-selected-preview";
+  previewPanel.setAttribute("aria-label", "선택한 개파조사 나이별 초상화 미리보기");
+
+  previewPanel.append(createFounderAgePreview(portrait));
+  return previewPanel;
+}
+
+function keepSelectedPortraitInView() {
+  if (!window.matchMedia("(max-width: 420px)").matches) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    portraitOptions
+      .querySelector(".portrait-selected-preview")
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+}
+
 function renderPortraitOptions() {
+  const selectedPortrait = portraits.find((portrait) => portrait.id === selectedPortraitId) ?? portraits[0];
+
   portraitOptions.replaceChildren(
     ...portraits.map((portrait) => {
+      const isSelected = portrait.id === selectedPortraitId;
       const button = document.createElement("button");
-      button.className = "portrait-option";
+      button.className = `portrait-option${isSelected ? " is-selected" : ""}`;
       button.type = "button";
-      button.setAttribute("aria-pressed", String(portrait.id === selectedPortraitId));
+      button.setAttribute("aria-pressed", String(isSelected));
+      button.setAttribute("aria-label", `${portrait.namePool === "female" ? "여성" : "남성"} 개파조사 초상화`);
 
-      const preview = document.createElement("span");
-      preview.className = "portrait";
-      applyPortraitColors(preview, portrait.id);
-
-      button.append(preview);
+      button.append(createPortraitPreview(portrait.id));
       button.addEventListener("click", () => {
         selectedPortraitId = portrait.id;
         if (!founderNameTouched) {
           pickRandomName();
         }
         renderPortraitOptions();
+        keepSelectedPortraitInView();
       });
 
       return button;
-    })
+    }),
+    createSelectedPortraitPreview(selectedPortrait)
   );
 }
 
@@ -659,7 +756,7 @@ function renderGame(save, options = {}) {
     ? `저장됨 ${new Date(currentSave.savedAt).toLocaleString()}`
     : "새 게임";
 
-  applyPortraitColors(founderPortrait, currentSave.founder.portrait);
+  applyPortraitColors(founderPortrait, currentSave.founder.portrait, currentSave.founder.age);
   founderNameDisplay.textContent = currentSave.founder.name;
   const healthText = document.createElement("span");
   healthText.className = `health-chip health-${getHealthTone(currentSave.founder.health)}`;
@@ -918,7 +1015,7 @@ function renderCharacterDetail(character, { title = character.role ?? "상세 �
 
   const portrait = document.createElement("div");
   portrait.className = "portrait portrait-small";
-  applyPortraitColors(portrait, character.portrait);
+  applyPortraitColors(portrait, character.portrait, character.age);
 
   const identity = document.createElement("div");
   const labelRow = document.createElement("div");
@@ -1808,6 +1905,10 @@ function watchServiceWorkerUpdates(registration) {
     });
   });
 }
+
+updateAppScale();
+window.addEventListener("resize", updateAppScale);
+window.visualViewport?.addEventListener("resize", updateAppScale);
 
 if ("serviceWorker" in navigator) {
   let refreshing = false;

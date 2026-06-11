@@ -1,5 +1,8 @@
 :root {
   --app-height: 100vh;
+  --app-scale: 1;
+  --desktop-stage-width: 1920px;
+  --desktop-stage-height: 1080px;
   --color-page: #e7e2d5;
   --color-surface: #f8f5ed;
   --color-surface-raised: #ffffff;
@@ -275,6 +278,17 @@ button:disabled:hover {
   box-shadow: none;
 }
 
+.portrait-selected-preview {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-raised);
+  scroll-margin-block: 12px;
+}
+
 .portrait-option:hover {
   color: var(--color-text);
   background: var(--color-surface);
@@ -283,6 +297,34 @@ button:disabled:hover {
 .portrait-option[aria-pressed="true"] {
   border-color: var(--color-focus);
   box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+.portrait-life-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+  padding: 1px 1px 3px;
+}
+
+.portrait-age-card {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  align-content: start;
+  color: var(--color-text);
+}
+
+.portrait-age-card .portrait {
+  width: 100%;
+}
+
+.portrait-age-label {
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
 }
 
 .portrait {
@@ -1172,15 +1214,33 @@ button:disabled:hover {
   transform: translateY(0);
 }
 
-@media (min-width: 760px) {
+@media (min-width: 1024px) {
   body {
-    padding: 24px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    width: var(--desktop-stage-width);
+    height: var(--desktop-stage-height);
+    transform: scale(var(--app-scale));
+    transform-origin: center;
   }
 
   .welcome-view,
   .founder-view,
-  .game-view,
   .ending-view {
+    width: min(100%, 760px);
+    height: 100%;
+    min-height: 0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .game-view {
+    width: min(100%, 1500px);
     height: 100%;
     min-height: 0;
     border-radius: 10px;
@@ -1191,25 +1251,272 @@ button:disabled:hover {
     overflow-y: auto;
   }
 
+  .portrait-options {
+    grid-template-columns: repeat(3, 220px);
+    width: min(100%, 704px);
+    gap: 14px;
+  }
+
+  .portrait-option {
+    padding: 8px;
+  }
+
+  .portrait-selected-preview {
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .portrait-life-preview {
+    gap: 10px;
+  }
+
+  .portrait-age-card {
+    gap: 8px;
+  }
+
+  .portrait-age-label {
+    font-size: 0.85rem;
+  }
+
   .ending-view {
     overflow-y: auto;
   }
 
+  .fixed-status {
+    gap: 20px;
+    padding: 34px 40px 24px;
+  }
+
+  .status-pane {
+    padding: 0 40px 32px;
+  }
+
+  .sect-header {
+    gap: 24px;
+  }
+
+  .sect-header h1 {
+    font-size: clamp(3.2rem, 4vw, 4.6rem);
+  }
+
+  .save-state {
+    font-size: 1rem;
+  }
+
+  .compact-action {
+    min-height: 42px;
+    padding-inline: 16px;
+    font-size: 1rem;
+  }
+
+  .hud-row {
+    gap: 16px;
+  }
+
+  .founder-card {
+    gap: 18px;
+    padding: 18px 20px;
+  }
+
+  .founder-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .founder-card p:not(.kicker),
+  .main-status {
+    font-size: 1rem;
+  }
+
+  .role-badge,
+  .health-chip {
+    min-height: 22px;
+    padding-inline: 8px;
+  }
+
+  .game-view .portrait-small {
+    width: 112px;
+    min-width: 112px;
+    height: 112px;
+  }
+
+  .disciple-list {
+    gap: 16px;
+  }
+
+  .disciple-list h3 {
+    font-size: 1.25rem;
+  }
+
+  .disciple-card {
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 18px;
+    padding: 22px;
+  }
+
+  .disciple-card strong {
+    font-size: 1.2rem;
+  }
+
+  .disciple-card span {
+    font-size: 1rem;
+  }
+
+  .time-card {
+    min-width: 160px;
+    padding: 18px 20px;
+  }
+
+  .time-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .menu-bar {
+    gap: 14px;
+    padding: 18px 20px;
+  }
+
+  .menu-bar button {
+    min-height: 54px;
+    font-size: 1.05rem;
+  }
+
+  .app-shell:has(.cheat-sidebar:not([hidden])) {
+    display: grid;
+    grid-template-columns: 1500px 360px;
+    gap: 32px;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .app-shell:has(.cheat-sidebar:not([hidden])) .game-view {
+    width: 100%;
+    margin: 0;
+  }
+
   .cheat-sidebar:not([hidden]) {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    bottom: 24px;
-    z-index: 6;
+    position: static;
     display: grid;
     align-content: start;
-    gap: 14px;
-    width: 260px;
+    gap: 18px;
+    width: 100%;
+    height: 100%;
     overflow-y: auto;
-    padding: 16px;
+    padding: 24px;
     border: 1px solid var(--color-border);
     border-radius: 10px;
     background: var(--color-surface-raised);
+  }
+
+  .cheat-summary > div {
+    padding: 14px;
+    font-size: 1rem;
+  }
+
+  .cheat-actions {
+    gap: 10px;
+  }
+
+  .cheat-actions button {
+    min-height: 54px;
+    font-size: 1.05rem;
+  }
+
+  .modal-backdrop {
+    padding: 48px;
+  }
+
+  .modal-panel {
+    width: min(100%, 900px);
+    max-height: min(860px, 92vh);
+    gap: 24px;
+    padding: 30px;
+    border-radius: 10px;
+  }
+
+  .recruitment-panel {
+    width: min(100%, 1040px);
+    max-height: min(900px, 92vh);
+  }
+
+  .cheat-panel {
+    width: min(100%, 760px);
+  }
+
+  .panel-heading h2 {
+    font-size: 1.75rem;
+  }
+
+  .detail-grid {
+    gap: 18px;
+  }
+
+  .detail-character {
+    gap: 20px;
+    padding: 22px;
+  }
+
+  .modal-panel .portrait-small {
+    width: 138px;
+    min-width: 138px;
+    height: 138px;
+  }
+
+  .detail-character h3 {
+    font-size: 1.55rem;
+  }
+
+  .detail-character p,
+  .detail-item span,
+  .tooltip-bubble {
+    font-size: 1rem;
+  }
+
+  .detail-stat-row {
+    gap: 14px;
+  }
+
+  .detail-item {
+    padding: 18px;
+  }
+
+  .detail-item strong {
+    font-size: 1.45rem;
+  }
+
+  .detail-item.important strong {
+    font-size: 1.6rem;
+  }
+
+  .tooltip-bubble {
+    width: min(460px, 52vw);
+  }
+
+  .candidate-list {
+    gap: 18px;
+  }
+
+  .candidate-card {
+    gap: 20px;
+    padding: 26px;
+  }
+
+  .candidate-portrait {
+    width: min(100%, 240px);
+  }
+
+  .candidate-summary strong,
+  .candidate-identity strong {
+    font-size: 1.45rem;
+  }
+
+  .candidate-meta,
+  .candidate-stat {
+    font-size: 1.05rem;
+  }
+
+  .candidate-detail-stats,
+  .candidate-nav {
+    gap: 12px;
   }
 
   .app-shell:has(.cheat-sidebar:not([hidden])) #openCheats {
@@ -1218,6 +1525,10 @@ button:disabled:hover {
 }
 
 @media (max-width: 420px) {
+  .portrait-selected-preview {
+    min-height: 0;
+  }
+
   .sect-header {
     gap: 10px;
   }

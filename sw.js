@@ -1,4 +1,4 @@
-const CACHE_NAME = "munpaweb-shell-v68";
+const CACHE_NAME = "munpaweb-shell-v78";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,7 +6,11 @@ const APP_SHELL = [
   "./src/app.js",
   "./manifest.webmanifest",
   "./assets/portraits/founders/founder-male-01.png",
+  "./assets/portraits/founders/founder-male-01-age-50s.png",
+  "./assets/portraits/founders/founder-male-01-age-70s.png",
   "./assets/portraits/founders/founder-female-01.png",
+  "./assets/portraits/founders/founder-female-01-age-50s.png",
+  "./assets/portraits/founders/founder-female-01-age-70s.png",
   "./assets/portraits/disciples/disciple-male-01/age-08.png",
   "./assets/portraits/disciples/disciple-male-01/age-16.png",
   "./assets/portraits/disciples/disciple-male-01/age-30s.png",
