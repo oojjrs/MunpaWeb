@@ -141,6 +141,7 @@ button:disabled:hover {
 }
 
 .welcome-view,
+.character-creation-view,
 .founder-view,
 .game-view,
 .ending-view {
@@ -152,6 +153,7 @@ button:disabled:hover {
 }
 
 .welcome-view,
+.character-creation-view,
 .founder-view,
 .ending-view {
   display: grid;
@@ -160,6 +162,7 @@ button:disabled:hover {
   padding: clamp(18px, 4vh, 28px);
 }
 
+.character-creation-view,
 .founder-view {
   align-content: start;
   background: var(--color-surface);
@@ -239,6 +242,17 @@ button:disabled:hover {
   font-size: clamp(1.9rem, 6vw, 2.55rem);
 }
 
+.creation-lead {
+  max-width: 34rem;
+  margin: 4px 0 0;
+  color: var(--color-text-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
 .founder-form {
   display: grid;
   gap: clamp(14px, 2.4vh, 20px);
@@ -253,6 +267,7 @@ button:disabled:hover {
 }
 
 .portrait-picker legend,
+.weapon-picker legend,
 .name-field span {
   margin-bottom: 8px;
   color: var(--color-text);
@@ -383,6 +398,99 @@ button:disabled:hover {
   width: 54px;
   min-width: 54px;
   height: 54px;
+}
+
+.weapon-picker {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.weapon-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.weapon-option {
+  display: grid;
+  gap: 8px;
+  min-height: 116px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  text-align: left;
+}
+
+.weapon-option:hover {
+  color: var(--color-text);
+  background: var(--color-panel);
+}
+
+.weapon-option[aria-pressed="true"] {
+  border-color: var(--color-focus);
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+.weapon-option.is-locked {
+  color: var(--color-text-muted);
+  background: color-mix(in srgb, var(--color-surface-raised), var(--color-border) 16%);
+}
+
+.weapon-option.is-locked:hover {
+  background: color-mix(in srgb, var(--color-surface-raised), var(--color-border) 16%);
+}
+
+.weapon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.weapon-header strong {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.weapon-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 999px;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.lock-badge {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background: color-mix(in srgb, var(--color-border), transparent 70%);
+}
+
+.weapon-summary,
+.weapon-meta {
+  color: var(--color-text-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.weapon-meta {
+  color: var(--color-text-muted);
+  font-weight: 800;
 }
 
 .name-field {
@@ -1230,6 +1338,7 @@ button:disabled:hover {
   }
 
   .welcome-view,
+  .character-creation-view,
   .founder-view,
   .ending-view {
     width: min(100%, 760px);
@@ -1247,6 +1356,7 @@ button:disabled:hover {
     overflow: hidden;
   }
 
+  .character-creation-view,
   .founder-view {
     overflow-y: auto;
   }
@@ -1276,6 +1386,20 @@ button:disabled:hover {
 
   .portrait-age-label {
     font-size: 0.85rem;
+  }
+
+  .weapon-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .weapon-option {
+    min-height: 136px;
+    padding: 18px;
+  }
+
+  .weapon-header strong {
+    font-size: 1.18rem;
   }
 
   .ending-view {

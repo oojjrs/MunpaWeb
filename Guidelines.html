@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MunpaWeb 작업 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #cfd8e4;
+      --panel: #e6edf5;
+      --panel-muted: #d9e2ec;
+      --text: #172033;
+      --muted: #566171;
+      --line: #aebaca;
+      --blue: #2f62d8;
+      --green: #267756;
+      --amber: #a86716;
+      --red: #b73b32;
+      --ink: #1e293b;
+      --code: #d7e0ea;
+      --surface-raised: #dde6f0;
+      --surface-hover: #ccd8e5;
+      --shadow: 0 16px 38px rgba(15, 23, 42, 0.15);
+      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.11);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      background: #151f2e;
+      color: #fff;
+      padding: 30px 32px 28px;
+      border-bottom: 4px solid var(--green);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 720;
+      letter-spacing: 0;
+    }
+
+    header p {
+      max-width: 980px;
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    main {
+      width: min(1480px, calc(100% - 32px));
+      margin: 22px auto 48px;
+      display: grid;
+      grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    main > :not(.side-nav) {
+      grid-column: 2;
+    }
+
+    section {
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: var(--ink);
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: var(--code);
+      color: #1e3a5f;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 0.94em;
+    }
+
+    .notice,
+    .panel,
+    .column,
+    .task-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .notice {
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      order: 1;
+    }
+
+    .signal {
+      border-left: 4px solid var(--blue);
+      padding-left: 12px;
+      min-width: 0;
+    }
+
+    .signal strong {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .signal span {
+      overflow-wrap: anywhere;
+      font-weight: 650;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    ol,
+    ul {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .rules {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .rule {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--panel-muted);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .rule strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .queue-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .queue-toolbar input {
+      width: min(360px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      font: inherit;
+      background: var(--surface-raised);
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .queue-toolbar input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+      outline: none;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 14px;
+      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .done-archive,
+    .future-task-pool {
+      margin-top: 14px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: var(--panel-muted);
+      color: var(--muted);
+    }
+
+    .done-archive summary,
+    .future-task-pool summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 700;
+    }
+
+    .done-archive summary span,
+    .future-task-pool summary span {
+      display: block;
+      margin-top: 2px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .done-archive .column,
+    .future-task-pool .column {
+      margin: 0 12px 12px;
+      background: var(--panel);
+    }
+
+    .done-archive .task-card {
+      opacity: 0.74;
+    }
+
+    .future-task-pool .task-card {
+      opacity: 1;
+    }
+
+    .todo-done-archive .rules {
+      padding: 0 12px 12px;
+    }
+
+    .todo-done-archive .rule {
+      opacity: 0.74;
+    }
+
+    .column {
+      min-height: 220px;
+      padding: 12px;
+      box-shadow: none;
+      background: var(--surface-raised);
+    }
+
+    .column header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: -12px -12px 12px;
+      padding: 10px 12px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 8px 8px 0 0;
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .column h3 {
+      margin: 0;
+    }
+
+    .count {
+      min-width: 24px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: #c8d4e2;
+      color: var(--ink);
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .task-card {
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 10px;
+      padding: 12px;
+      border-left: 5px solid var(--blue);
+      background: var(--surface-raised);
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .task-card.is-collapsible {
+      cursor: pointer;
+    }
+
+    .task-card.is-collapsible:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+    }
+
+    .task-card.is-collapsible:focus {
+      outline: 3px solid rgba(31, 111, 235, 0.28);
+      outline-offset: 2px;
+    }
+
+    .task-card.is-expanded {
+      background: var(--panel);
+    }
+
+    .task-card[data-status="검증"] {
+      border-left-color: var(--amber);
+    }
+
+    .task-card[data-status="대기"] {
+      border-left-color: var(--blue);
+    }
+
+    .task-card[data-status="완료"] {
+      border-left-color: var(--green);
+    }
+
+    .task-card h4 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 15px;
+      flex-wrap: wrap;
+    }
+
+    .card-toggle-hint {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: var(--surface-hover);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card-summary {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .task-card.is-collapsible:not(.is-expanded) .meta {
+      display: none;
+    }
+
+    .task-card.is-expanded .meta {
+      margin-top: 10px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .meta div {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .meta dt {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meta dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      background: #c8d7ee;
+      color: #1d469f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    #thread-queue {
+      order: 1;
+    }
+
+    #product-direction {
+      order: 10;
+    }
+
+    #task-detail {
+      order: 11;
+    }
+
+    #milestones {
+      order: 12;
+    }
+
+    #future-task-pool {
+      order: 13;
+    }
+
+    #queue-rules {
+      order: 80;
+    }
+
+    .reference-block {
+      order: 90;
+    }
+
+    #card-template {
+      order: 91;
+    }
+
+    footer {
+      order: 100;
+    }
+
+    .side-nav {
+      grid-column: 1;
+      grid-row: 1 / span 20;
+      position: sticky;
+      top: 18px;
+      order: 0;
+      align-self: start;
+      background: var(--panel);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .side-nav h2 {
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .jump-links {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .jump-links {
+      grid-template-columns: 1fr;
+    }
+
+    .jump-links a {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-raised);
+      padding: 12px;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    .jump-links a:hover,
+    .jump-links a:focus {
+      border-color: rgba(37, 99, 235, 0.42);
+      box-shadow: var(--shadow-soft);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .jump-links a strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .jump-links a span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    details.reference-block {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 0;
+    }
+
+    details.reference-block > summary {
+      cursor: pointer;
+      padding: 15px 18px;
+      font-weight: 750;
+      color: var(--ink);
+    }
+
+    details.reference-block > .details-body {
+      border-top: 1px solid var(--line);
+      padding: 18px;
+      background: var(--surface-raised);
+    }
+
+    .tip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 4px;
+      border-radius: 50%;
+      background: #c8d7ee;
+      color: #1d469f;
+      cursor: help;
+      font-size: 12px;
+      font-weight: 800;
+      vertical-align: middle;
+    }
+
+    .tip-text {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      width: min(300px, 78vw);
+      transform: translateX(-50%);
+      border: 1px solid #c7d2e4;
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: #111827;
+      color: #f9fafb;
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 120ms ease;
+    }
+
+    .tip:hover .tip-text,
+    .tip:focus .tip-text {
+      opacity: 1;
+    }
+
+    .empty {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .template {
+      white-space: pre-wrap;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #0f172a;
+      color: #e5eefc;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 13px;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 12px 0;
+    }
+
+    @media (max-width: 980px) {
+      header {
+        padding: 24px 18px;
+      }
+
+      main {
+        display: block;
+      }
+
+      main > :not(.side-nav) {
+        grid-column: auto;
+      }
+
+      .side-nav {
+        position: static;
+        margin-bottom: 22px;
+      }
+
+      .notice,
+      .two-col,
+      .rules,
+      .jump-links {
+        grid-template-columns: 1fr;
+      }
+
+      .queue-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .board {
+        grid-template-columns: repeat(3, minmax(250px, 86vw));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MunpaWeb 작업 보드</h1>
+    <p>맨 위는 사용자가 바로 볼 운영 화면입니다. 자세한 프로젝트 설명과 Codex용 지침은 아래쪽에 접어서, 필요할 때만 열어봅니다.</p>
+  </header>
+
+  <main>
+    <nav class="panel side-nav" aria-label="문서 탐색">
+      <h2>바로가기</h2>
+      <div class="jump-links" aria-label="주요 이동">
+        <a href="#thread-queue">
+          <strong>상태 큐</strong>
+          <span>대기, 진행 중, 검증 우선 확인</span>
+        </a>
+        <a href="#future-task-pool">
+          <strong>미래 대기 태스크</strong>
+          <span>당장 안 할 후보를 접어서 확인</span>
+        </a>
+        <a href="#product-direction">
+          <strong>제품 방향</strong>
+          <span>MunpaWeb의 정체성과 배포 방향 확인</span>
+        </a>
+        <a href="#task-detail">
+          <strong>예상 작업</strong>
+          <span>앱 셸, 저장, 서비스워커, UI 작업 범위 확인</span>
+        </a>
+        <a href="#milestones">
+          <strong>마일스톤</strong>
+          <span>초기 구현과 검증 순서 후보 확인</span>
+        </a>
+        <a href="#codex-reference">
+          <strong>Codex 지침</strong>
+          <span>스레드 운영 원칙과 시작 절차 확인</span>
+        </a>
+      </div>
+    </nav>
+
+    <section class="notice" id="coding-convention-reference" aria-label="코딩 컨벤션 참조">
+      <div class="signal">
+        <strong>코딩 컨벤션</strong>
+        <span>컨벤션 문서 없음. 이 프로젝트의 언어/프레임워크에 맞는 별도 컨벤션 문서를 만들어야 한다.</span>
+      </div>
+      <div class="signal">
+        <strong>현재 상태</strong>
+        <span>Unity 프로젝트가 아니므로 Unity C# 컨벤션을 적용하지 않는다.</span>
+      </div>
+    </section>
+
+    <details class="reference-block" id="codex-reference">
+      <summary>Codex 참고 지침과 운영 원칙</summary>
+      <div class="details-body two-col">
+      <div class="panel">
+        <h2>새 스레드 시작 절차</h2>
+        <ol>
+          <li><code>Guidelines.html</code>을 먼저 읽고, 현재 작업이 큐 상태를 바꾸면 해당 카드를 갱신한다.</li>
+          <li><code>README.md</code>와 <code>HANDOFF.md</code>에서 GitHub Pages 배포 방식, 로컬 preview 방식, 프로젝트 방향을 확인한다.<span class="tip" tabindex="0">?<span class="tip-text">현재 저장소 안에는 별도 AGENTS.md 파일이 없으므로 대화에서 제공된 AGENTS 지침을 함께 적용합니다.</span></span></li>
+          <li>프로젝트 기준은 현재 저장소의 <code>Guidelines.html</code>, <code>Design.html</code>, <code>README.md</code>, <code>HANDOFF.md</code> 내용을 우선한다.</li>
+          <li><code>git status --short --branch</code>로 선행 변경과 현재 브랜치를 확인한다.<span class="tip" tabindex="0">?<span class="tip-text">다른 스레드나 사용자가 먼저 만든 변경을 덮지 않기 위한 최소 확인입니다.</span></span></li>
+          <li>현재 대기 큐에 맡을 작업이 있으면 해당 카드를 <code>ACTIVE_QUEUE_START</code> 아래로 옮기고 상태와 배지를 <code>진행 중</code>으로 바꾼다.</li>
+          <li>미래 대기 태스크가 바로 실행 가능해지면 <code>FUTURE_WAIT_QUEUE_START</code>에서 <code>WAIT_QUEUE_START</code> 아래로 승격한다.</li>
+          <li>작업 범위, 수정 예정 파일, 검증 계획을 카드에 적고 시작한다.</li>
+          <li>개별 구현 작업은 담당 카드 코드 기반 <code>git worktree</code>와 <code>codex/&lt;task-code&gt;</code> 브랜치를 기본값으로 둔다.</li>
+          <li>작업자 검증이 끝나면 카드를 <code>VERIFY_QUEUE_START</code> 아래로 옮기고, 다음 항목에 사용자 QA 또는 통합 담당 확인 지점을 명시한다.</li>
+          <li>구현 카드는 사용자 QA 또는 통합 담당 확인이 기록되기 전까지 <code>DONE_QUEUE_START</code> 아래로 옮기지 않는다.</li>
+          <li>파일 수정 전, 주요 구현 후, 검증 후, 최종 응답 전에 담당 카드를 갱신한다.</li>
+        </ol>
+      </div>
+
+      <div class="panel">
+        <h2>공통 작업 원칙</h2>
+        <ul>
+          <li>피드백과 문서는 한글로 작성한다.</li>
+        <li><code>Design.html</code>은 최종 결정된 구현 기준과 그 결정 사유를 정리하는 문서다. 중간 산출물, 대화 히스토리, 임시 비교 과정은 최종안이나 다음 버전이 나오면 제거하고, 필요한 경우 이미지·영상·소리처럼 바로 이해되는 자료를 본문 설명보다 우선한다.</li>
+        <li>기획서 작성 중 생긴 후보 이미지·영상·소리, 비교표, 접촉시트, 임시 변환물, 폐기 초안은 프로젝트 루트 <code>$Trash</code> 아래에만 둔다. <code>DesignAssets</code>/<code>GuidelinesAssets</code>에는 현재 최종 문서가 실제 참조하는 확정 자료만 둔다.</li>
+        <li>새 게임 기획서의 첫 얼개는 핵심 방향, 세계와 공간, 레벨과 콘텐츠 구조, 캐릭터와 성장, 규칙과 계산 모델, 아이템과 경제, 퀘스트와 이벤트, 상호작용과 전투, 연출과 커뮤니케이션, UI와 편의 시스템, 메타 시스템, 미결정/제외 기준을 기본 후보로 삼는다. 장르에 맞지 않는 범주는 최종 문서에서 삭제하거나 합친다.</li>
+        <li>마지막 기획 결과물 이후 코드가 직접 수정되어 <code>Design.html</code>과 다르면, 코드가 구현 기준이다. 기획서는 사용자의 말과 결정 사유를 나중에 검증하기 위한 정리 문서이므로 코드와 최신 의도에 맞춰 갱신한다.</li>
+          <li>시스템 규칙 설명이 아닌 기획 방향, 아트, 감각 섹션은 이미지, 카드, 짧은 판단 기준을 먼저 보여주고 긴 문단은 접힘 영역이나 세부 설명으로 내린다.</li>
+          <li>현재 기획 기준에서 탈락했거나 사용하지 않는 내용은 비교용 기록으로 쌓지 않고 삭제한다. 필요한 결정 이유만 현재 기준 가까이에 짧게 남긴다.</li>
+          <li>이미지 생성 프롬프트처럼 작업자에게만 필요한 문구는 <code>Design.html</code> 본문에 노출하지 않고, 필요하면 <code>Guidelines.html</code>의 접힌 작업자용 참고에 둔다.</li>
+          <li>롤백이 어려운 작업, 예를 들어 push, 완전 삭제, 되돌리기 어려운 문서 변경은 직전 대화에 명시 지시가 없으면 허가를 받는다.</li>
+          <li>새 텍스트 파일은 UTF-8 No-BOM과 CRLF를 기본으로 한다. 기존 파일은 원본 인코딩과 줄바꿈을 유지한다.</li>
+          <li>다른 스레드나 사용자가 만든 unrelated 변경은 되돌리지 않는다.</li>
+          <li>사용자가 직접 손댄 코드나 미커밋 변경은 기본적으로 현재 의도가 담긴 작업물로 본다. 명시 요청 없이 되돌리거나, 스타일 정리·리팩터링 명목으로 덮어쓰거나, 기존 구현을 새 판단으로 갈아치우지 않는다. 같은 파일을 고쳐야 하면 요청 범위에 필요한 최소 hunk만 수정하고 기존 사용자 변경과 공존시킨다.</li>
+          <li>MunpaWeb은 정적 브라우저 게임이다. 사용자가 명시적으로 선택하기 전까지 서버, 백엔드, 패키지 매니저, 빌드 시스템을 추가하지 않는다.</li>
+          <li>서비스워커나 오프라인 캐시는 직접 파일 열기만으로 판단하지 않고 <code>localhost</code>, <code>127.0.0.1</code>, HTTPS에서 확인한다.</li>
+          <li><code>Guidelines.html</code>은 무시 대상이 아니다. 작업 상태나 공유 규칙이 바뀌면 이 보드도 함께 갱신한다.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>검증과 커밋 원칙</h2>
+        <ul>
+          <li><code>Design.html</code>, <code>Guidelines.html</code>, <code>DesignAssets</code>, <code>GuidelinesAssets</code>는 opt-in 커밋 대상이다. 사용자가 문서 커밋을 명시하거나 해당 파일을 직접 지목하거나 문서 변경 포함을 지시한 경우에만 스테이징한다.</li>
+          <li>코드나 게임 에셋 작업 뒤의 단순한 “커밋해”는 문서 파일 포함 지시가 아니다. 문서 변경이 남아 있으면 스테이징하지 말고 최종 보고에 미커밋 문서 변경으로 따로 언급한다.</li>
+          <li>일반 문서 변경은 <code>git diff --check</code>, UTF-8 No-BOM, CRLF, 큐 마커 보존을 확인한다.</li>
+          <li>JS 변경은 번들 Node를 우선 사용한다: <code>C:\Users\oojjr\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe --check src\app.js</code>.</li>
+          <li>서비스워커 관련 변경은 <code>src/app.js</code>의 <code>APP_VERSION</code>과 <code>sw.js</code>의 <code>CACHE_NAME</code>을 함께 확인한다.</li>
+          <li>같은 워킹트리에서 커밋할 때는 <code>git add -A</code>를 습관적으로 쓰지 않고, 자기 변경 파일만 명시적으로 스테이징한다.</li>
+          <li>커밋 직전에는 <code>git diff --cached --name-status</code>로 스테이징된 파일이 자기 범위인지 확인한다. 이 목록에 문서 파일이나 문서 자산이 보이면 명시 지시가 있었는지 다시 확인한다.</li>
+          <li>push는 로컬 커밋과 다르게 되돌리기 어려우므로 직전 대화에 명시 지시가 없으면 진행하지 않는다.</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="reference-block" id="art-prompt-reference">
+      <summary>작업자용 아트 프롬프트 참고</summary>
+      <div class="details-body two-col">
+        <div class="panel">
+          <h2>배경 공통 프롬프트</h2>
+          <p>stylish modernized wuxia game background, premium contemporary martial sect, modern city and distant mountains, precision-machined architectural finish, seamless curved glass and stone, refined metal and ceramic surfaces, three-dimensional geometric building forms, polished joints, performance-wear details, subtle martial flow markings, wide 16:9, open center and lower third for UI, fashion-editorial polish, semi-realistic 2D concept art, no focal character, no readable text, no logo, no watermark</p>
+        </div>
+        <div class="panel">
+          <h2>배경 금지 프롬프트</h2>
+          <p>avoid historical Chinese palace or temple architecture, avoid upturned roofs, red lantern alleys, dragon motifs, imperial ornament, ancient Chinese robe silhouettes, old Taoist robes, readable Chinese signage, calligraphy scrolls, neon cyberpunk overload, guns, cars as focal objects, heavy magic effects, avoid treating straight concrete boxes as the only sign of futurism</p>
+        </div>
+        <div class="panel">
+          <h2>용도별 핵심 문구</h2>
+          <ul>
+            <li><strong>문파 홈:</strong> precision-finished rooftop martial sect headquarters, seamless curved glass and stone pavilion, geometric training floor, modern skyline, distant mountains, subtle mist</li>
+            <li><strong>캐릭터 생성/수련:</strong> contemporary martial academy studio, curved concrete and wood, seamless joints, performance jackets, sneakers, smart weapon racks, large windows, foggy hills and city lights</li>
+            <li><strong>협행/사건:</strong> rain-slick urban hidden martial corridor, minimalist secret club entrance, wet concrete, metal stairs, rooftop garden, city lights and dark hills</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h2>보정 지시</h2>
+          <ul>
+            <li>문파 홈은 어두운 파란색만 과해지지 않게 웜 아이보리 조명을 섞는다.</li>
+            <li>현대화는 직선, 차가운 콘크리트, 도시화만으로 처리하지 않는다. 손으로 만들기 어려운 정밀 마감, 균일 곡면, 오차 없는 접합부, 3차원 기하학 구조를 우선한다.</li>
+            <li>캐릭터 생성/수련은 밝고 접근 가능한 화면을 유지하고, 캐릭터 복식은 장비와 옷장 기준을 따른다.</li>
+            <li>비대칭 하네스처럼 실전 착용성과 일상 패션 논리 없이 아트적 형태감만 노리는 장식은 쓰지 않는다.</li>
+            <li>캐릭터의 멋은 “실생활에 없으니 상상으로 보태자”가 아니라, 인물의 취향과 사용 논리를 정한 뒤 그 의도를 끝까지 밀어붙인 결과로 만든다.</li>
+            <li>협행/사건은 분위기용으로 두되 모바일 UI에 쓰려면 암부를 줄이고 하단 중앙을 비운다.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <section class="panel" id="product-direction">
+      <h2>제품 방향</h2>
+      <ul>
+        <li><strong>정체성:</strong> MunpaWeb은 GitHub Pages로 공개되는 서버리스 브라우저 게임이다.</li>
+        <li><strong>배포:</strong> <code>main</code> 푸시 시 GitHub Actions의 <code>Deploy GitHub Pages</code> workflow가 정적 파일을 <code>_site</code>로 복사해 배포한다.</li>
+        <li><strong>저장:</strong> 큰 저장 데이터는 브라우저 저장소와 앱 런타임 흐름에 맞춰 유지하고, 작은 선호값과 최근 저장 메타데이터는 <code>localStorage</code>를 사용한다.</li>
+        <li><strong>오프라인:</strong> 서비스워커와 Cache Storage로 앱 셸 캐시를 관리한다.</li>
+        <li><strong>기술 방향:</strong> 브라우저 네이티브 기술을 우선하고, 패키지/빌드 시스템은 요구가 명확해질 때만 도입한다.</li>
+      </ul>
+      <div class="rules">
+        <div class="rule">
+          <strong>정적 사이트 유지</strong>
+          서버나 백엔드 없이 GitHub Pages에서 플레이 가능해야 한다.
+        </div>
+        <div class="rule">
+          <strong>브라우저 SPA 흐름</strong>
+          화면과 모달은 <code>history.pushState</code>, <code>replaceState</code>, <code>popstate</code> 복원 계약을 유지한다.
+        </div>
+        <div class="rule">
+          <strong>캐시 버전 동기화</strong>
+          앱 셸 캐시 변경 시 <code>APP_VERSION</code>과 <code>CACHE_NAME</code>을 함께 맞춘다.
+        </div>
+      </div>
+    </section>
+
+    <section class="two-col" id="task-detail">
+      <div class="panel">
+        <h2>예상 주요 작업</h2>
+        <ul>
+          <li>게임 화면 흐름: 시작, 캐릭터/문파 생성, 플레이 화면, 기록/엔딩 화면의 브라우저 history 복원 안정화.</li>
+          <li>저장 데이터: <code>munpaweb:save:local</code>, <code>munpaweb:records:local</code>, <code>munpaweb:welcomeSaveStartedAt</code> 키와 호환되는 저장/복원 관리.</li>
+          <li>서비스워커: 앱 셸 목록, 네트워크 우선 fetch, 자동 활성화와 1회 reload 정책 점검.</li>
+          <li>초상화 자산: 런타임 기본 캐릭터는 <code>assets/style-exploration/characters/character-style-k/n-*.png</code>, 제자 초상화는 <code>assets/portraits/disciples/</code>를 쓰며 <code>src/app.js</code>와 <code>sw.js</code> 캐시 목록을 함께 동기화.</li>
+          <li>UI 품질: 한국어 줄바꿈, 모바일 하단 조작, 고정형 선택 그리드, 명확한 인터랙션 상태 유지.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>구현 기준</h2>
+        <ul>
+          <li>GitHub Pages에서 직접 동작해야 하므로 상대 경로, 정적 자산 경로, 서비스워커 scope를 신중히 본다.</li>
+          <li>로컬 quick check는 <code>index.html</code> 직접 열기로 가능하지만, 서비스워커 검증은 <code>.\serve.ps1</code> 또는 <code>serve.bat</code>의 <code>http://127.0.0.1:4173/</code>에서 한다.</li>
+          <li>사용자가 명시하지 않은 대형 리팩터링, 배포 workflow 변경, 공개 URL 변경은 하지 않는다.</li>
+          <li>PowerShell 출력의 한글 깨짐은 파일 손상으로 단정하지 말고 <code>rg</code> 또는 명시적 UTF-8 읽기로 다시 확인한다.</li>
+          <li><code>Guidelines.html</code>은 작업용 운영판이므로 현재 workflow 복사 목록에 포함하지 않는다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel" id="milestones">
+      <h2>초기 마일스톤 후보</h2>
+      <ol>
+        <li>완료: 정적 GitHub Pages 게임 셸, README, manifest, 서비스워커, Pages workflow 기본 구성을 마련했다.</li>
+        <li>현재: 운영 지침은 ImageStudio 기준 HTML 형식으로 통일하고 MunpaWeb 내용만 채운다.</li>
+        <li>다음: 실제 기능 작업 때 <code>src/app.js</code>, <code>styles.css</code>, <code>sw.js</code> 변경 범위를 카드에 먼저 적고 진행한다.</li>
+        <li>보류: 배포 workflow의 복사 목록 변경은 공개 배포 대상 파일을 추가할 때만 검토한다.</li>
+        <li>보류: 패키지/빌드 시스템 도입은 정적 구조만으로 해결할 수 없는 요구가 생긴 뒤 판단한다.</li>
+      </ol>
+    </section>
+
+    <section class="panel" id="queue-rules">
+      <h2>큐 갱신 규칙</h2>
+      <div class="rules">
+        <div class="rule">
+          <strong>카드 소유권<span class="tip" tabindex="0">?<span class="tip-text">병렬 스레드가 서로의 진행 상황을 덮어쓰지 않게 하는 최소 규칙입니다.</span></span></strong>
+          한 스레드는 자기 카드만 수정한다. 다른 스레드 카드 정리는 사용자가 명시적으로 요청했을 때만 한다.
+        </div>
+        <div class="rule">
+          <strong>상태 이동<span class="tip" tabindex="0">?<span class="tip-text">대기, 진행 중, 검증, 완료 중 하나로만 두어 전체 보드 상태를 빠르게 읽게 합니다.</span></span></strong>
+          실행 가능한 일은 현재 대기 큐에 둔다. 시작하면 진행 중으로 옮기고, 작업자 검증이 끝나면 검증으로 옮긴다. 사용자 QA 또는 통합 담당 확인이 기록된 뒤에만 완료 기록으로 옮긴다.
+        </div>
+        <div class="rule">
+          <strong>기록 밀도</strong>
+          한 항목은 짧게 쓴다. 범위, 현재 상태, 다음 행동, 수정 파일, 검증 결과, 막힌 사유가 보이면 충분하다.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="thread-queue">
+      <div class="queue-toolbar">
+        <div>
+          <h2>스레드 상태 큐<span class="tip" tabindex="0">?<span class="tip-text">동시에 돌아가는 Codex 스레드가 지금 무엇을 하는지 보는 운영 보드입니다.</span></span></h2>
+          <p>브라우저에서 이 파일을 열어 전체 스레드 상태를 봅니다. 검색어를 입력하면 카드가 즉시 필터링되고, 카드를 누르면 상세가 펼쳐집니다.</p>
+        </div>
+        <input id="filter" type="search" placeholder="스레드 ID, 파일, 상태 검색">
+      </div>
+
+      <div class="board" id="queue-board">
+        <section class="column" data-column="대기">
+          <header>
+            <h3>대기</h3>
+            <span class="count">0</span>
+          </header>
+          <!-- WAIT_QUEUE_START -->
+          <p class="empty">현재 대기 카드 없음</p>
+          <!-- WAIT_QUEUE_END -->
+        </section>
+
+        <section class="column" data-column="진행 중">
+          <header>
+            <h3>진행 중</h3>
+            <span class="count">0</span>
+          </header>
+          <!-- ACTIVE_QUEUE_START -->
+          <!-- ACTIVE_QUEUE_END -->
+        </section>
+
+        <section class="column" data-column="검증">
+          <header>
+            <h3>검증</h3>
+            <span class="count">0</span>
+          </header>
+          <!-- VERIFY_QUEUE_START -->
+          <article class="task-card" data-status="검증" data-thread="T-20260621-1859-planning-rule-sync">
+            <h4>T-20260621-1859-planning-rule-sync <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd><code>Design.html</code> 최신 기획 문서 작성 규칙 반영과 현재 구현 기준 동기화</dd></div>
+              <div><dt>현재</dt><dd>현재 코드와 대조해 초회차 열린 입문 무공을 검/권법/봉으로 확정하고, 계절 진행 시간 단위와 <code>runMode="wanderer"</code> 첫 진입, 저장/기록/서비스워커 표면을 <code>Design.html</code>의 접힌 구현 표면 장에 추가. 미결정 항목에서는 이미 구현된 시작 선택과 시간 기준을 제거하고 도/창/암기 해금, 계절-사건 대응, 토너먼트 이후 전환 구조를 남김</dd></div>
+              <div><dt>다음</dt><dd>사용자 QA에서 새 구현 표면 장과 미결정 목록이 빠진 판단 없이 읽히는지 확인</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html</dd></div>
+              <div><dt>검증</dt><dd><code>Design.html</code> 주요 앵커 9개와 접힌 장 8개 확인, 이미지 경로 7개 존재 확인, UTF-8 No-BOM/CRLF 확인, 큐 마커 보존 확인, <code>git diff --check -- Design.html</code> 실행 결과 공백 오류 없음</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-21 18:59 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1930-design-world-art-visibility">
+            <h4>T-20260614-1930-design-world-art-visibility <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd><code>Design.html</code>에서 배경/캐릭터 아트 소개를 1-A/1-B 정식 섹션 중심으로 정리</dd></div>
+              <div><dt>현재</dt><dd>개요의 중복 아트 요약 블록을 제거하고, 캐릭터 대표 이미지와 짧은 기준 카드는 <code>1-B. 캐릭터 아트 스타일 기준</code> 섹션 안으로 이동</dd></div>
+              <div><dt>다음</dt><dd>사용자가 개요 첫 화면이 과밀하지 않고, 배경 아트와 캐릭터 아트가 각각 1-A/1-B에서 충분히 잘 보이는지 확인</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html, HANDOFF.md, src/app.js, sw.js, 최신 캐릭터/배경 자산, 삭제된 구형 아트 자산</dd></div>
+              <div><dt>검증</dt><dd>Design 이미지 경로 7개 존재, 서비스워커 앱 셸 경로 16개 존재, 구형 개파조사/고전 배경/초기 스타일 자산 참조 제거, 캐릭터 아트 앵커 중복 없음, UTF-8 No-BOM/CRLF, trailing whitespace 없음, 큐 마커 보존, node --check와 git diff --check 출력 오류 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-20 13:29 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1812-character-style">
+            <h4>T-20260614-1812-character-style <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>현대화된 무협 캐릭터 초상화 스타일과 복색 탐색</dd></div>
+              <div><dt>현재</dt><dd>중국 고대풍/전통 무협 복식, 펑퍼짐한 겹옷, 산수화 배경, 원형 후광을 제외하는 기준에 더해, 치파오는 성인 캐릭터의 섹시함과 핏을 위한 의도적 선택이면 허용하고 중국풍 무협 기호로만 쓰지 않는다는 기준, 비대칭 하네스처럼 실전 착용성과 일상 패션 논리 없이 아트적 형태감만 노리는 장식 금지, 포니테일1/단발머리1 계열은 좋은 기준점으로 유지하되 체형/턱선/얼굴 골격/인상 차이를 통해 대표 캐릭터 풀을 확장한다는 기준, 남성 캐릭터는 뒤묶음/상투형 헤어를 피하고 현대적인 짧은 머리나 정돈된 헤어를 우선한다는 기준을 <code>Design.html</code>에 반영. K 남성 스트리트 무협 이미지는 상투형 헤어를 뺀 짧은 머리와 단단한 턱선 후보로 교체했고, L 피티드 복식 이미지는 단발 유지, 강아지상/토끼상 얼굴, 건강한 실루엣 후보로 재교체</dd></div>
+              <div><dt>다음</dt><dd>기본 초상화 세트나 추가 캐릭터 시안을 만들 때 포니테일1/단발머리1의 장점은 유지하면서, 남성 머리가 상투처럼 보이지 않는지, 치파오가 섹시함/핏을 위한 선택인지, 복식 과장이 기획적 끝판왕에서 나온 것인지, 인물들이 같은 턱선/눈매/마른 체형의 양산형 AI 미형으로 수렴하지 않는지 먼저 검토</dd></div>
+              <div><dt>파일</dt><dd>Guidelines.html, Design.html, assets/style-exploration/characters/character-style-k-modern-male-street-martial.png, assets/style-exploration/characters/character-style-l-modern-female-fitted.png, assets/style-exploration/characters/character-style-n-modern-female-techwear.png</dd></div>
+              <div><dt>검증</dt><dd>K/L/M/N 후보 이미지 열람, K 남성 스트리트 무협 이미지 교체 및 경로 존재 확인, L 피티드 복식 이미지 재교체 및 경로 존재 확인, 캐릭터 아트 문구에서 포니테일1/단발머리1 기준점 유지, 강아지상/토끼상 얼굴 기준, 남성 뒤묶음/상투형 헤어 금지, 치파오 예외 허용 기준, 비대칭 하네스 금지선, 체형/얼굴 골격/인상 다양성 기준 반영, UTF-8 No-BOM/CRLF 확인, <code>git diff --check</code> 실행 결과 공백 오류 없음</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-20 17:22 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1900-design-rename">
+            <h4>T-20260614-1900-design-rename <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>기획 문서 파일명을 <code>Design.html</code>로 변경하고 공유 문서 참조를 갱신</dd></div>
+              <div><dt>현재</dt><dd>기획 문서 파일명을 <code>Design.html</code>로 변경하고 <code>Guidelines.html</code> 안의 관련 카드/참조를 새 파일명으로 정리</dd></div>
+              <div><dt>다음</dt><dd>사용자가 새 파일명 기준으로 문서 접근을 확인하면 완료 기록으로 이동 가능</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html</dd></div>
+              <div><dt>검증</dt><dd><code>Design.html</code> 존재, 이전 파일명 참조 없음, UTF-8 No-BOM/CRLF, 큐 마커 보존, git diff --check 출력 오류 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-14 19:10 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1852-modern-tech-martial-rule">
+            <h4>T-20260614-1852-modern-tech-martial-rule <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>현대화 무협 세계관에서 총기류가 있는데도 <code>기</code>를 사용하는 무공이 주력 해법이어야 하는 성립 조건 정리</dd></div>
+              <div><dt>현재</dt><dd><code>Design.html</code>에 무협은 현실에 기가 있다면 무엇이 달라지는지 따지는 유사 가상 현실이라는 기준을 추가하고, 총기보다 무공이 상시성, 대응 폭, 교전 환경, 사회 비용, 성장성과 소유권에서 더 안정적인 주력 해법이 되는 가상 사실과 게임 결과를 정리</dd></div>
+              <div><dt>다음</dt><dd>총포가 유효한 하한선, 기장 간섭 강도, 총기 사용의 사회 비용, 기가 의료/소재/시설/감시 장비에 주는 영향, 외부 군사력과 무림의 관계를 확정 또는 조정</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html</dd></div>
+              <div><dt>검증</dt><dd>UTF-8 No-BOM/CRLF, trailing whitespace 없음, 큐 마커 보존, git diff --check 출력 오류 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-20 16:36 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1811-background-art-style">
+            <h4>T-20260614-1811-background-art-style <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>현대적이고 비중국풍인 무협 배경 아트 스타일 재탐색과 재사용 가능한 묘사/프롬프트 문서화</dd></div>
+              <div><dt>현재</dt><dd>고전 산수풍 시안과 구형 스타일 탐색 자산은 제거하고, 모던 문파 본부, 트레이닝 스튜디오, 도시 협행/비밀 사건의 현대화 무협 시안만 <code>Design.html</code>에 남김. 현대화 기준은 직선/콘크리트/도시화만이 아니라 손으로 만들기 어려운 정밀 마감, 균일 곡면, 오차 없는 접합부, 3차원 기하학 구조로 재정의. 작업자용 프롬프트는 <code>Guidelines.html</code> 접힘 참고로 이동</dd></div>
+              <div><dt>다음</dt><dd>사용자가 A/B/C 중 기준선을 확인하고, 다음 배경 시안이 직선형 콘크리트 미래관에 갇히지 않고 곡면/정밀 마감/3차원 기하학을 반영하는지 확인</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html, assets/art-style/backgrounds/background-style-modern-*.png</dd></div>
+              <div><dt>검증</dt><dd>새 시안 3장 확인, 이미지 경로 존재, 16:9 비율, 배경 현대화 기준에 정밀 마감/곡면/3차원 기하학 반영, UTF-8 No-BOM/CRLF, trailing whitespace 없음, 큐 마커 보존, git diff --check 출력 오류 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-20 17:01 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260614-1652-game-design-doc">
+            <h4>T-20260614-1652-game-design-doc <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd><code>Design.html</code> 기획 협업 문서와 앱 첫 진입 캐릭터 생성 화면</dd></div>
+              <div><dt>현재</dt><dd>기존 개파조사/문파 운영 기능은 삭제하지 않고 뒤 단계로 보존한 채, 새 게임 진입을 캐릭터 생성, 초상화, 이름, 입문 무공 선택 화면으로 전환. <code>Design.html</code>에는 배경 아트와 나란히 캐릭터 아트 스타일 기준 섹션을 추가해 초상화/복식/나이 변화도 정식 기획 축으로 명시</dd></div>
+              <div><dt>다음</dt><dd>사용자가 앱 첫 화면과 기획 문서를 보며 초회차 오픈 무공 3종, 잠긴 무공 문구, 기본 캐릭터 세트, 첫 토너먼트와 개파 권한 연결 범위를 결정</dd></div>
+              <div><dt>파일</dt><dd>Design.html, Guidelines.html, index.html, styles.css, src/app.js, sw.js</dd></div>
+              <div><dt>검증</dt><dd><code>node --check src/app.js</code>, <code>node --check sw.js</code>, 브라우저 데스크톱 흐름, UTF-8 No-BOM/CRLF, 큐 마커 보존, <code>git diff --check</code> 출력 오류 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-14 20:01 +09:00</dd></div>
+            </dl>
+          </article>
+          <article class="task-card" data-status="검증" data-thread="T-20260613-1841-queue-flow-rule">
+            <h4>T-20260613-1841-queue-flow-rule <span class="badge">검증</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>업데이트된 가이드라인 스킬의 검증 큐 흐름 반영</dd></div>
+              <div><dt>현재</dt><dd>작업자 검증 후 바로 완료로 보내지 않고 검증 큐에 남기며, 사용자 QA 또는 통합 담당 확인 전에는 구현 카드를 완료로 옮기지 않는 규칙을 문서에 반영</dd></div>
+              <div><dt>다음</dt><dd>사용자가 이 규칙 반영을 확인하면 완료 기록으로 이동 가능</dd></div>
+              <div><dt>파일</dt><dd>Guidelines.html</dd></div>
+              <div><dt>검증</dt><dd>CSS/스크립트 원본 일치, UTF-8 No-BOM/CRLF, 큐 마커, git diff --check 출력 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-13 18:41 +09:00</dd></div>
+            </dl>
+          </article>
+          <!-- VERIFY_QUEUE_END -->
+        </section>
+
+      </div>
+
+      <details class="future-task-pool" id="future-task-pool">
+        <summary>미래 대기 태스크<span>아직 의존성이나 범위가 풀리지 않아 바로 실행할 수 없는 보류 후보만 여기에 둡니다.</span></summary>
+        <section class="column" data-column="미래 대기">
+          <header>
+            <h3>미래 대기</h3>
+            <span class="count">0</span>
+          </header>
+          <!-- FUTURE_WAIT_QUEUE_START -->
+          <article class="task-card" data-status="대기" data-thread="T-20260613-1736-handoff-guidelines-split">
+            <h4>T-20260613-1736-handoff-guidelines-split <span class="badge">대기</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd><code>HANDOFF.md</code>와 <code>Guidelines.html</code>의 역할 분리</dd></div>
+              <div><dt>현재</dt><dd>두 문서가 모두 프로젝트 맥락과 작업 규칙을 담고 있어 일부 중복이 있다</dd></div>
+              <div><dt>다음</dt><dd>사용자가 요청하면 운영 규칙은 <code>Guidelines.html</code>, 히스토리와 저장소 인수인계는 <code>HANDOFF.md</code> 중심으로 정리</dd></div>
+              <div><dt>파일</dt><dd>Guidelines.html, HANDOFF.md</dd></div>
+              <div><dt>검증</dt><dd>문서 간 충돌 여부 확인, UTF-8 No-BOM/CRLF 확인, git diff --check 필요</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-13 17:36 +09:00</dd></div>
+            </dl>
+          </article>
+          <!-- FUTURE_WAIT_QUEUE_END -->
+        </section>
+      </details>
+
+      <details class="done-archive" id="done-archive">
+        <summary>완료 기록<span>끝난 작업 카드는 여기 접어두고, 필요할 때만 펼쳐 확인합니다.</span></summary>
+        <section class="column" data-column="완료">
+          <header>
+            <h3>완료</h3>
+            <span class="count">0</span>
+          </header>
+          <!-- DONE_QUEUE_START -->
+          <article class="task-card" data-status="완료" data-thread="T-20260613-1736-imagestudio-format-port">
+            <h4>T-20260613-1736-imagestudio-format-port <span class="badge">완료</span></h4>
+            <dl class="meta">
+              <div><dt>범위</dt><dd>ImageStudio <code>Guidelines.html</code> 형식을 MunpaWeb 가이드라인에 적용</dd></div>
+              <div><dt>현재</dt><dd>참고 HTML의 CSS, 보드 구조, 카드 구조, 접힘 영역, 문서 정보, 필터/접기 스크립트를 유지하고 MunpaWeb 내용으로 교체</dd></div>
+              <div><dt>다음</dt><dd>후속 작업은 이 형식을 유지하고 카드 내용과 상태만 갱신</dd></div>
+              <div><dt>파일</dt><dd>Guidelines.html</dd></div>
+              <div><dt>검증</dt><dd>CSS/스크립트 해시 원본 일치, UTF-8 No-BOM/CRLF, 큐 마커, HTML 기본 구조, git diff --check 출력 없음 확인</dd></div>
+              <div><dt>갱신</dt><dd>2026-06-13 17:36 +09:00</dd></div>
+            </dl>
+          </article>
+          <!-- DONE_QUEUE_END -->
+        </section>
+      </details>
+    </section>
+
+    <details class="reference-block" id="card-template">
+      <summary>새 카드 템플릿</summary>
+      <div class="details-body">
+      <h2>새 카드 템플릿</h2>
+      <p>당장 처리할 새 일감은 <code>WAIT_QUEUE_START</code> 아래에 두고, 장기 후보는 <code>FUTURE_WAIT_QUEUE_START</code> 아래에 둡니다. 담당 스레드가 잡으면 <code>ACTIVE_QUEUE_START</code> 아래로 옮기고, 작업자 검증 후 <code>VERIFY_QUEUE_START</code> 아래로 옮깁니다. 사용자 QA 또는 통합 담당 확인이 기록된 뒤에만 완료 기록의 <code>DONE_QUEUE_START</code> 아래로 옮깁니다.</p>
+      <div class="template">&lt;article class="task-card" data-status="대기" data-thread="T-YYYYMMDD-HHMM-short"&gt;
+  &lt;h4&gt;T-YYYYMMDD-HHMM-short &lt;span class="badge"&gt;대기&lt;/span&gt;&lt;/h4&gt;
+  &lt;dl class="meta"&gt;
+    &lt;div&gt;&lt;dt&gt;범위&lt;/dt&gt;&lt;dd&gt;작업 범위&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;현재&lt;/dt&gt;&lt;dd&gt;지금 하는 일&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;다음&lt;/dt&gt;&lt;dd&gt;다음 행동&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;파일&lt;/dt&gt;&lt;dd&gt;수정 또는 확인 파일&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;검증&lt;/dt&gt;&lt;dd&gt;명령과 결과&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;갱신&lt;/dt&gt;&lt;dd&gt;YYYY-MM-DD HH:MM +09:00&lt;/dd&gt;&lt;/div&gt;
+  &lt;/dl&gt;
+&lt;/article&gt;</div>
+      </div>
+    </details>
+
+    <details class="reference-block" id="document-info">
+      <summary>문서 정보</summary>
+      <div class="details-body">
+        <section class="notice" aria-label="문서 신호">
+          <div class="signal">
+            <strong>프로젝트</strong>
+            <span>H:\MunpaWeb</span>
+          </div>
+          <div class="signal">
+            <strong>기준 문서</strong>
+            <span>Guidelines.html</span>
+          </div>
+          <div class="signal">
+            <strong>마지막 수동 갱신</strong>
+            <span>2026-06-21 18:59 +09:00</span>
+          </div>
+          <div class="signal">
+            <strong>형식 기준</strong>
+            <span>H:\ImageStudio\Guidelines.html CSS/구조/스크립트</span>
+          </div>
+        </section>
+      </div>
+    </details>
+
+    <footer>
+      이 문서는 저장소 안에서 관리하지만 매 커밋마다 포함하지 않습니다. 큐 카드 갱신은 작고 자주 하되, 하루 작업 마감이나 상태 공유 시점에 한 번 반영합니다.
+    </footer>
+  </main>
+
+  <script>
+    const filter = document.getElementById("filter");
+    const columns = Array.from(document.querySelectorAll(".column"));
+    const taskCards = Array.from(document.querySelectorAll(".task-card"));
+
+    function getCardMeta(card, label) {
+      const rows = Array.from(card.querySelectorAll(".meta div"));
+      const row = rows.find((item) => item.querySelector("dt")?.textContent.trim() === label);
+      return row?.querySelector("dd")?.textContent.trim() ?? "";
+    }
+
+    function setCardExpanded(card, expanded) {
+      card.classList.toggle("is-expanded", expanded);
+      card.setAttribute("aria-expanded", String(expanded));
+      const hint = card.querySelector(".card-toggle-hint");
+      if (hint) {
+        hint.textContent = expanded ? "접기" : "펼치기";
+      }
+    }
+
+    function setupTaskCards() {
+      taskCards.forEach((card) => {
+        const heading = card.querySelector("h4");
+        if (!heading) {
+          return;
+        }
+
+        card.classList.add("is-collapsible");
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-expanded", "false");
+
+        if (!heading.querySelector(".card-toggle-hint")) {
+          const hint = document.createElement("span");
+          hint.className = "card-toggle-hint";
+          hint.textContent = "펼치기";
+          heading.appendChild(hint);
+        }
+
+        if (!card.querySelector(".card-summary")) {
+          const scope = getCardMeta(card, "범위");
+          const updated = getCardMeta(card, "갱신");
+          const summary = document.createElement("p");
+          summary.className = "card-summary";
+          summary.textContent = [scope, updated].filter(Boolean).join(" · ");
+          heading.insertAdjacentElement("afterend", summary);
+        }
+
+        card.addEventListener("click", (event) => {
+          if (event.target.closest("a, button, input, summary, .tip")) {
+            return;
+          }
+
+          setCardExpanded(card, !card.classList.contains("is-expanded"));
+        });
+
+        card.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+
+          event.preventDefault();
+          setCardExpanded(card, !card.classList.contains("is-expanded"));
+        });
+      });
+    }
+
+    function refresh() {
+      const query = filter.value.trim().toLowerCase();
+
+      columns.forEach((column) => {
+        const cards = Array.from(column.querySelectorAll(".task-card"));
+        let visible = 0;
+
+        cards.forEach((card) => {
+          const text = card.textContent.toLowerCase();
+          const matches = query === "" || text.includes(query);
+          card.style.display = matches ? "" : "none";
+          if (matches) {
+            visible += 1;
+          }
+        });
+
+        column.querySelector(".count").textContent = String(visible);
+        const empty = column.querySelector(".empty");
+        if (empty) {
+          empty.style.display = visible === 0 ? "" : "none";
+        }
+      });
+    }
+
+    setupTaskCards();
+    filter.addEventListener("input", refresh);
+    refresh();
+  </script>
+</body>
+</html>

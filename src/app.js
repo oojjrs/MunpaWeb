@@ -1,4 +1,5 @@
 const welcomeView = document.querySelector("#welcomeView");
+const characterCreationView = document.querySelector("#characterCreationView");
 const founderView = document.querySelector("#founderView");
 const gameView = document.querySelector("#gameView");
 const endingView = document.querySelector("#endingView");
@@ -7,6 +8,11 @@ const continueGameButton = document.querySelector("#continueGame");
 const viewRecordsButton = document.querySelector("#viewRecords");
 const newGameButton = document.querySelector("#newGame");
 const deploymentMeta = document.querySelector("#deploymentMeta");
+const characterForm = document.querySelector("#characterForm");
+const characterPortraitOptions = document.querySelector("#characterPortraitOptions");
+const characterNameInput = document.querySelector("#characterName");
+const randomCharacterNameButton = document.querySelector("#randomCharacterName");
+const weaponOptions = document.querySelector("#weaponOptions");
 const founderForm = document.querySelector("#founderForm");
 const portraitOptions = document.querySelector("#portraitOptions");
 const sectNameInput = document.querySelector("#sectNameInput");
@@ -15,13 +21,17 @@ const founderNameInput = document.querySelector("#founderName");
 const randomNameButton = document.querySelector("#randomName");
 const returnWelcomeButton = document.querySelector("#returnWelcome");
 const saveState = document.querySelector("#saveState");
+const sectContextLabel = document.querySelector("#sectContextLabel");
 const sectName = document.querySelector("#sectName");
 const seasonText = document.querySelector("#seasonText");
 const mainStatus = document.querySelector("#mainStatus");
 const founderCard = document.querySelector("#founderCard");
 const founderPortrait = document.querySelector("#founderPortrait");
+const founderRoleKicker = document.querySelector("#founderRoleKicker");
+const founderRoleBadge = document.querySelector("#founderRoleBadge");
 const founderNameDisplay = document.querySelector("#founderNameDisplay");
 const founderMeta = document.querySelector("#founderMeta");
+const memberListTitle = document.querySelector("#memberListTitle");
 const discipleList = document.querySelector("#discipleList");
 const openRecruitmentButton = document.querySelector("#openRecruitment");
 const recruitmentModal = document.querySelector("#recruitmentModal");
@@ -37,6 +47,7 @@ const founderModal = document.querySelector("#founderModal");
 const founderModalTitle = document.querySelector("#founderModalTitle");
 const closeFounderModalButton = document.querySelector("#closeFounderModal");
 const founderDetail = document.querySelector("#founderDetail");
+const endingKicker = document.querySelector("#endingKicker");
 const endingTitle = document.querySelector("#endingTitle");
 const endingSummary = document.querySelector("#endingSummary");
 const endingStats = document.querySelector("#endingStats");
@@ -46,7 +57,7 @@ const clearRecordsButton = document.querySelector("#clearRecords");
 const recordsList = document.querySelector("#recordsList");
 const recordsReturnWelcomeButton = document.querySelector("#recordsReturnWelcome");
 
-const APP_VERSION = "v78";
+const APP_VERSION = "v80";
 const DEPLOYED_AT = "2026. 5. 22. 오전 8:53:31";
 const SAVE_KEY = "munpaweb:save:local";
 const RECORDS_KEY = "munpaweb:records:local";
@@ -55,9 +66,11 @@ const DESKTOP_LAYOUT_WIDTH = 1920;
 const DESKTOP_LAYOUT_HEIGHT = 1080;
 const DESKTOP_LAYOUT_QUERY = "(min-width: 1024px)";
 const FOUNDER_AGE = 35;
+const STARTING_CHARACTER_AGE = 18;
 const MAX_LIFESPAN = 120;
 const CANDIDATE_LIFESPAN = 80;
 const STARTING_HEALTH = 100;
+const WANDERER_SECT_NAME = "무명 여정";
 const seasons = ["봄", "여름", "가을", "겨울"];
 const declineByOverYear = [0, 2, 3, 4, 5, 6, 8, 10, 12];
 
@@ -86,37 +99,29 @@ const candidateNamePools = {
 
 const portraits = [
   {
-    id: "founder-male-01",
-    image: "./assets/portraits/founders/founder-male-01.png",
-    ageImages: [
-      { age: 50, image: "./assets/portraits/founders/founder-male-01-age-50s.png" },
-      { age: 70, image: "./assets/portraits/founders/founder-male-01-age-70s.png" }
-    ],
+    id: "character-style-k-modern-male-street-martial",
+    image: "./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png",
     namePool: "male",
     colors: {
-      face: "#d8b38a",
-      hair: "#172019",
-      robe: "#2f5946",
-      robeDark: "#1d3329",
-      bgA: "#d9e2cf",
-      bgB: "#6d8a64"
+      face: "#d1a57f",
+      hair: "#171719",
+      robe: "#1f2730",
+      robeDark: "#111820",
+      bgA: "#d8dde2",
+      bgB: "#667481"
     }
   },
   {
-    id: "founder-female-01",
-    image: "./assets/portraits/founders/founder-female-01.png",
-    ageImages: [
-      { age: 50, image: "./assets/portraits/founders/founder-female-01-age-50s.png" },
-      { age: 70, image: "./assets/portraits/founders/founder-female-01-age-70s.png" }
-    ],
+    id: "character-style-n-modern-female-techwear",
+    image: "./assets/style-exploration/characters/character-style-n-modern-female-techwear.png",
     namePool: "female",
     colors: {
-      face: "#d7aa91",
-      hair: "#241923",
-      robe: "#7a4963",
-      robeDark: "#4a2d3c",
-      bgA: "#ead8d8",
-      bgB: "#a66d7b"
+      face: "#d3a68c",
+      hair: "#211b24",
+      robe: "#24313a",
+      robeDark: "#111a20",
+      bgA: "#dfe4e7",
+      bgB: "#63707b"
     }
   }
 ];
@@ -155,8 +160,59 @@ const disciplePortraits = discipleGenders.flatMap((gender) =>
 const allPortraits = [...portraits, ...disciplePortraits];
 
 const sectNames = ["청운문", "월영문", "백하문", "무결문", "비연문", "창송문", "한화문", "천류문"];
+const startingWeapons = [
+  {
+    id: "sword",
+    name: "검",
+    unlocked: true,
+    trait: "균형",
+    summary: "초식과 대응이 고르게 잡힌 입문 무공입니다.",
+    stats: ["완력", "반응성", "집중력"]
+  },
+  {
+    id: "fist",
+    name: "권법",
+    unlocked: true,
+    trait: "근접",
+    summary: "거리를 좁혀 압박하고 버티는 싸움에 강합니다.",
+    stats: ["생명력", "완력", "순발력"]
+  },
+  {
+    id: "staff",
+    name: "봉",
+    unlocked: true,
+    trait: "제어",
+    summary: "간격을 유지하며 상대의 진입을 끊는 무공입니다.",
+    stats: ["기동성", "집중력", "완력"]
+  },
+  {
+    id: "blade",
+    name: "도",
+    unlocked: false,
+    trait: "폭발",
+    summary: "한 번의 큰 틈을 노리는 공격적인 무공입니다.",
+    stats: ["완력", "순발력"]
+  },
+  {
+    id: "spear",
+    name: "창",
+    unlocked: false,
+    trait: "거리",
+    summary: "긴 리치와 선공권으로 전장을 넓게 씁니다.",
+    stats: ["기동성", "반응성"]
+  },
+  {
+    id: "hidden",
+    name: "암기",
+    unlocked: false,
+    trait: "변칙",
+    summary: "조건을 만들고 허를 찌르는 기습형 무공입니다.",
+    stats: ["집중력", "매력", "순발력"]
+  }
+];
 
 const newGameSeed = {
+  runMode: "sect",
   sect: {
     name: sectNames[0],
     foundedYear: 1,
@@ -182,9 +238,11 @@ const newGameSeed = {
 };
 
 let selectedPortraitId = portraits[0].id;
+let selectedWeaponId = startingWeapons.find((weapon) => weapon.unlocked)?.id ?? startingWeapons[0].id;
 let currentSave = null;
 let currentRecords = [];
 let activeView = null;
+let characterNameTouched = false;
 let founderNameTouched = false;
 let pendingRecruitment = null;
 let activeRecruitmentIndex = 0;
@@ -223,7 +281,9 @@ function normalizeFounder(founder = {}) {
     health,
     dead: Boolean(founder.dead) || health <= 0,
     role: founder.role ?? "개파조사",
-    portrait: founder.portrait ?? portraits[0].id
+    portrait: founder.portrait ?? portraits[0].id,
+    weaponId: founder.weaponId ?? null,
+    origin: founder.origin ?? null
   };
 }
 
@@ -293,6 +353,7 @@ function normalizeDisciple(disciple = {}) {
 
 function normalizeSave(save) {
   const migrated = cloneSeed();
+  migrated.runMode = save?.runMode ?? (save?.founder?.role === "무명 무인" ? "wanderer" : "sect");
   migrated.sect.name = save?.sect?.name ?? sectNames[0];
   migrated.sect.foundedYear = Number.isFinite(save?.sect?.foundedYear) ? save.sect.foundedYear : 1;
   migrated.sect.seasonIndex = Number.isFinite(save?.sect?.seasonIndex)
@@ -389,6 +450,7 @@ function showWelcome({ historyMode = "push" } = {}) {
   continueGameButton.hidden = !currentSave || Boolean(currentSave.ended);
   viewRecordsButton.hidden = currentRecords.length === 0;
   welcomeView.hidden = false;
+  characterCreationView.hidden = true;
   founderView.hidden = true;
   gameView.hidden = true;
   endingView.hidden = true;
@@ -418,9 +480,28 @@ async function returnToWelcome(options = {}) {
   showWelcome(options);
 }
 
+function showCharacterCreation({ historyMode = "push" } = {}) {
+  activeView = "character";
+  welcomeView.hidden = true;
+  characterCreationView.hidden = false;
+  founderView.hidden = true;
+  gameView.hidden = true;
+  endingView.hidden = true;
+  recordsView.hidden = true;
+  founderModal.hidden = true;
+  recruitmentModal.hidden = true;
+  cheatModal.hidden = true;
+  founderModalHistoryOpen = false;
+  recruitmentModalHistoryOpen = false;
+  cheatModalHistoryOpen = false;
+  updateCheatVisibility(false);
+  updateHistory(activeView, historyMode);
+}
+
 function showFounderCreation({ historyMode = "push" } = {}) {
   activeView = "founder";
   welcomeView.hidden = true;
+  characterCreationView.hidden = true;
   founderView.hidden = false;
   gameView.hidden = true;
   endingView.hidden = true;
@@ -438,6 +519,7 @@ function showFounderCreation({ historyMode = "push" } = {}) {
 function showGame({ historyMode = "push" } = {}) {
   activeView = "game";
   welcomeView.hidden = true;
+  characterCreationView.hidden = true;
   founderView.hidden = true;
   gameView.hidden = false;
   endingView.hidden = true;
@@ -449,6 +531,7 @@ function showGame({ historyMode = "push" } = {}) {
 function showEnding({ historyMode = "push" } = {}) {
   activeView = "ending";
   welcomeView.hidden = true;
+  characterCreationView.hidden = true;
   founderView.hidden = true;
   gameView.hidden = true;
   endingView.hidden = false;
@@ -463,6 +546,7 @@ function showEnding({ historyMode = "push" } = {}) {
 function showRecords({ historyMode = "push" } = {}) {
   activeView = "records";
   welcomeView.hidden = true;
+  characterCreationView.hidden = true;
   founderView.hidden = true;
   gameView.hidden = true;
   endingView.hidden = true;
@@ -504,8 +588,10 @@ function createPortraitPreview(portraitId, age = null) {
 function createFounderAgePreview(portrait) {
   const stages = [
     { label: "시작", age: FOUNDER_AGE },
-    { label: "50대", age: 50 },
-    { label: "70대", age: 70 }
+    ...(portrait.ageImages ?? []).map((item) => ({
+      label: `${item.age}대`,
+      age: item.age
+    }))
   ];
 
   const previewList = document.createElement("span");
@@ -538,16 +624,66 @@ function createSelectedPortraitPreview(portrait) {
   return previewPanel;
 }
 
-function keepSelectedPortraitInView() {
+function createSelectedCharacterPortraitPreview(portrait) {
+  const previewPanel = document.createElement("div");
+  previewPanel.className = "portrait-selected-preview character-portrait-preview";
+  previewPanel.setAttribute("aria-label", "선택한 캐릭터 초상화 미리보기");
+
+  const previewList = document.createElement("span");
+  previewList.className = "portrait-life-preview";
+  previewList.setAttribute("aria-hidden", "true");
+
+  const item = document.createElement("span");
+  item.className = "portrait-age-card";
+
+  const label = document.createElement("span");
+  label.className = "portrait-age-label";
+  label.textContent = "선택";
+
+  item.append(createPortraitPreview(portrait.id), label);
+  previewList.append(item);
+  previewPanel.append(previewList);
+  return previewPanel;
+}
+
+function keepSelectedPortraitInView(container = portraitOptions) {
   if (!window.matchMedia("(max-width: 420px)").matches) {
     return;
   }
 
   requestAnimationFrame(() => {
-    portraitOptions
+    container
       .querySelector(".portrait-selected-preview")
       ?.scrollIntoView({ block: "nearest", inline: "nearest" });
   });
+}
+
+function renderCharacterPortraitOptions() {
+  const selectedPortrait = portraits.find((portrait) => portrait.id === selectedPortraitId) ?? portraits[0];
+
+  characterPortraitOptions.replaceChildren(
+    ...portraits.map((portrait) => {
+      const isSelected = portrait.id === selectedPortraitId;
+      const button = document.createElement("button");
+      button.className = `portrait-option${isSelected ? " is-selected" : ""}`;
+      button.type = "button";
+      button.setAttribute("aria-pressed", String(isSelected));
+      button.setAttribute("aria-label", `${portrait.namePool === "female" ? "여성" : "남성"} 캐릭터 초상화`);
+
+      button.append(createPortraitPreview(portrait.id));
+      button.addEventListener("click", () => {
+        selectedPortraitId = portrait.id;
+        if (!characterNameTouched) {
+          pickRandomCharacterName();
+        }
+        renderCharacterPortraitOptions();
+        keepSelectedPortraitInView(characterPortraitOptions);
+      });
+
+      return button;
+    }),
+    createSelectedCharacterPortraitPreview(selectedPortrait)
+  );
 }
 
 function renderPortraitOptions() {
@@ -569,13 +705,75 @@ function renderPortraitOptions() {
           pickRandomName();
         }
         renderPortraitOptions();
-        keepSelectedPortraitInView();
+        keepSelectedPortraitInView(portraitOptions);
       });
 
       return button;
     }),
     createSelectedPortraitPreview(selectedPortrait)
   );
+}
+
+function getWeaponById(weaponId) {
+  return startingWeapons.find((weapon) => weapon.id === weaponId) ?? startingWeapons[0];
+}
+
+function renderWeaponOptions() {
+  const fallbackWeapon = startingWeapons.find((weapon) => weapon.unlocked) ?? startingWeapons[0];
+  const selectedWeapon = getWeaponById(selectedWeaponId);
+  if (!selectedWeapon.unlocked) {
+    selectedWeaponId = fallbackWeapon.id;
+  }
+
+  weaponOptions.replaceChildren(
+    ...startingWeapons.map((weapon) => {
+      const isSelected = weapon.id === selectedWeaponId;
+      const button = document.createElement("button");
+      button.className = `weapon-option${isSelected ? " is-selected" : ""}${weapon.unlocked ? "" : " is-locked"}`;
+      button.type = "button";
+      button.disabled = !weapon.unlocked;
+      button.setAttribute("aria-pressed", String(isSelected));
+
+      const header = document.createElement("span");
+      header.className = "weapon-header";
+
+      const name = document.createElement("strong");
+      name.textContent = weapon.name;
+
+      const badge = document.createElement("span");
+      badge.className = weapon.unlocked ? "weapon-badge" : "weapon-badge lock-badge";
+      badge.textContent = weapon.unlocked ? weapon.trait : "잠김";
+
+      header.append(name, badge);
+
+      const summary = document.createElement("span");
+      summary.className = "weapon-summary";
+      summary.textContent = weapon.summary;
+
+      const meta = document.createElement("span");
+      meta.className = "weapon-meta";
+      meta.textContent = `연관 스탯: ${weapon.stats.join(", ")}`;
+
+      button.append(header, summary, meta);
+      button.addEventListener("click", () => {
+        if (!weapon.unlocked) {
+          return;
+        }
+        selectedWeaponId = weapon.id;
+        renderWeaponOptions();
+      });
+
+      return button;
+    })
+  );
+}
+
+function pickRandomCharacterName() {
+  const portrait = portraits.find((item) => item.id === selectedPortraitId) ?? portraits[0];
+  const names = founderNamePools[portrait.namePool] ?? founderNamePools.male;
+  const name = names[Math.floor(Math.random() * names.length)];
+  characterNameInput.value = name;
+  characterNameTouched = false;
 }
 
 function pickRandomName() {
@@ -739,6 +937,10 @@ function updateCheatVisibility(isGameActive) {
   cheatSidebar.hidden = !visible;
 }
 
+function isWandererRun(save = currentSave) {
+  return save?.runMode === "wanderer";
+}
+
 function renderGame(save, options = {}) {
   sessionStorage.removeItem(WELCOME_LOCK_KEY);
   currentSave = normalizeSave(save);
@@ -749,20 +951,35 @@ function renderGame(save, options = {}) {
     return;
   }
 
+  const wandererRun = isWandererRun(currentSave);
+  const weapon = wandererRun ? getWeaponById(currentSave.founder.weaponId) : null;
+
+  sectContextLabel.textContent = wandererRun ? "현재 여정" : "현재 문파";
   sectName.textContent = currentSave.sect.name;
   seasonText.textContent = formatTime(currentSave.sect);
-  mainStatus.textContent = `${formatTime(currentSave.sect)} 현재 문파 상황`;
+  mainStatus.textContent = wandererRun
+    ? `${formatTime(currentSave.sect)} 현재 수련 상황`
+    : `${formatTime(currentSave.sect)} 현재 문파 상황`;
   saveState.textContent = currentSave.savedAt
     ? `저장됨 ${new Date(currentSave.savedAt).toLocaleString()}`
     : "새 게임";
 
   applyPortraitColors(founderPortrait, currentSave.founder.portrait, currentSave.founder.age);
+  founderCard.setAttribute("aria-label", `${currentSave.founder.name} 상세 정보 열기`);
+  founderRoleKicker.textContent = wandererRun ? "주인공" : currentSave.founder.role;
+  founderRoleBadge.textContent = wandererRun ? (weapon?.name ?? "무공 미정") : "장문인";
   founderNameDisplay.textContent = currentSave.founder.name;
   const healthText = document.createElement("span");
   healthText.className = `health-chip health-${getHealthTone(currentSave.founder.health)}`;
   healthText.textContent = `건강 ${currentSave.founder.health}`;
   founderMeta.replaceChildren(`${currentSave.founder.age}세 · `, healthText);
 
+  memberListTitle.textContent = wandererRun ? "동료" : "제자";
+  openRecruitmentButton.hidden = wandererRun;
+  if (wandererRun) {
+    recruitmentModal.hidden = true;
+    recruitmentModalHistoryOpen = false;
+  }
   renderDisciples();
   renderFounderDetail();
   renderCheatSummary();
@@ -776,6 +993,7 @@ function renderGame(save, options = {}) {
 
 function renderEnding(save, options = {}) {
   currentSave = normalizeSave(save);
+  const wandererRun = isWandererRun(currentSave);
   const freshStats = createEndingStats(currentSave.ended?.reason ?? "문파 내에 살아있는 사람이 없습니다.");
   const stats = {
     ...freshStats,
@@ -786,7 +1004,8 @@ function renderEnding(save, options = {}) {
   const lineage = stats.leaderLineage ?? currentSave.stats.leaderLineage ?? [];
   const majorEvents = stats.majorEvents ?? [];
 
-  endingTitle.textContent = `${currentSave.sect.name} 멸망`;
+  endingKicker.textContent = wandererRun ? "여정 종료" : "문파 멸망";
+  endingTitle.textContent = wandererRun ? `${currentSave.founder.name}의 여정 종료` : `${currentSave.sect.name} 멸망`;
   endingSummary.textContent = currentSave.ended?.reason ?? "문파 내에 살아있는 사람이 없습니다.";
   endingStats.replaceChildren(
     createEndingStatItem("존속 기간", `${stats.finalTime}까지`),
@@ -824,7 +1043,9 @@ function renderRecords(options = {}) {
       button.type = "button";
 
       const title = document.createElement("strong");
-      title.textContent = `${record.sectName} 멸망`;
+      title.textContent = record.save?.runMode === "wanderer"
+        ? `${record.save.founder?.name ?? record.sectName} 여정 종료`
+        : `${record.sectName} 멸망`;
 
       const meta = document.createElement("span");
       meta.textContent = `${record.stats.finalTime} · ${formatDateTime(record.endedAt)} 종료`;
@@ -997,7 +1218,7 @@ function renderDisciples() {
   if (currentSave.disciples.length === 0) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "아직 제자가 없습니다.";
+    empty.textContent = isWandererRun() ? "아직 동료가 없습니다." : "아직 제자가 없습니다.";
     discipleList.replaceChildren(empty);
     return;
   }
@@ -1056,10 +1277,11 @@ function renderCharacterDetail(character, { title = character.role ?? "상세 �
 
 function renderFounderDetail() {
   activeDetailDiscipleId = null;
+  const weapon = isWandererRun() ? getWeaponById(currentSave.founder.weaponId) : null;
   renderCharacterDetail(currentSave.founder, {
-    title: currentSave.founder.role,
-    role: currentSave.founder.role,
-    badge: "장문인"
+    title: isWandererRun() ? "캐릭터 상세" : currentSave.founder.role,
+    role: isWandererRun() ? "주인공" : currentSave.founder.role,
+    badge: isWandererRun() ? (weapon?.name ?? "") : "장문인"
   });
 }
 
@@ -1265,18 +1487,19 @@ function isMajorEventLog(entry) {
     return false;
   }
 
-  return ["개파", "제자 모집", "장문인 승계", "사망", "멸망"].some((keyword) =>
+  return ["개파", "수련 시작", "제자 모집", "장문인 승계", "사망", "멸망", "종료"].some((keyword) =>
     entry.includes(keyword)
   );
 }
 
 function endSect(reason) {
+  const endingKeyword = isWandererRun() ? "여정 종료" : "멸망";
   currentSave.ended = {
     reason,
     endedAt: new Date().toISOString(),
     stats: createEndingStats(reason)
   };
-  currentSave.log.push(`${currentSave.sect.name} 멸망: ${reason}`);
+  currentSave.log.push(`${currentSave.sect.name} ${endingKeyword}: ${reason}`);
 }
 
 function promoteSuccessor() {
@@ -1306,6 +1529,13 @@ function promoteSuccessor() {
 }
 
 function resolveSectContinuity() {
+  if (isWandererRun()) {
+    if (currentSave.founder.dead || currentSave.founder.health <= 0) {
+      endSect(`${currentSave.founder.name}이 사망했습니다.`);
+    }
+    return;
+  }
+
   if (getLivingMemberCount(currentSave) === 0) {
     endSect("문파 내에 살아있는 사람이 없습니다.");
     return;
@@ -1627,15 +1857,18 @@ async function runCheat(action) {
 
 async function startNewGame(founderName, sectNameValue, options = {}) {
   const save = cloneSeed();
+  save.runMode = options.runMode ?? "sect";
   save.sect.name = sectNameValue;
   save.founder = {
     id: "founder",
     name: founderName,
-    age: FOUNDER_AGE,
-    lifespan: MAX_LIFESPAN,
+    age: options.age ?? FOUNDER_AGE,
+    lifespan: options.lifespan ?? MAX_LIFESPAN,
     health: STARTING_HEALTH,
-    role: "개파조사",
-    portrait: selectedPortraitId
+    role: options.role ?? "개파조사",
+    portrait: selectedPortraitId,
+    weaponId: options.weaponId ?? null,
+    origin: options.origin ?? null
   };
   save.recruitment.candidates = createCandidates();
   save.startedAt = new Date().toISOString();
@@ -1653,10 +1886,25 @@ async function startNewGame(founderName, sectNameValue, options = {}) {
       }
     ]
   };
-  save.log = [`${save.sect.name} 개파`];
+  save.log = [options.openingLog ?? `${save.sect.name} 개파`];
 
   await writeSave(save);
   renderGame(save, options);
+}
+
+async function startCharacterRun(characterName, weaponId, options = {}) {
+  const weapon = getWeaponById(weaponId);
+
+  await startNewGame(characterName, WANDERER_SECT_NAME, {
+    ...options,
+    runMode: "wanderer",
+    role: "무명 무인",
+    age: STARTING_CHARACTER_AGE,
+    lifespan: CANDIDATE_LIFESPAN,
+    weaponId: weapon.id,
+    origin: "무소속",
+    openingLog: `${characterName} ${weapon.name} 수련 시작`
+  });
 }
 
 async function boot() {
@@ -1706,11 +1954,13 @@ function beginNewGameFlow({ confirmExisting = true } = {}) {
   clearSave();
   currentSave = null;
   selectedPortraitId = portraits[0].id;
+  selectedWeaponId = startingWeapons.find((weapon) => weapon.unlocked)?.id ?? startingWeapons[0].id;
+  characterNameTouched = false;
   founderNameTouched = false;
-  pickRandomSectName();
-  pickRandomName();
-  renderPortraitOptions();
-  showFounderCreation({ historyMode: "push" });
+  pickRandomCharacterName();
+  renderCharacterPortraitOptions();
+  renderWeaponOptions();
+  showCharacterCreation({ historyMode: "push" });
 }
 
 newGameButton.addEventListener("click", () => {
@@ -1745,6 +1995,21 @@ recordsReturnWelcomeButton.addEventListener("click", () => {
 });
 clearRecordsButton.addEventListener("click", () => {
   clearRecords().catch(() => {});
+});
+
+randomCharacterNameButton.addEventListener("click", pickRandomCharacterName);
+characterNameInput.addEventListener("input", () => {
+  characterNameTouched = true;
+});
+characterForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const fallbackPortrait = portraits.find((item) => item.id === selectedPortraitId) ?? portraits[0];
+  const fallbackNames = founderNamePools[fallbackPortrait.namePool] ?? founderNamePools.male;
+  const characterName = characterNameInput.value.trim() || fallbackNames[0];
+
+  startCharacterRun(characterName, selectedWeaponId, { historyMode: "replace" }).catch(() => {
+    showCharacterCreation({ historyMode: "replace" });
+  });
 });
 
 randomNameButton.addEventListener("click", pickRandomName);
@@ -1864,6 +2129,11 @@ window.addEventListener("popstate", (event) => {
 
   if (view === "records") {
     renderRecords({ historyMode: "none" });
+    return;
+  }
+
+  if (view === "character") {
+    showCharacterCreation({ historyMode: "none" });
     return;
   }
 

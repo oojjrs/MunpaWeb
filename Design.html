@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MunpaWeb 기획 문서</title>
+  <style>
+    :root { color-scheme: light; --bg:#dde5eb; --paper:#f8fafb; --surface:#edf3f5; --strong:#dfe8ed; --ink:#17212d; --muted:#596777; --line:#b7c3cc; --green:#256b62; --green-soft:#d8ebe7; --blue:#315f9f; --blue-soft:#dce7f7; --gold:#92702c; --gold-soft:#f0e6cf; --red:#a8473f; --shadow:0 12px 28px rgba(23,33,45,.13); --shadow-soft:0 6px 14px rgba(23,33,45,.09); }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Segoe UI","Malgun Gothic",Arial,sans-serif; line-height:1.58; word-break:keep-all; overflow-wrap:break-word; }
+    a { color:inherit; }
+    header { background:#15212c; color:#f8fbfd; border-bottom:4px solid var(--green); padding:28px 32px 24px; box-shadow:var(--shadow); }
+    header h1 { margin:0 0 8px; font-size:30px; letter-spacing:0; }
+    header p { max-width:980px; margin:0; color:#d9e2ea; font-size:15px; }
+    main { width:min(1440px, calc(100% - 32px)); margin:22px auto 52px; display:grid; grid-template-columns:minmax(190px,250px) minmax(0,1fr); gap:18px; align-items:start; }
+    nav { position:sticky; top:18px; display:grid; gap:10px; padding:14px; border:1px solid var(--line); border-radius:8px; background:var(--paper); box-shadow:var(--shadow-soft); }
+    nav h2 { margin:0 0 4px; font-size:15px; }
+    nav a { display:block; border:1px solid var(--line); border-radius:7px; background:var(--surface); padding:10px 11px; color:var(--muted); text-decoration:none; font-size:13px; }
+    nav a strong { display:block; color:var(--ink); font-size:14px; }
+    .doc-shell { min-width:0; }
+    section, details.chapter { margin-bottom:18px; border:1px solid var(--line); border-radius:8px; background:var(--paper); box-shadow:var(--shadow); }
+    section { padding:18px; }
+    details.chapter > summary { cursor:pointer; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:15px 18px; list-style:none; }
+    details.chapter > summary::-webkit-details-marker { display:none; }
+    details.chapter > summary::after { content:"+"; display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:var(--green-soft); color:var(--green); font-weight:900; }
+    details.chapter[open] > summary { border-bottom:1px solid var(--line); }
+    details.chapter[open] > summary::after { content:"-"; }
+    .summary-title { display:block; font-weight:850; font-size:18px; }
+    .summary-note { display:block; margin-top:3px; color:var(--muted); font-size:13px; font-weight:500; }
+    .chapter-body { padding:18px; }
+    h2, h3 { margin:0 0 10px; letter-spacing:0; }
+    h2 { font-size:22px; }
+    h3 { margin-top:18px; font-size:16px; }
+    p { margin:0 0 10px; }
+    ul, ol { margin:0; padding-left:22px; }
+    li { margin:6px 0; }
+    code { border-radius:4px; padding:2px 5px; background:#dce5ec; color:#24436c; font-family:Consolas,"Cascadia Mono",monospace; font-size:.94em; }
+    table { width:100%; border-collapse:collapse; margin:10px 0 4px; overflow:hidden; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+    th, td { border-bottom:1px solid var(--line); padding:10px 11px; text-align:left; vertical-align:top; font-size:14px; }
+    th { background:var(--strong); color:#263849; font-weight:800; }
+    tr:last-child td { border-bottom:0; }
+    .signal-grid, .card-grid, .rule-grid { display:grid; gap:12px; margin:12px 0 16px; }
+    .signal-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .card-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .rule-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .signal, .panel, .rule, .need { border:1px solid var(--line); border-radius:8px; background:var(--surface); padding:12px; box-shadow:var(--shadow-soft); }
+    .signal { border-left:5px solid var(--green); background:var(--paper); }
+    .signal strong, .rule strong, .panel strong, .need strong { display:block; margin-bottom:4px; color:var(--ink); }
+    .signal span, .rule span { display:block; color:var(--muted); font-size:13px; }
+    .badge-row { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 14px; }
+    .badge { display:inline-flex; align-items:center; min-height:25px; border-radius:999px; padding:3px 10px; background:var(--blue-soft); color:var(--blue); font-size:12px; font-weight:800; }
+    .badge.decision { background:var(--green-soft); color:var(--green); }
+    .badge.later { background:var(--gold-soft); color:var(--gold); }
+    .need { border-color:#d29a94; border-left:5px solid var(--red); background:#fff7f6; }
+    .need strong { color:var(--red); }
+    .flow { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:12px 0 16px; }
+    .step { min-height:116px; border:1px solid var(--line); border-radius:8px; background:var(--surface); padding:12px; }
+    .step b { display:inline-grid; place-items:center; width:28px; height:28px; border-radius:50%; background:var(--green); color:#fff; font-size:13px; }
+    .step strong { display:block; margin-top:9px; }
+    .step span { display:block; margin-top:4px; color:var(--muted); font-size:13px; }
+    .gallery-wide, .portrait-gallery { display:grid; gap:14px; margin:14px 0; }
+    .gallery-wide { grid-template-columns:1fr; }
+    .portrait-gallery { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    figure { overflow:hidden; margin:0; border:1px solid var(--line); border-radius:8px; background:var(--surface); box-shadow:var(--shadow-soft); }
+    figure img { display:block; width:100%; background:#dbe4ea; object-fit:cover; }
+    .gallery-wide img { aspect-ratio:16/9; }
+    .portrait-gallery img { aspect-ratio:4/5; }
+    figcaption { padding:9px 10px; color:var(--muted); font-size:12px; }
+    figcaption strong { display:block; margin-bottom:2px; color:var(--ink); font-size:13px; }
+    .tip { position:relative; display:inline-grid; place-items:center; width:18px; height:18px; margin-left:4px; border-radius:50%; background:var(--green-soft); color:var(--green); font-size:12px; font-weight:900; cursor:help; }
+    .tip-text { position:absolute; z-index:5; left:50%; bottom:calc(100% + 8px); width:min(300px,72vw); transform:translateX(-50%); visibility:hidden; opacity:0; border:1px solid var(--line); border-radius:8px; background:#17212d; color:#fff; padding:8px 10px; font-weight:500; line-height:1.45; box-shadow:var(--shadow); transition:opacity .12s ease; }
+    .tip:hover .tip-text, .tip:focus .tip-text { visibility:visible; opacity:1; }
+    footer { color:var(--muted); font-size:13px; padding:10px 0 0; }
+    @media (max-width:1080px) { main { display:block; } nav { position:static; margin-bottom:18px; } .signal-grid, .card-grid, .rule-grid, .flow, .portrait-gallery { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:660px) { header { padding:24px 18px 20px; } header h1 { font-size:25px; } main { width:min(100% - 24px,1440px); } section, .chapter-body { padding:14px; } details.chapter > summary { padding:13px 14px; } .signal-grid, .card-grid, .rule-grid, .flow, .portrait-gallery { grid-template-columns:1fr; } th, td { display:block; width:100%; } th { border-bottom:0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MunpaWeb 기획 문서</h1>
+    <p>현대 사회에 기가 실제 변수로 존재한다면 무협 문파 운영 게임은 어떻게 성립하는가를 정리한 현재 기준 문서입니다.</p>
+  </header>
+
+  <main>
+    <nav aria-label="기획 문서 목차">
+      <h2>바로가기</h2>
+      <a href="#overview"><strong>개요</strong>게임 정체성과 현재 기준</a>
+      <a href="#world-rule"><strong>세계 규칙</strong>기, 현대 기술, 총기와 무공</a>
+      <a href="#run-structure"><strong>플레이 구조</strong>초회차, 회차 해금, 엔딩</a>
+      <a href="#core-loop"><strong>코어 루프</strong>MVP와 반복 플레이</a>
+      <a href="#people-systems"><strong>인물 시스템</strong>제자, 스탯, 교육, 사건</a>
+      <a href="#sect-systems"><strong>문파 시스템</strong>생태계, 건물, 자원, 연구</a>
+      <a href="#art-direction"><strong>아트 방향</strong>현대화 무협 배경과 캐릭터</a>
+      <a href="#implementation-surface"><strong>구현 표면</strong>첫 진입, 저장, UI/메타 기준</a>
+      <a href="#decision-ledger"><strong>결정 목록</strong>확정 기준과 미결정 항목</a>
+    </nav>
+
+    <div class="doc-shell">
+      <section id="overview">
+        <h2>현재 게임 정체성</h2>
+        <p>MunpaWeb은 고전 문파 판타지를 그대로 현대 배경에 얹는 게임이 아닙니다. 현실에 <strong>기</strong><span class="tip" tabindex="0">?<span class="tip-text">이 문서에서 기는 신체, 감각, 장비 신뢰도, 문파 시설, 사회 규칙에 영향을 주는 가상 현실 변수입니다.</span></span>가 존재한다는 가상의 사실을 깔고, 그 사실 때문에 현대 사회의 전투, 교육, 조직 운영, 미학이 어떻게 달라지는지 끝까지 밀어붙이는 문파 운영 게임입니다.</p>
+        <p>첫 플레이는 개파조사나 거대 문파장이 아니라 일개 제자의 무공 싸움과 생존에서 시작합니다. 플레이어는 죽고 다시 시작하며 무공, 제자, 사건, 문파 시설의 의미를 배운 뒤, 회차가 쌓이면 문파 창설과 개파조사 무공으로 시야를 넓힙니다.</p>
+        <div class="signal-grid" aria-label="문서 핵심 상태">
+          <div class="signal"><strong>장르 표면</strong><span>현대화 무협 문파 운영</span></div>
+          <div class="signal"><strong>초반 관점</strong><span>일개 제자 생존과 무공 전투</span></div>
+          <div class="signal"><strong>운영 축</strong><span>모집, 교육, 사건, 건물, 연구</span></div>
+          <div class="signal"><strong>승패 기준</strong><span>타 문파 소멸 또는 전원 사망</span></div>
+        </div>
+        <div class="badge-row"><span class="badge decision">결정: 일개 제자 시작</span><span class="badge decision">결정: 승패 엔딩 있음</span><span class="badge decision">결정: 승리 후 자유 플레이 가능</span><span class="badge later">후속 확장: 개파조사 무공</span></div>
+        <h3>범주별 구현 기준</h3>
+        <div class="card-grid">
+          <div class="panel"><strong>세계와 공간</strong><p>기가 있는 현대 사회, 문파 생태계, 도시와 수련 공간이 왜 성립하는지 먼저 고정한다.</p></div>
+          <div class="panel"><strong>레벨과 콘텐츠 구조</strong><p>초회차, 회차 확장, 코어 루프, 승패 엔딩이 어떤 순서로 열리는지 정리한다.</p></div>
+          <div class="panel"><strong>캐릭터와 성장</strong><p>제자, 스탯, 교육, 무공, 죽음과 회차 성장을 감정의 중심으로 묶는다.</p></div>
+          <div class="panel"><strong>아이템과 경제</strong><p>돈, 명성, 건물, 연구, 자원 후보를 문파 운영의 장기 선택으로 분리한다.</p></div>
+          <div class="panel"><strong>연출과 UI</strong><p>현대화 무협 배경, 캐릭터 아트, 첫 진입 화면의 감각을 현재 구현 표면에 맞춘다.</p></div>
+          <div class="panel"><strong>미결정과 제외</strong><p>아직 선택이 필요한 항목만 남기고, 폐기된 비교 과정은 본문에서 늘리지 않는다.</p></div>
+        </div>
+        <div class="rule-grid"><div class="rule"><strong>플레이어가 먼저 느껴야 하는 것</strong><span>내가 고른 인물이 살아남고, 배우고, 다치고, 죽고, 기록되는 감정입니다. 숫자 루프는 인물감을 밀어주는 장치여야 합니다.</span></div><div class="rule"><strong>이 게임이 피해야 하는 것</strong><span>현대 배경 스킨만 씌운 고전 무협, 또는 총기와 현대 기술을 무시한 낭만 무협으로 흐르면 세계가 성립하지 않습니다.</span></div></div>
+      </section>
+
+      <details class="chapter" id="world-rule"><summary><span><span class="summary-title">1. 세계와 공간 - 기가 있는 현대 사회</span><span class="summary-note">무공이 총기와 현대 기술 사이에서 왜 주력 해법으로 남는지 설명합니다.</span></span></summary><div class="chapter-body">
+        <h2>무협은 현실 모사품이 아니라 유사 가상 현실이다</h2>
+        <p>이 세계에는 자동차, 비행기, 통신망, 의료 장비, 감시 장비가 존재합니다. 문파도 이동, 회계, 보안, 훈련, 홍보에는 현대 기술을 적극적으로 씁니다. 다만 무림 충돌의 결판에서는 총포, 전기 충격기, 레이저 장비가 무공을 완전히 대체하지 못합니다.</p>
+        <p>성립 조건은 단순합니다. “총기류가 있는데 왜 기를 사용하는 무공을 써야 하는가?”에 답하지 못하면 이 게임은 성립하지 않습니다. 답은 총알이 약하다는 과학 흉내가 아니라, 숙련된 기 사용자가 총기보다 더 넓고 반복 가능한 문제 해결 범위를 제공한다는 가상 사실에서 나옵니다.</p>
+        <table><thead><tr><th>기준</th><th>무공이 주력으로 남는 이유</th><th>게임에서 드러나는 결과</th></tr></thead><tbody><tr><td>상시성</td><td>무공은 몸에 축적되는 기술이라 분실, 압수, 탄약, 구매 경로에 덜 묶입니다.</td><td>기본 사건 해결은 수련, 적성, 교육, 상태 관리로 판정합니다.</td></tr><tr><td>대응 폭</td><td>무공은 살상뿐 아니라 회피, 감지, 제압, 탈출, 치료 보조, 기세 압박을 다룹니다.</td><td>전투 결과는 사망, 제압, 부상, 포섭, 원한, 명성 변화로 나뉩니다.</td></tr><tr><td>교전 환경</td><td>문파 시설과 고수 주변에는 조준, 센서, 점화 안정성, 전자 장비 신뢰도를 낮추는 기장 간섭<span class="tip" tabindex="0">?<span class="tip-text">고수의 호흡, 움직임, 내공, 수련장 구조가 주변 장비와 감각 판정에 만드는 불안정성입니다.</span></span>이 있습니다.</td><td>총기는 강하지만 준비, 거리, 장소, 사회 비용을 크게 탑니다.</td></tr><tr><td>사회 비용</td><td>총포, 폭발물, 고출력 장비는 소리, 탄흔, 전력 기록, 구매 경로, 국가기관 개입을 남깁니다.</td><td>불법 화력은 사건 태그와 위험 요소로 쓰고, 플레이어 기본 루프는 무공과 교섭 중심으로 둡니다.</td></tr><tr><td>계승성</td><td>무공은 문파 교육과 연구로 재생산됩니다. 장비보다 조직의 성향과 역사를 강하게 남깁니다.</td><td>성장은 무기 구매보다 제자 적성, 시설 투자, 교육 과정, 무공 연구로 느껴져야 합니다.</td></tr></tbody></table>
+        <div class="need"><strong>남은 결정</strong><p>기장 간섭의 강도, 총포가 유효한 하한선, 기가 의료/소재/시설/감시 장비에 주는 영향, 외부 군사력과 무림의 관계는 아직 수치와 사건 규칙으로 확정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="run-structure"><summary><span><span class="summary-title">2. 레벨과 콘텐츠 구조 - 죽고 다시 배우는 회차</span><span class="summary-note">초회차는 좁고 직접적으로, 이후 회차는 전략 선택 폭을 넓힙니다.</span></span></summary><div class="chapter-body">
+        <h2>초회차 원칙</h2><p>초회차 화면에서는 개파조사라는 단어를 쓰지 않습니다. 플레이어는 이름, 초상화, 열린 입문 무공 3개만 고르고 바로 무공 싸움의 위험에 들어갑니다. 도, 창, 암기처럼 잠긴 무공은 많이 보이되, 해금될 때마다 특징과 요구 스탯을 읽을 수 있게 합니다.</p>
+        <div class="card-grid"><div class="panel"><strong>시작 선택</strong><p>이름, 초상화, 검/권법/봉 중 하나를 선택합니다.</p></div><div class="panel"><strong>난이도</strong><p>자주 죽고 다시 시작합니다. 죽음은 튜토리얼이 아니라 세계 규칙을 배우는 장치입니다.</p></div><div class="panel"><strong>첫 목표</strong><p>토너먼트 우승 같은 명확한 첫 엔딩을 통해 개파 권한을 엽니다.</p></div></div>
+        <h3>엔딩 기준</h3><ul><li><strong>승리:</strong> 내 문파 이외의 문파가 단 하나도 남지 않는 상태입니다.</li><li><strong>패배:</strong> 문파 소속 인원이 전부 사망하거나 플레이어가 현재 플레이를 포기한 상태입니다.</li><li><strong>승리 후:</strong> 한 턴 더 자유 플레이는 가능하지만, 공식 기록과 리더보드에는 승리 시점까지만 반영합니다.</li></ul>
+        <div class="need"><strong>남은 결정</strong><p>도, 창, 암기의 해금 조건, 잠긴 무공 표시 방식, 첫 토너먼트 구조, 회차 해금 조건, 플레이어 의식의 정체를 확정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="core-loop"><summary><span><span class="summary-title">3. 규칙과 경제 - 모집, 교육, 사건, 투자</span><span class="summary-note">가장 작은 완성 단위는 제자를 키워 사건에 보내고 결과를 문파 성장으로 돌리는 흐름입니다.</span></span></summary><div class="chapter-body">
+        <h2>MVP 코어 루프</h2><div class="flow" aria-label="코어 플레이 루프"><div class="step"><b>1</b><strong>모집</strong><span>후보를 보고 문파에 받을 인물을 선택합니다.</span></div><div class="step"><b>2</b><strong>교육</strong><span>제자 적성과 문파 방침에 맞춰 수련을 배치합니다.</span></div><div class="step"><b>3</b><strong>사건</strong><span>협행, 비무, 기연, 습격, 원정에 제자를 보냅니다.</span></div><div class="step"><b>4</b><strong>결과</strong><span>성공, 부상, 사망, 명성, 단서가 기록됩니다.</span></div><div class="step"><b>5</b><strong>투자</strong><span>돈과 명성을 시설, 교육, 연구로 다시 돌립니다.</span></div></div>
+        <h3>MVP에서 반드시 느껴져야 하는 것</h3><ul><li>제자를 고르는 순간의 욕구와 불안감</li><li>교육 선택이 다음 사건 결과를 바꾸는 감각</li><li>무공 싸움이 텍스트 로그만이 아니라 인물 상태와 기록에 남는 감각</li><li>벌어온 돈으로 건물을 지으면 다음 루프가 편해지는 감각</li></ul>
+        <h3>현재 구현 시간 단위</h3><p>현재 앱은 버튼 한 번에 계절을 진행하고 네 계절이 지나면 1년과 나이를 올립니다. 이 기준은 장기 운영 감각을 먼저 검증하기 위한 구현 기준이며, 개별 교육이나 사건 1회가 한 계절 전체를 차지하는지는 아직 조정 대상입니다.</p>
+        <h3>구현 단계</h3><table><thead><tr><th>단계</th><th>검증 목표</th></tr></thead><tbody><tr><td>1차</td><td>일개 제자 시작, 무공 전투 표현, 사망 후 재시작, 제자 스탯 최소 구조</td></tr><tr><td>2차</td><td>무공 학습, 수련, 협행, 기연, 인물 기록을 앱에 연결</td></tr><tr><td>3차</td><td>회차 해금, 시작 선택 확장, 문파 창설 진입, 제자 모집 루프</td></tr><tr><td>4차</td><td>속가문파, 문파 합병, 문파 습격, 파티 원정, 개파조사 무공, 무공 연구</td></tr></tbody></table>
+        <div class="need"><strong>남은 결정</strong><p>교육/사건 1회와 계절 진행의 대응, 계절마다 후보/회복/쇠약 판정을 얼마나 갱신할지 정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="people-systems"><summary><span><span class="summary-title">4. 캐릭터와 성장 - 제자가 루프의 감정값이다</span><span class="summary-note">스탯과 교육은 전투력 표기가 아니라 성장 방향과 사건 가능성을 만드는 언어입니다.</span></span></summary><div class="chapter-body">
+        <h2>제자 시스템</h2><p>제자는 숫자 성장의 대상이면서 플레이어가 루프에 감정을 붙이는 매개체입니다. 인게임 조작이 없더라도 무공 학습 조건과 사건 판정이 스탯에 걸리므로, 스탯은 단순 전투력보다 다채로운 성장 축이어야 합니다.</p>
+        <table><thead><tr><th>스탯</th><th>의미</th><th>주요 사용처</th></tr></thead><tbody><tr><td>생명력</td><td>부상과 사망에 대한 저항력</td><td>장기 원정, 습격, 위험 사건 실패 시 생존 판정</td></tr><tr><td>기력</td><td>긴 활동을 버티는 힘</td><td>교육, 수련, 협행, 목표 원정의 소모와 회복</td></tr><tr><td>완력</td><td>직접적인 힘과 돌파력</td><td>토벌, 방어, 비무, 물리적 충돌</td></tr><tr><td>집중력</td><td>배움과 판단의 밀도</td><td>무공 습득, 연구, 기연 해석, 정밀 판정</td></tr><tr><td>매력</td><td>사람을 끌어들이고 설득하는 힘</td><td>모집, 교섭, 속가문파 관리, 합병 안정화</td></tr><tr><td>반응성</td><td>돌발 상황을 알아차리고 대응하는 힘</td><td>기습, 함정, 반격, 문파 습격 초기 피해 감소</td></tr><tr><td>순발력</td><td>짧은 순간에 폭발적으로 움직이는 힘</td><td>구출, 일격 돌파, 위기 탈출, 빠른 초식</td></tr><tr><td>기동성</td><td>멀리 움직이고 유리한 위치를 잡는 힘</td><td>원정 이동, 추격, 도주, 장거리 협행, 경공</td></tr></tbody></table>
+        <h3>교육 방향</h3><div class="card-grid"><div class="panel"><strong>기초 단련</strong><p>완력과 생명력을 안정적으로 올리는 초반 기본 선택입니다.</p></div><div class="panel"><strong>기력 수련</strong><p>느리지만 장기 활동, 무공 수련, 원정 지속력에 연결됩니다.</p></div><div class="panel"><strong>처세와 교섭</strong><p>매력과 집중력을 통해 전투 외 사건 해결을 엽니다.</p></div></div>
+        <h3>사건과 위험</h3><p>사건은 돈을 벌기 위한 심부름이 아니라 인물 기록을 만드는 장치입니다. 협행, 기연, 비무, 문파 습격, 목표 원정은 제자의 부상, 실종, 사망, 명성, 무공 단서, 원한을 남겨야 합니다.</p>
+        <div class="need"><strong>남은 결정</strong><p>민첩 계열을 반응성, 순발력, 기동성으로 모두 유지할지 줄일지 결정해야 합니다. 교육은 매턴 직접 고르는 방식인지, 제자별 장기 방침을 지정하는 방식인지도 확정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="sect-systems"><summary><span><span class="summary-title">5. 아이템과 경제 - 시설과 관계가 장기 운영을 만든다</span><span class="summary-note">건물, 자원, 연구, 속가문파는 코어 루프가 안정된 뒤 확장할 운영 층입니다.</span></span></summary><div class="chapter-body">
+        <h2>문파 생태계</h2><p>문파<span class="tip" tabindex="0">?<span class="tip-text">무공을 교육하고 인물, 시설, 명성, 연구 성과를 축적하는 플레이어 조직입니다.</span></span>는 제자 개인보다 오래 남는 운영 단위입니다. 경쟁 문파, 속가문파<span class="tip" tabindex="0">?<span class="tip-text">본산에서 성장한 인물이 바깥에 세우거나 관리하는 분파 또는 외곽 세력입니다.</span></span>, 합병, 습격은 제자 생애 이벤트를 조직의 장기 기록으로 연결합니다.</p>
+        <div class="card-grid"><div class="panel"><strong>경쟁 문파</strong><p>타 문파는 단순 적이 아니라 합병, 동맹, 원한, 인재 이동의 대상입니다.</p></div><div class="panel"><strong>속가문파</strong><p>충분히 성장한 제자는 본산을 떠나 영향력을 바깥으로 넓힐 수 있습니다.</p></div><div class="panel"><strong>문파 습격</strong><p>방어 이벤트에 그치지 않고 건물 파괴와 인명 손실까지 확장될 수 있습니다.</p></div></div>
+        <h3>건물 기준</h3><table><thead><tr><th>건물</th><th>역할</th></tr></thead><tbody><tr><td>숙소</td><td>보유 제자 수와 제자 회복을 보조합니다.</td></tr><tr><td>연무장</td><td>기초 단련과 실전 교육 효율을 올립니다.</td></tr><tr><td>장서각</td><td>무공 연구, 집중력 교육, 고급 사건 해금을 담당합니다.</td></tr><tr><td>의약당</td><td>부상 회복, 고령 캐릭터 생존, 위험 사건 보정에 연결됩니다.</td></tr><tr><td>객당</td><td>모집 후보의 질, 외부 성장, 외부 인물 방문을 다룹니다.</td></tr><tr><td>대전</td><td>문파 등급, 명성 상한, 장문인의 권위를 상징합니다.</td></tr></tbody></table>
+        <h3>무공 연구와 개파조사</h3><p>무공 연구는 코어 루프를 발전시키는 2단계 시스템입니다. 무공은 단순 장착 스킬이 아니라 문파가 어떤 방식으로 문제를 해결하는지 보여주는 장기 성장 축이어야 합니다. 개파조사의 무공 정의는 초회차 이후, 플레이어가 죽음과 학습의 의미를 이해한 뒤 열리는 상위 메타로 둡니다.</p>
+        <div class="need"><strong>남은 결정</strong><p>타 문파 수, 제거/흡수/동맹 방식, 합병 보상과 후폭풍, 초반 건물 3개, MVP 자원 목록, 무공의 소유 단위, 개파조사 무공 정의 방식을 확정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="art-direction"><summary><span><span class="summary-title">6. 연출과 커뮤니케이션 - 현실 논리를 끝까지 밀어붙인 현대 무협</span><span class="summary-note">멋은 공상 장식이 아니라 착용, 사용, 제작 논리를 극단까지 밀어붙인 결과입니다.</span></span></summary><div class="chapter-body">
+        <h2>배경 아트 기준</h2><p>현대화는 직선 건물, 차가운 콘크리트, 도시화만으로 표현하지 않습니다. 핵심은 사람이 손으로 만들기 어려운 정교한 마감, 균일한 곡면, 오차 없는 접합부, 3차원 기하학 구조, 기계 가공처럼 보이는 표면 품질입니다.</p>
+        <div class="gallery-wide" aria-label="현대화 무협 배경 시안"><figure><img src="./assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png" alt="도시 옥상에 있는 현대식 문파 본부 배경 시안"><figcaption><strong>A. 모던 문파 본부</strong>프리미엄 무림 거점의 기준선입니다. 산과 도시를 함께 두되, 현대성은 정밀 마감과 균일한 곡면으로 잡습니다.</figcaption></figure><figure><img src="./assets/art-style/backgrounds/background-style-modern-b-training-studio.png" alt="현대식 무공 수련 스튜디오 배경 시안"><figcaption><strong>B. 트레이닝 스튜디오</strong>캐릭터 생성, 수련, 무기 선택 화면의 기준 후보입니다. 복식은 기능성 재킷, 트레이닝웨어, 운동화 쪽으로 읽힙니다.</figcaption></figure><figure><img src="./assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" alt="도시 속 비밀 무림 사건 장소 배경 시안"><figcaption><strong>C. 도시 협행/비밀 사건</strong>현대 도시 안쪽에 숨어 있는 무림을 보여주는 보조안입니다.</figcaption></figure></div>
+        <h3>캐릭터 아트 기준</h3><p>대표 캐릭터는 잘생기고 예쁜 방향을 유지하되, 날렵하고 날카로운 AI 미형 한 가지로 수렴하면 실패입니다. 통통해도 예쁜 인물, 사각턱인데 멋진 남자, 둥근 얼굴, 부드러운 인상, 거친 인상처럼 체형과 얼굴 골격의 개성이 먼저 보여야 합니다.</p><p>비대칭 하네스처럼 실전 착용성과 일상 패션 논리 없이 아트적 형태감만 노리는 장식은 쓰지 않습니다. 멋은 인물의 취향, 신념, 신체 사용 방식, 옷장 논리를 끝까지 밀어붙인 결과여야 합니다. 치파오는 성인 캐릭터의 섹시함과 핏을 위한 의도적 선택이면 허용하지만, 중국풍 무협 기호로만 쓰지는 않습니다.</p>
+        <div class="portrait-gallery" aria-label="대표 캐릭터 스타일 후보"><figure><img src="./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" alt="현대 숏헤어 스트리트 무협 남성 캐릭터 후보"><figcaption><strong>K. 숏헤어 스트리트 무협</strong>상투형 헤어를 뺀 초회차 남성 기준 후보입니다.</figcaption></figure><figure><img src="./assets/style-exploration/characters/character-style-n-modern-female-techwear.png" alt="현대 테크웨어 무협 성인 여성 캐릭터 후보"><figcaption><strong>N. 테크웨어 무협</strong>성인 여성 캐릭터 기준 후보입니다.</figcaption></figure><figure><img src="./assets/style-exploration/characters/character-style-l-modern-female-fitted.png" alt="현대 피티드 복식의 여성 캐릭터 후보"><figcaption><strong>L. 단발 피티드 복식</strong>강아지상/토끼상 얼굴과 건강한 실루엣 보조 후보입니다.</figcaption></figure><figure><img src="./assets/style-exploration/characters/character-style-m-modern-female-leader.png" alt="현대 문파 리더풍 여성 캐릭터 후보"><figcaption><strong>M. 현대 문파 리더</strong>문파 소속감과 지휘자 인상 후보입니다.</figcaption></figure></div>
+        <div class="rule-grid"><div class="rule"><strong>남성 헤어</strong><span>뒤로 묶은 상투형 실루엣, 시대극 무사 머리, 매듭은 현대화 무협 기준을 흐리므로 피합니다.</span></div><div class="rule"><strong>여성 얼굴 다양성</strong><span>고양이상만 반복하지 않고 강아지상, 토끼상, 둥근 얼굴, 부드러운 눈매도 매력 후보로 둡니다.</span></div><div class="rule"><strong>복식</strong><span>기능성 재킷, 테크웨어, 현대 무도복, 스트리트웨어, 무대의상 감각을 우선합니다.</span></div><div class="rule"><strong>금지선</strong><span>중국 고대풍 의복, 도사복, 펑퍼짐한 장포, 원형 후광, 산수화 배경, 장르 기호뿐인 전통 장식은 피합니다.</span></div></div>
+      </div></details>
+
+      <details class="chapter" id="implementation-surface"><summary><span><span class="summary-title">7. UI와 편의 시스템 - 첫 진입과 메타 흐름</span><span class="summary-note">현재 코드가 보장하는 시작 화면, 저장, 기록, 서비스워커 기준을 기획 판단으로 정리합니다.</span></span></summary><div class="chapter-body">
+        <h2>현재 앱이 보장하는 흐름</h2><div class="card-grid"><div class="panel"><strong>첫 진입</strong><p>현재 런타임은 <code>runMode="wanderer"</code>인 18세 <code>무명 무인</code>을 <code>무명 여정</code> 아래에 저장합니다. 개파조사와 문파명 입력은 뒤 단계 화면으로 남겨 두지만 첫 진입에서는 잠급니다.</p></div><div class="panel"><strong>입문 무공</strong><p>열린 선택지는 검, 권법, 봉입니다. 도, 창, 암기는 잠긴 후보로 보이며, 해금될 때 특징과 요구 스탯을 읽게 하는 방향입니다.</p></div><div class="panel"><strong>시간과 생애</strong><p>계절 진행이 기본 턴처럼 작동하고 네 계절 뒤 1년이 오릅니다. 나이, 수명, 건강, 사망 기록은 인물의 생애감을 만들기 위한 핵심 축입니다.</p></div><div class="panel"><strong>저장과 기록</strong><p>세이브는 IndexedDB, 작은 상태는 localStorage, 끝난 여정과 문파는 기록 화면에 남깁니다. 죽음과 재시작은 단순 실패가 아니라 다음 판단을 남기는 회차 기억이어야 합니다.</p></div><div class="panel"><strong>초상화 자산</strong><p>현재 플레이어 기본 초상화는 K/N 현대 캐릭터 이미지입니다. 제자 초상화는 별도 연령대 자산을 쓰므로 런타임 초상화 변경은 <code>src/app.js</code>와 <code>sw.js</code> 캐시 목록을 함께 맞춰야 합니다.</p></div><div class="panel"><strong>오프라인 표면</strong><p>서비스워커는 앱 셸과 주요 초상화를 캐시합니다. 아트 기준이 바뀌면 문서만 고치는 것이 아니라 캐시 기준도 사용자가 보는 현재 게임 표면으로 갱신해야 합니다.</p></div></div>
+        <h3>이 기준을 둔 이유</h3><p>문파 운영 기능을 먼저 넓히면 플레이어가 왜 사람을 고르고, 왜 죽음과 계승을 받아들이는지 검증하기 어렵습니다. 현재 구현은 문파 경영보다 한 인물의 생존, 입문 무공 선택, 계절 진행, 기록 저장을 먼저 고정해 감정의 최소 단위를 확인하는 방향입니다.</p>
+        <div class="need"><strong>남은 결정</strong><p>토너먼트 승리 후 <code>wanderer</code>에서 <code>sect</code>로 전환하는 저장 구조, 승리 후 자유 플레이가 기록/리더보드에 어디까지 반영되는지, 개파조사 화면을 언제 다시 노출할지 확정해야 합니다.</p></div>
+      </div></details>
+
+      <details class="chapter" id="decision-ledger"><summary><span><span class="summary-title">8. 미결정과 제외 - 결정 목록과 미결정 항목</span><span class="summary-note">확정된 기준은 본문에 반영했고, 아직 선택이 필요한 항목만 남깁니다.</span></span></summary><div class="chapter-body">
+        <h2>확정 기준</h2><ul><li>초반 플레이는 개파조사나 문파 운영자가 아니라 일개 제자의 무공 싸움과 생존에서 시작합니다.</li><li>초회차 화면에서는 개파조사라는 단어를 빼고, 캐릭터 생성에서 이름, 초상화, 검/권법/봉 중 하나만 제공합니다.</li><li>현재 앱의 초회차 구현은 18세 무명 무인, <code>runMode="wanderer"</code>, <code>무명 여정</code> 저장 흐름입니다.</li><li>시간 진행은 현재 코드에서 계절 단위이며 네 계절 뒤 1년, 나이, 건강, 후보 갱신으로 이어집니다.</li><li>난이도는 높게 두어 자주 죽고 재시작하며, 첫 엔딩 이후 개파 권한을 엽니다.</li><li>회차 확장은 로그라이트식 랜덤 보상이 아니라 문명식 전략 선택 폭 확장으로 둡니다.</li><li>승리는 내 문파 이외의 문파가 단 하나도 남지 않는 상태, 패배는 전원 사망 또는 플레이 포기입니다.</li><li>무협 세계관은 현실에 기가 실제 변수로 존재한다면 무엇이 달라지는지 따지는 유사 가상 현실입니다.</li><li>현대 무협의 성립 조건은 “총기류가 있는데도 왜 무공을 쓰는가?”에 답하는 것입니다.</li><li>배경의 현대화는 직선과 콘크리트가 아니라 정밀 마감, 균일 곡면, 3차원 기하학, 기계 가공감입니다.</li><li>캐릭터는 예쁘고 잘생긴 방향을 유지하되, 날렵한 AI 미형 한 가지로 수렴하지 않습니다.</li><li>남성 대표 캐릭터는 뒤묶음 머리나 상투처럼 보이는 시대극 헤어를 피합니다.</li><li>캐릭터 복식의 멋은 실생활에 없는 장식을 상상으로 얹는 방식이 아니라, 인물의 사용 논리를 끝까지 밀어붙인 기획적 극단에서 나와야 합니다.</li></ul>
+        <h2>미결정 항목</h2><ol><li>플레이어는 한 인물의 의식인가, 죽음을 넘어 이어지는 계보/운명인가, 문파의 장기 의지인가?</li><li>도, 창, 암기의 해금 조건과 잠긴 무공 표시 방식, 무기별 특징 문법은 무엇인가?</li><li>교육/사건 1회와 계절 진행의 대응은 어디까지인가?</li><li>첫 토너먼트 구조와 우승 후 개파 권한 범위는 어디까지인가?</li><li>타 문파는 몇 개로 시작하며, 제거/흡수/동맹 중 어떤 방식으로 사라질 수 있는가?</li><li>속가문파는 내 세력권인가, 독립 문파인가, 배신 또는 이탈할 수 있는가?</li><li>다른 문파를 합병할 때 제자, 무공, 건물, 원한을 어디까지 흡수하는가?</li><li>문파 습격은 방어 이벤트로 둘지, 건물 파괴와 인명 손실이 있는 위기로 둘지 정해야 합니다.</li><li>교육은 매턴 직접 고르는 방식인가, 제자별 장기 방침을 지정하는 방식인가?</li><li>돈 외에 명성, 약재, 무공 단서 같은 자원을 MVP에 넣을 것인가?</li><li>초반 건물 3개는 무엇이며, 각각 어떤 루프를 강화하는가?</li><li>개파조사 무공은 문답식, 태그식, 스탯 배분식, 이름 짓기식 중 어떤 방식으로 정의하는가?</li><li>기장 간섭의 강도, 총포가 유효한 하한선, 기가 의료/소재/시설/감시 장비에 주는 영향, 외부 군사력과 무림의 관계는 어디까지인가?</li><li>기본 캐릭터 K/N 이후 무기별 자세/복식 차이와 성장 단계별 초상화 범위는 어디까지인가?</li></ol>
+      </div></details>
+
+      <footer>현재 구현과 다음 구현 기준을 맞추기 위한 기획서입니다. 확정된 항목은 본문 섹션에, 미확정 항목은 미결정 목록에만 둡니다.</footer>
+    </div>
+  </main>
+</body>
+</html>
