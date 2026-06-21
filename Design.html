@@ -74,12 +74,27 @@
     footer { color:var(--muted); font-size:13px; padding:10px 0 0; }
     @media (max-width:1080px) { main { display:block; } nav { position:static; margin-bottom:18px; } .signal-grid, .card-grid, .rule-grid, .flow, .portrait-gallery { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width:660px) { header { padding:24px 18px 20px; } header h1 { font-size:25px; } main { width:min(100% - 24px,1440px); } section, .chapter-body { padding:14px; } details.chapter > summary { padding:13px 14px; } .signal-grid, .card-grid, .rule-grid, .flow, .portrait-gallery { grid-template-columns:1fr; } th, td { display:block; width:100%; } th { border-bottom:0; } }
+    .common-work-guide {
+      width: min(1180px, calc(100% - 36px));
+      margin: 12px auto 0;
+      color: inherit;
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .common-work-guide a {
+      color: inherit;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>MunpaWeb 기획 문서</h1>
     <p>현대 사회에 기가 실제 변수로 존재한다면 무협 문파 운영 게임은 어떻게 성립하는가를 정리한 현재 기준 문서입니다.</p>
+  <p class="common-work-guide">공통 작업 지침: <a href="https://oojjrs.github.io/engineering-notes/codex/common-work-guidelines.html" target="_blank" rel="noopener noreferrer">Codex 공통 작업 지침</a></p>
   </header>
 
   <main>
