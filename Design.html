@@ -88,6 +88,98 @@
       text-decoration: underline;
       text-underline-offset: 3px;
     }
+
+    /* Shared Design.html navigation layout */
+    .design-doc-layout {
+      width: min(1380px, calc(100% - 36px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .design-doc-layout > main {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .design-floating-nav {
+      position: sticky;
+      top: 94px;
+      z-index: 20;
+      max-height: calc(100vh - 112px);
+      overflow-y: auto;
+      margin-top: 24px;
+      padding: 12px;
+      border: 1px solid rgba(120, 135, 155, 0.38);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 14px 34px rgba(20, 31, 46, 0.14);
+      backdrop-filter: blur(10px);
+    }
+
+    .design-floating-nav strong {
+      display: block;
+      margin: 0 0 7px;
+      color: inherit;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.72;
+    }
+
+    .design-floating-nav a {
+      display: block;
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 13px;
+      line-height: 1.35;
+      opacity: 0.82;
+    }
+
+    .design-floating-nav a:hover {
+      background: rgba(60, 110, 180, 0.12);
+      opacity: 1;
+    }
+
+    section,
+    details {
+      scroll-margin-top: 120px;
+    }
+
+    @media (max-width: 980px) {
+      .design-doc-layout {
+        width: min(100% - 24px, 1000px);
+        grid-template-columns: 1fr;
+      }
+
+      .design-floating-nav {
+        position: sticky;
+        top: 64px;
+        display: flex;
+        gap: 4px;
+        margin-top: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+      }
+
+      .design-floating-nav strong {
+        flex: 0 0 auto;
+        align-self: center;
+        margin: 0 4px 0 0;
+      }
+
+      .design-floating-nav a {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    }
   </style>
 </head>
 <body>
@@ -95,22 +187,21 @@
     <h1>MunpaWeb 기획 문서</h1>
     <p class="common-work-guide">참고 지침: <a href="https://oojjrs.github.io/engineering-notes/codex/common-work-guidelines.html" target="_blank" rel="noopener noreferrer">Codex 공통 작업 지침</a> · <a href="https://oojjrs.github.io/engineering-notes/codex/guideline-design-generation.review.html" target="_blank" rel="noopener noreferrer">기획서 작성 기준</a></p>
   </header>
-
+<div class="design-doc-layout">
+  <nav class="design-floating-nav" aria-label="기획서 목차">
+    <strong>목차</strong>
+    <a href="#overview">현재 게임 정체성</a>
+    <a href="#world-rule">1. 세계와 공간 - 기가 있는 현대 사회 무공이 총기와 현대...</a>
+    <a href="#run-structure">2. 레벨과 콘텐츠 구조 - 죽고 다시 배우는 회차 초회차는...</a>
+    <a href="#core-loop">3. 규칙과 경제 - 모집, 교육, 사건, 투자 가장 작은 완...</a>
+    <a href="#people-systems">4. 캐릭터와 성장 - 제자가 루프의 감정값이다 스탯과 교육은...</a>
+    <a href="#sect-systems">5. 아이템과 경제 - 시설과 관계가 장기 운영을 만든다 건물...</a>
+    <a href="#art-direction">6. 연출과 커뮤니케이션 - 현실 논리를 끝까지 밀어붙인 현대...</a>
+    <a href="#implementation-surface">7. UI와 편의 시스템 - 첫 진입과 메타 흐름 현재 코드가...</a>
+    <a href="#decision-ledger">8. 미결정과 제외 - 결정 목록과 미결정 항목 확정된 기준은...</a>
+  </nav>
   <main>
-    <nav aria-label="기획 문서 목차">
-      <h2>바로가기</h2>
-      <a href="#overview"><strong>개요</strong>게임 정체성과 현재 기준</a>
-      <a href="#world-rule"><strong>세계 규칙</strong>기, 현대 기술, 총기와 무공</a>
-      <a href="#run-structure"><strong>플레이 구조</strong>초회차, 회차 해금, 엔딩</a>
-      <a href="#core-loop"><strong>코어 루프</strong>MVP와 반복 플레이</a>
-      <a href="#people-systems"><strong>인물 시스템</strong>제자, 스탯, 교육, 사건</a>
-      <a href="#sect-systems"><strong>문파 시스템</strong>생태계, 건물, 자원, 연구</a>
-      <a href="#art-direction"><strong>아트 방향</strong>현대화 무협 배경과 캐릭터</a>
-      <a href="#implementation-surface"><strong>구현 표면</strong>첫 진입, 저장, UI/메타 기준</a>
-      <a href="#decision-ledger"><strong>결정 목록</strong>확정 기준과 미결정 항목</a>
-    </nav>
-
-    <div class="doc-shell">
+<div class="doc-shell">
       <section id="overview">
         <h2>현재 게임 정체성</h2>
         <p>MunpaWeb은 고전 문파 판타지를 그대로 현대 배경에 얹는 게임이 아닙니다. 현실에 <strong>기</strong><span class="tip" tabindex="0">?<span class="tip-text">이 문서에서 기는 신체, 감각, 장비 신뢰도, 문파 시설, 사회 규칙에 영향을 주는 가상 현실 변수입니다.</span></span>가 존재한다는 가상의 사실을 깔고, 그 사실 때문에 현대 사회의 전투, 교육, 조직 운영, 미학이 어떻게 달라지는지 끝까지 밀어붙이는 문파 운영 게임입니다.</p>
@@ -189,5 +280,6 @@
       <footer>현재 구현과 다음 구현 기준을 맞추기 위한 기획서입니다. 확정된 항목은 본문 섹션에, 미확정 항목은 미결정 목록에만 둡니다.</footer>
     </div>
   </main>
+  </div>
 </body>
 </html>
