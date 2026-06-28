@@ -514,7 +514,108 @@
         width: min(100% - 24px, 900px);
       }
     }
+    .image-lightbox {
+      width: min(94vw, 1280px);
+      max-height: 92vh;
+      padding: 0;
+      border: 1px solid rgba(226, 232, 240, 0.24);
+      border-radius: 10px;
+      background: #10141f;
+      color: #f8fafc;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.42);
+      overflow: hidden;
+    }
 
+    .image-lightbox::backdrop {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(4px);
+    }
+
+    .image-lightbox[open] {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .image-lightbox-toolbar,
+    .image-lightbox-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.86);
+    }
+
+    .image-lightbox-title {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .image-lightbox-close {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(226, 232, 240, 0.22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .image-lightbox-close:hover,
+    .image-lightbox-close:focus-visible {
+      background: rgba(255, 255, 255, 0.16);
+      outline: none;
+    }
+
+    .image-lightbox-stage {
+      display: grid;
+      min-height: 0;
+      place-items: center;
+      padding: 14px;
+      background: #0b1020;
+    }
+
+    .image-lightbox-stage img {
+      display: block;
+      max-width: 100%;
+      max-height: min(74vh, 900px);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .image-lightbox-actions {
+      justify-content: flex-end;
+    }
+
+    .image-lightbox-original {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(226, 232, 240, 0.24);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8fafc;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .image-lightbox-original:hover,
+    .image-lightbox-original:focus-visible {
+      background: rgba(255, 255, 255, 0.16);
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -810,6 +911,69 @@
       updateFloatingNavOffset();
     })();
   </script>
+  <dialog id="imageLightbox" class="image-lightbox" aria-label="원본 이미지 보기">
+    <div class="image-lightbox-toolbar">
+      <span id="imageLightboxTitle" class="image-lightbox-title"></span>
+      <button type="button" class="image-lightbox-close" aria-label="닫기">&times;</button>
+    </div>
+    <div class="image-lightbox-stage">
+      <img id="imageLightboxImage" alt="">
+    </div>
+    <div class="image-lightbox-actions">
+      <a id="imageLightboxOriginal" class="image-lightbox-original" target="_blank" rel="noopener noreferrer">원본 열기</a>
+    </div>
+  </dialog>
+  <script>
+    (() => {
+      const dialog = document.getElementById('imageLightbox');
+      if (!dialog || typeof dialog.showModal !== 'function') return;
 
+      const image = document.getElementById('imageLightboxImage');
+      const title = document.getElementById('imageLightboxTitle');
+      const original = document.getElementById('imageLightboxOriginal');
+      const closeButton = dialog.querySelector('.image-lightbox-close');
+      const imagePattern = /\.(avif|bmp|gif|jpe?g|png|svg|webp)([?#].*)?$/i;
+
+      const getLabel = (link, sourceImage) => {
+        const alt = sourceImage?.getAttribute('alt')?.trim();
+        if (alt) return alt;
+        const href = link.getAttribute('href') || '';
+        const fileName = href.split(/[?#]/)[0].split('/').pop();
+        return fileName ? decodeURIComponent(fileName) : '이미지';
+      };
+
+      document.addEventListener('click', event => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+        const link = event.target.closest('a[href]');
+        if (!link || !link.querySelector('img')) return;
+
+        const href = link.getAttribute('href');
+        if (!href || !imagePattern.test(href)) return;
+
+        event.preventDefault();
+        const sourceImage = event.target.closest('img') || link.querySelector('img');
+        const label = getLabel(link, sourceImage);
+        image.src = href;
+        image.alt = label;
+        title.textContent = label;
+        original.href = href;
+        dialog.showModal();
+      });
+
+      closeButton?.addEventListener('click', () => dialog.close());
+
+      dialog.addEventListener('click', event => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      dialog.addEventListener('close', () => {
+        image.removeAttribute('src');
+        image.alt = '';
+        title.textContent = '';
+        original.removeAttribute('href');
+      });
+    })();
+  </script>
 </body>
 </html>
