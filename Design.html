@@ -576,6 +576,7 @@
               <tr><td>첫 화면</td><td><code>welcomeView</code>, 이어하기, 기록 보기, 새 게임</td><td>플레이 기록이 남는 회차형 운영 게임임을 첫 화면부터 보여준다.</td></tr>
               <tr><td>캐릭터 생성</td><td>초상, 이름, 입문 무공 선택</td><td>처음부터 문파장이 아니라 무공을 배우는 개인의 생존에서 출발한다.</td></tr>
               <tr><td>문파 생성</td><td>개파조사/문파 이름 생성 흐름 존재</td><td>후속 단계에서 문파 운영 관점으로 확장될 수 있는 표면을 남긴다.</td></tr>
+              <tr><td>플레이어 초상</td><td>K/N 현대 캐릭터 이미지, 서비스워커 캐시</td><td>기본 캐릭터는 현대 무협 아트 기준을 실제 플레이 표면에 걸어 둔 현재 기준이다.</td></tr>
               <tr><td>게임 화면</td><td>주인공/장문인 카드, 시간 카드, 제자 목록, 모집, 턴 종료</td><td>인물 상태와 시간 흐름이 운영 판단의 기본 단위다.</td></tr>
               <tr><td>기록</td><td><code>localStorage</code> 저장, 종료 기록, 주요 사건, 역대 계보</td><td>죽음과 실패가 버려지는 리셋이 아니라 다음 플레이의 맥락이 된다.</td></tr>
             </tbody>
@@ -646,6 +647,31 @@
             <div class="rule"><strong>수명</strong><p>수명을 넘긴 나이부터 건강이 확률적으로 감소한다.</p></div>
             <div class="rule"><strong>건강</strong><p>건강이 0이 되면 사망하고, 문파는 후계자 또는 멸망 판정을 받는다.</p></div>
           </div>
+          <h3>제자 시스템</h3>
+          <p class="lead">제자는 숫자 성장의 대상이면서 플레이어가 회차에 감정을 붙이는 매개체다. 인게임 조작이 없더라도 무공 학습 조건과 사건 판정이 스탯에 걸리므로, 스탯은 단순 전투력보다 다채로운 성장 축이어야 한다.</p>
+          <table>
+            <thead>
+              <tr><th>스탯</th><th>의미</th><th>주요 사용처</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>생명력</td><td>부상과 사망에 대한 저항력</td><td>장기 원정, 습격, 위험 사건 실패 시 생존 판정</td></tr>
+              <tr><td>기력</td><td>긴 활동을 버티는 힘</td><td>교육, 수련, 협행, 목표 원정의 소모와 회복</td></tr>
+              <tr><td>완력</td><td>직접적인 힘과 돌파력</td><td>토벌, 방어, 비무, 물리적 충돌</td></tr>
+              <tr><td>집중력</td><td>배움과 판단의 밀도</td><td>무공 습득, 연구, 기연 해석, 정밀 판정</td></tr>
+              <tr><td>매력</td><td>사람을 끌어들이고 설득하는 힘</td><td>모집, 교섭, 속가문파 관리, 합병 안정화</td></tr>
+              <tr><td>반응성</td><td>돌발 상황을 알아차리고 대응하는 힘</td><td>기습, 함정, 반격, 문파 습격 초기 피해 감소</td></tr>
+              <tr><td>순발력</td><td>짧은 순간에 폭발적으로 움직이는 힘</td><td>구출, 일격 돌파, 위기 탈출, 빠른 초식</td></tr>
+              <tr><td>기동성</td><td>멀리 움직이고 유리한 위치를 잡는 힘</td><td>원정 이동, 추격, 도주, 장거리 협행, 경공</td></tr>
+            </tbody>
+          </table>
+          <h3>교육 방향</h3>
+          <div class="three-col">
+            <div class="rule"><strong>기초 단련</strong><p>완력과 생명력을 안정적으로 올리는 초반 기본 선택이다.</p></div>
+            <div class="rule"><strong>기력 수련</strong><p>느리지만 장기 활동, 무공 수련, 원정 지속력에 연결된다.</p></div>
+            <div class="rule"><strong>처세와 교섭</strong><p>매력과 집중력을 통해 전투 외 사건 해결을 연다.</p></div>
+          </div>
+          <h3>사건과 위험</h3>
+          <p class="lead">사건은 돈을 벌기 위한 심부름이 아니라 인물 기록을 만드는 장치다. 협행, 기연, 비무, 문파 습격, 목표 원정은 제자의 부상, 실종, 사망, 명성, 무공 단서, 원한을 남겨야 한다.</p>
           <h3>초상 기준</h3>
           <div class="portrait-gallery">
             <figure><a href="./assets/portraits/disciples/disciple-male-01/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-08.png" alt="남성 제자 8세 초상"></a><figcaption><strong>8세</strong>어린 후보와 초기 성장감.</figcaption></figure>
@@ -682,6 +708,21 @@
             <figure class="wide-art"><a href="./assets/art-style/backgrounds/background-style-modern-b-training-studio.png" target="_blank" rel="noopener noreferrer"><img src="./assets/art-style/backgrounds/background-style-modern-b-training-studio.png" alt="현대 무공 훈련장"></a><figcaption><strong>훈련장</strong>기능적이고 정밀한 수련 공간.</figcaption></figure>
             <figure class="wide-art"><a href="./assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" target="_blank" rel="noopener noreferrer"><img src="./assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" alt="현대 도시 무림 사건"></a><figcaption><strong>도시 사건</strong>현대 질서 안에서 일어나는 무림 충돌.</figcaption></figure>
           </div>
+          <h3>캐릭터 아트 기준</h3>
+          <p class="lead">대표 캐릭터는 잘생기고 예쁜 방향을 유지하되, 날렵하고 날카로운 AI 미형 한 가지로 수렴하면 실패다. 통통해도 예쁜 인물, 사각턱인데 멋진 남자, 둥근 얼굴, 부드러운 인상, 거친 인상처럼 체형과 얼굴 골격의 개성이 먼저 보여야 한다.</p>
+          <p class="lead">비대칭 하네스처럼 실전 착용성과 일상 패션 논리 없이 아트적 형태감만 노리는 장식은 쓰지 않는다. 멋은 인물의 취향, 신념, 신체 사용 방식, 옷장 논리를 끝까지 밀어붙인 결과여야 한다. 치파오는 성인 캐릭터의 섹시함과 핏을 위한 의도적 선택이면 허용하지만, 중국풍 무협 기호로만 쓰지는 않는다.</p>
+          <div class="portrait-gallery" aria-label="대표 캐릭터 스타일 후보">
+            <figure><a href="./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" alt="현대 숏헤어 스트리트 무협 남성 캐릭터 후보"></a><figcaption><strong>K. 숏헤어 스트리트 무협</strong>상투형 헤어를 뺀 초회차 남성 기준 후보.</figcaption></figure>
+            <figure><a href="./assets/style-exploration/characters/character-style-n-modern-female-techwear.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-n-modern-female-techwear.png" alt="현대 테크웨어 무협 성인 여성 캐릭터 후보"></a><figcaption><strong>N. 테크웨어 무협</strong>성인 여성 캐릭터 기준 후보.</figcaption></figure>
+            <figure><a href="./assets/style-exploration/characters/character-style-l-modern-female-fitted.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-l-modern-female-fitted.png" alt="현대 피티드 복식의 여성 캐릭터 후보"></a><figcaption><strong>L. 단발 피티드 복식</strong>강아지상/토끼상 얼굴과 건강한 실루엣 보조 후보.</figcaption></figure>
+            <figure><a href="./assets/style-exploration/characters/character-style-m-modern-female-leader.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-m-modern-female-leader.png" alt="현대 문파 리더풍 여성 캐릭터 후보"></a><figcaption><strong>M. 현대 문파 리더</strong>문파 소속감과 지휘자 인상 후보.</figcaption></figure>
+          </div>
+          <div class="two-col" style="margin-top: 12px;">
+            <div class="rule"><strong>남성 헤어</strong><p>뒤로 묶은 상투형 실루엣, 시대극 무사 머리, 매듭은 현대화 무협 기준을 흐리므로 피한다.</p></div>
+            <div class="rule"><strong>여성 얼굴 다양성</strong><p>고양이상만 반복하지 않고 강아지상, 토끼상, 둥근 얼굴, 부드러운 눈매도 매력 후보로 둔다.</p></div>
+            <div class="rule"><strong>복식</strong><p>기능성 재킷, 테크웨어, 현대 무도복, 스트리트웨어, 무대의상 감각을 우선한다.</p></div>
+            <div class="rule"><strong>금지선</strong><p>중국 고대풍 의복, 도사복, 펑퍼짐한 장포, 원형 후광, 산수화 배경, 장르 기호뿐인 전통 장식은 피한다.</p></div>
+          </div>
           <div class="two-col" style="margin-top: 12px;">
             <div class="rule"><strong>이미지 생성 원칙</strong><p>새 아트 기준 이미지는 imagegen으로 먼저 만들고, 웹 규격과 압축이 필요할 때만 후처리한다.</p></div>
             <div class="rule"><strong>피해야 할 방향</strong><p>고대 중국풍 장식만 덧씌운 화면, 총기와 현대 기술의 존재를 무시한 낭만 무협, UI 공간이 없는 배경 이미지는 제외한다.</p></div>
@@ -699,6 +740,9 @@
             <div class="decision"><strong>무공 전투 규칙</strong><span class="tag pending">미결정</span><p>검, 권법, 봉은 열려 있지만 실제 전투 판정과 성장식은 아직 확정하지 않는다.</p></div>
             <div class="decision"><strong>도/창/암기 해금</strong><span class="tag pending">미결정</span><p>잠긴 무공은 장기 목표로 보이게 하되, 해금 조건은 첫 루프 안정화 뒤 정한다.</p></div>
             <div class="decision"><strong>시설과 연구</strong><span class="tag pending">미결정</span><p>숙소, 연무장, 장서각 같은 시설은 코어 루프가 안정된 뒤 붙인다.</p></div>
+            <div class="decision"><strong>무기별 자세와 복식</strong><span class="tag pending">미결정</span><p>K/N 기본 캐릭터 이후 검, 권법, 봉, 도, 창, 암기가 자세와 옷장 논리를 어떻게 달리 가져갈지 정해야 한다.</p></div>
+            <div class="decision"><strong>성장 단계별 초상 범위</strong><span class="tag pending">미결정</span><p>제자 연령대 초상은 존재하지만, 기본 캐릭터 K/N 이후 성인 캐릭터의 성장 단계와 무공별 변화를 어디까지 그릴지 정해야 한다.</p></div>
+            <div class="decision"><strong>AI 미형 수렴</strong><span class="tag blocked">제외</span><p>날렵하고 날카로운 한 종류의 미형으로 모든 인물을 통일하는 방향은 캐릭터 기준에서 제외한다.</p></div>
             <div class="decision"><strong>고전 무협 스킨</strong><span class="tag blocked">제외</span><p>현대 배경 위에 한복풍 장식만 얹는 방식은 이 프로젝트의 기준이 아니다.</p></div>
           </div>
         </div>
