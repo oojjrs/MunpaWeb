@@ -3,610 +3,1308 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MunpaWeb 기획서</title>
+  <title>MunpaWeb Design</title>
+  <script>
+    document.documentElement.classList.add("page-mode");
+  </script>
   <style>
     :root {
-      color-scheme: light;
-      --page: #e4ebef;
-      --ink: #14202b;
-      --muted: #5d6976;
-      --surface: #ffffff;
-      --soft: #f5f8fa;
-      --line: #c7d3db;
-      --green: #22665d;
-      --green-soft: #dcefeb;
-      --blue: #315f9f;
-      --blue-soft: #e1eaf8;
-      --gold: #8f6d24;
-      --gold-soft: #f4ead1;
-      --red: #a4453c;
-      --red-soft: #f7dfdb;
-      --shadow: 0 18px 42px rgba(20, 32, 43, 0.12);
+      color-scheme: dark;
+      --bg: #111315;
+      --panel: #1a1d20;
+      --panel-strong: #22272b;
+      --panel-soft: #171a1d;
+      --ink: #f2efe8;
+      --muted: #b9b1a3;
+      --subtle: #8d8476;
+      --line: #343a40;
+      --accent: #d5b169;
+      --accent-strong: #f0cf82;
+      --accent-soft: rgba(213, 177, 105, 0.12);
+      --danger: #d98272;
+      --nav-width: 280px;
+      --nav-width-min: 220px;
+      --nav-width-max: 480px;
+      --paper: #1e2226;
+      --paper-ink: #f0ece4;
+      --paper-muted: #b8b0a3;
+      --paper-line: #3a4248;
+      --paper-soft: #282d32;
+      --radius: 8px;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background: var(--page);
-      color: var(--ink);
-      font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
-      line-height: 1.58;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-    }
-    a { color: inherit; }
-    .hero {
-      min-height: 430px;
-      display: grid;
-      align-items: end;
-      border-bottom: 5px solid var(--green);
+      min-height: 100vh;
       background:
-        linear-gradient(180deg, rgba(10, 18, 27, 0.08) 0%, rgba(10, 18, 27, 0.74) 70%, rgba(10, 18, 27, 0.92) 100%),
-        url("./assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png") center 42% / cover no-repeat;
-      color: #f8fbfd;
+        linear-gradient(180deg, rgba(213, 177, 105, 0.08), transparent 220px),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.62;
     }
-    .hero-inner,
-    .layout {
-      width: min(1240px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-    .hero-inner { padding: 64px 0 34px; }
-    .eyebrow {
-      margin: 0 0 8px;
-      color: #c9f1ea;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    h1, h2, h3 { margin: 0; line-height: 1.25; letter-spacing: 0; }
-    h1 { max-width: 880px; font-size: 46px; }
-    h2 { font-size: 23px; }
-    h3 { font-size: 17px; }
-    .hero-copy {
-      max-width: 780px;
-      margin: 12px 0 0;
-      color: #eaf2f5;
-      font-size: 17px;
-    }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 4px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.34);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
+
+    a {
       color: inherit;
-      font-size: 12px;
-      font-weight: 900;
     }
-    .pill.live { border-color: #8fc8bd; background: var(--green-soft); color: var(--green); }
-    .pill.todo { border-color: #dec88d; background: var(--gold-soft); color: var(--gold); }
-    .pill.no { border-color: #dfa59f; background: var(--red-soft); color: var(--red); }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 20px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(17, 19, 21, 0.94);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(14px);
+    }
+
+    .title-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .title-icon-frame {
+      display: grid;
+      flex: 0 0 auto;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      border: 1px solid rgba(213, 177, 105, 0.45);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .title-app-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 31%, #f5df9b 0 13%, transparent 14%),
+        conic-gradient(from 40deg, #d5b169, #75613a, #e6c987, #d5b169);
+      box-shadow: 0 0 18px rgba(213, 177, 105, 0.18);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 2.2vw, 2.35rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    header p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
     .layout {
       display: grid;
-      grid-template-columns: 238px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-      margin-top: 22px;
-      margin-bottom: 72px;
+      grid-template-columns: var(--nav-width) 6px minmax(0, 1fr);
+      gap: 0;
+      min-height: calc(100vh - 96px);
     }
+
     .side-nav {
       position: sticky;
-      top: 18px;
-      max-height: calc(100vh - 36px);
+      top: 96px;
+      align-self: start;
+      height: calc(100vh - 96px);
       overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: var(--shadow);
+      padding: 24px 18px 36px 24px;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(20, 23, 26, 0.82);
     }
-    .side-nav strong,
-    .side-nav a {
+
+    .nav-resizer {
+      position: sticky;
+      top: 96px;
+      align-self: start;
+      height: calc(100vh - 96px);
+      cursor: col-resize;
+      background: rgba(255, 255, 255, 0.025);
+      touch-action: none;
+      z-index: 5;
+    }
+
+    .nav-resizer::before {
+      content: "";
       display: block;
-      padding: 10px 12px;
-      border-bottom: 1px solid #ecf1f4;
-      text-decoration: none;
-      font-size: 13px;
+      width: 1px;
+      height: 100%;
+      margin: 0 auto;
+      background: rgba(213, 177, 105, 0.22);
     }
-    .side-nav strong { background: var(--soft); }
-    .side-nav a { color: #35495c; }
-    .side-nav a:hover { background: var(--green-soft); color: var(--green); }
-    main { min-width: 0; display: grid; gap: 16px; }
-    section,
-    details.doc-section {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      scroll-margin-top: 20px;
+
+    .nav-resizer:hover,
+    .nav-resizer:focus-visible,
+    body.is-resizing-nav .nav-resizer {
+      background: rgba(213, 177, 105, 0.12);
+      outline: none;
     }
-    .section-head,
-    details.doc-section > summary {
-      padding: 17px 18px;
-      border-bottom: 1px solid var(--line);
-      background: var(--soft);
+
+    body.is-resizing-nav {
+      cursor: col-resize;
+      user-select: none;
     }
-    details.doc-section > summary { cursor: pointer; list-style: none; }
-    details.doc-section > summary::-webkit-details-marker { display: none; }
-    details.doc-section:not([open]) > summary { border-bottom: 0; }
-    .section-head p,
-    summary p {
-      margin: 5px 0 0;
+
+    .nav-group {
+      margin: 0 0 18px;
+      padding: 0 0 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-group:last-child {
+      border-bottom: 0;
+    }
+
+    .nav-group-title {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent-strong);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .nav-items {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav-items a {
+      display: block;
+      padding: 7px 9px;
+      border-radius: 6px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 0.92rem;
+      text-decoration: none;
     }
-    .section-body { padding: 18px; display: grid; gap: 16px; }
-    .lead { margin: 0; max-width: 920px; color: #2d3f50; font-size: 16px; }
-    .grid, .data-grid, .gallery, .stage-strip { display: grid; gap: 12px; }
-    .data-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .backgrounds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .characters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .stage-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .fact, .rule, .decision {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: #fbfdfe;
+
+    .nav-items a:hover,
+    .nav-items a.is-active {
+      color: var(--ink);
+      background: var(--accent-soft);
     }
-    .fact { border-left: 5px solid var(--green); }
-    .decision { border-left: 5px solid var(--blue); }
-    .fact b, .rule strong, .decision strong { display: block; margin-bottom: 5px; color: #172536; }
-    .fact span { display: block; color: var(--green); font-weight: 900; }
-    .fact small, .rule p, .decision p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
-    th { background: var(--soft); }
-    code {
-      padding: 1px 5px;
-      border-radius: 5px;
-      background: #e4edf3;
-      color: #214563;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 0.92em;
+
+    .nav-group.is-page-active .nav-group-title {
+      color: var(--ink);
     }
-    figure {
-      min-width: 0;
+
+    main {
+      width: 100%;
+      min-height: calc(100vh - 96px);
+      padding: 0;
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .section-group {
       margin: 0;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--soft);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .page-mode .section-group {
+      display: none;
+      min-height: inherit;
+    }
+
+    .page-mode .section-group.is-page-active {
+      display: block;
+    }
+
+    .section-group > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 78px;
+      padding: 30px clamp(24px, 4vw, 56px) 18px;
+      cursor: default;
+      border-bottom: 1px solid var(--paper-line);
+      background: transparent;
+      color: var(--paper-ink);
+      font-weight: 900;
+      font-size: 1.34rem;
+      list-style: none;
+    }
+
+    .section-group > summary::-webkit-details-marker,
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .section-group > summary::after,
+    details > summary::after {
+      content: "+";
+      flex: 0 0 auto;
+      color: var(--accent-strong);
+      font-weight: 900;
+    }
+
+    .section-group[open] > summary::after,
+    details[open] > summary::after {
+      content: "-";
+    }
+
+    .section-group > summary::after,
+    .section-group[open] > summary::after {
+      content: "";
+      display: none;
+    }
+
+    .section-group-body {
+      display: grid;
+      gap: 0;
+      padding: 10px clamp(24px, 4vw, 56px) 42px;
+    }
+
+    .page-mode .section-group-body > details {
+      display: none;
+    }
+
+    .page-mode .section-group-body > details.is-page-active {
+      display: block;
+    }
+
+    section,
+    .section-group-body > details {
+      border: 0;
+      border-top: 1px solid var(--paper-line);
+      border-radius: 0;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .section-group-body > details > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 62px;
+      padding: 18px 0 14px;
+      cursor: default;
+      color: var(--paper-ink);
+      background: transparent;
+      font-weight: 850;
+      font-size: 1.12rem;
+      list-style: none;
+    }
+
+    .details-body {
+      display: grid;
+      gap: 16px;
+      padding: 0 0 24px;
+    }
+
+    .lead {
+      color: var(--paper-ink);
+      font-size: 1.04rem;
+    }
+
+    .muted {
+      color: var(--paper-muted);
+    }
+
+    .section-rationale {
+      padding: 14px 16px;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      background: var(--paper-soft);
+      color: var(--paper-muted);
+    }
+
+    .anchor-alias {
+      position: relative;
+      top: -120px;
+      display: block;
+      width: 1px;
+      height: 1px;
       overflow: hidden;
     }
-    figure a { display: block; text-decoration: none; }
-    figure img {
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .rule,
+    .fact-list,
+    .weapon-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rule li,
+    .fact-list li,
+    .weapon-list li {
+      padding: 10px 12px;
+      border: 1px solid var(--paper-line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .rule strong,
+    .fact-list strong,
+    .weapon-list strong {
+      color: var(--accent-strong);
+    }
+
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .profile-entry-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .profile-entry-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .profile-entry-card h3 {
+      color: var(--accent-strong);
+      font-size: 1rem;
+    }
+
+    .age-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    figure {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .image-link {
+      display: block;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: var(--radius);
+      background: #0c0e10;
+      overflow: hidden;
+    }
+
+    img {
       display: block;
       width: 100%;
       height: auto;
-      background: #d9e3e9;
+      aspect-ratio: 4 / 5;
       object-fit: cover;
     }
-    .backgrounds img { aspect-ratio: 16 / 9; }
-    .characters img,
-    .stage-strip img { aspect-ratio: 1 / 1; }
+
+    .wide-image img {
+      aspect-ratio: 16 / 9;
+    }
+
     figcaption {
-      display: grid;
-      gap: 3px;
-      padding: 9px 10px;
-      color: var(--muted);
-      font-size: 12px;
+      color: var(--paper-muted);
+      font-size: 0.86rem;
     }
-    figcaption strong { color: var(--ink); font-size: 13px; }
-    .asset-name {
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 11px;
-      color: #516171;
-      word-break: break-all;
-    }
-    .term-tip {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 16px;
-      height: 16px;
-      margin-left: 3px;
-      border: 1px solid #9dafba;
-      border-radius: 50%;
-      background: #fff;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 900;
-      position: relative;
-      cursor: help;
-    }
-    .term-tip::before { content: "?"; }
-    .term-tip-text {
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 8px);
-      width: min(310px, 82vw);
-      transform: translateX(-50%);
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: #17212d;
-      color: #fff;
-      font-size: 12px;
-      line-height: 1.5;
-      font-weight: 500;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 6;
-    }
-    .term-tip:hover .term-tip-text,
-    .term-tip:focus .term-tip-text { opacity: 1; }
-    .image-lightbox {
-      width: min(94vw, 1280px);
-      max-height: 92vh;
-      padding: 0;
-      border: 1px solid rgba(226, 232, 240, 0.24);
-      border-radius: 10px;
-      background: #10141f;
-      color: #f8fafc;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.42);
-      overflow: hidden;
-    }
-    .image-lightbox::backdrop { background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(4px); }
-    .image-lightbox[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
-    .image-lightbox-toolbar,
-    .image-lightbox-actions {
+
+    .image-file-tag-frame {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: rgba(15, 23, 42, 0.86);
-    }
-    .image-lightbox-title {
-      flex: 1;
       min-width: 0;
+    }
+
+    .image-file-tag {
+      display: block;
+      max-width: 100%;
       overflow: hidden;
-      color: #e2e8f0;
-      font-size: 13px;
-      font-weight: 800;
+      padding: 4px 7px;
+      border: 1px solid rgba(213, 177, 105, 0.25);
+      border-radius: 6px;
+      color: var(--accent-strong);
+      background: rgba(213, 177, 105, 0.09);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 0.72rem;
+      line-height: 1.35;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .image-lightbox-close {
-      display: inline-grid;
-      width: 34px;
-      height: 34px;
-      place-items: center;
-      border: 1px solid rgba(226, 232, 240, 0.22);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      color: #f8fafc;
-      cursor: pointer;
-      font-size: 22px;
-      line-height: 1;
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius);
     }
-    .image-lightbox-close:hover,
-    .image-lightbox-close:focus-visible,
-    .image-lightbox-original:hover,
-    .image-lightbox-original:focus-visible {
-      background: rgba(255, 255, 255, 0.16);
-      outline: none;
+
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
     }
-    .image-lightbox-stage {
-      display: grid;
-      min-height: 0;
-      place-items: center;
-      padding: 14px;
-      background: #0b1020;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--paper-line);
+      text-align: left;
+      vertical-align: top;
     }
-    .image-lightbox-stage img {
-      display: block;
-      max-width: 100%;
-      max-height: min(74vh, 900px);
-      width: auto;
-      height: auto;
-      object-fit: contain;
+
+    th {
+      color: var(--accent-strong);
+      background: var(--paper-soft);
+      font-weight: 850;
     }
-    .image-lightbox-actions { justify-content: flex-end; }
-    .image-lightbox-original {
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .state-pill {
       display: inline-flex;
       align-items: center;
-      min-height: 34px;
-      padding: 0 12px;
-      border: 1px solid rgba(226, 232, 240, 0.24);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      color: #f8fafc;
-      font-size: 13px;
+      min-height: 24px;
+      padding: 2px 8px;
+      border: 1px solid rgba(213, 177, 105, 0.34);
+      border-radius: 999px;
+      color: var(--accent-strong);
+      background: rgba(213, 177, 105, 0.08);
+      font-size: 0.78rem;
       font-weight: 800;
-      text-decoration: none;
     }
-    @media (max-width: 1080px) {
-      .layout { display: block; width: min(100% - 24px, 920px); }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.86);
+    }
+
+    .lightbox.is-open {
+      display: flex;
+    }
+
+    .lightbox img {
+      width: auto;
+      max-width: min(96vw, 1600px);
+      height: auto;
+      max-height: 92vh;
+      aspect-ratio: auto;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    .lightbox button {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: var(--ink);
+      background: rgba(17, 19, 21, 0.86);
+      cursor: pointer;
+      font-size: 1.3rem;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1040px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-resizer {
+        display: none;
+      }
+
       .side-nav {
         position: static;
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        margin-bottom: 14px;
+        height: auto;
+        padding: 14px 16px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
-      .side-nav strong,
-      .side-nav a {
-        flex: 0 0 auto;
-        border-bottom: 0;
-        white-space: nowrap;
+
+      .nav-group {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
       }
-      .data-grid,
-      .grid.two,
-      .grid.three,
-      .backgrounds,
-      .characters,
-      .stage-strip { grid-template-columns: 1fr; }
-      h1 { font-size: 34px; }
+
+      main {
+        width: 100%;
+      }
+
+      .asset-grid,
+      .three-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      header {
+        padding: 16px;
+      }
+
+      .title-icon-frame {
+        width: 46px;
+        height: 46px;
+      }
+
+      .title-app-icon {
+        width: 30px;
+        height: 30px;
+      }
+
+      main {
+        min-height: calc(100vh - 80px);
+        padding: 0;
+      }
+
+      .two-col,
+      .three-col,
+      .asset-grid,
+      .age-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .section-group > summary {
+        padding: 18px 16px 14px;
+      }
+
+      .section-group-body {
+        padding: 8px 16px 24px;
+      }
+
+      .section-group-body > details > summary {
+        min-height: 56px;
+      }
+
+      .details-body {
+        padding: 0 0 18px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="hero">
-    <div class="hero-inner">
-      <p class="eyebrow">Munpa Legacy</p>
-      <h1>MunpaWeb</h1>
-      <p class="hero-copy">현대 사회에 <strong>기</strong><span class="term-tip" tabindex="0"><span class="term-tip-text">몸, 감각, 기술, 조직 운영, 사회 비용에 영향을 주는 가상 현실 변수.</span></span>가 실제로 존재한다는 가정에서 출발하는 문파 운영 웹 게임.</p>
-      <div class="pill-row" aria-label="현재 기준">
-        <span class="pill">현대 무협</span>
-        <span class="pill">무명 무인 시작</span>
-        <span class="pill">계절 턴</span>
-        <span class="pill">로컬 기록</span>
-        <span class="pill">아트 컨셉 보존</span>
+  <header>
+    <div class="title-lockup">
+      <div class="title-icon-frame" aria-hidden="true">
+        <div class="title-app-icon"></div>
+      </div>
+      <div>
+        <h1>MunpaWeb 기획서</h1>
+        <p>현대 무협 문파 생존 시뮬레이션의 현재 기준과 아트 방향을 한 문서에 고정한다.</p>
       </div>
     </div>
   </header>
 
   <div class="layout">
-    <nav class="side-nav" aria-label="기획서 목차">
-      <strong>섹션</strong>
-      <a href="#direction">방향</a>
-      <a href="#implementation">구현 표면</a>
-      <a href="#world">세계 규칙</a>
-      <a href="#loop">루프와 인물</a>
-      <a href="#background-art">배경 아트</a>
-      <a href="#character-art">캐릭터 아트</a>
-      <a href="#disciple-art">제자 초상</a>
-      <a href="#decisions">결정과 미결정</a>
+    <nav class="side-nav" aria-label="문서 목차">
+      <div class="nav-group" data-section-group="basis">
+        <div class="nav-group-title">현재 기준</div>
+        <div class="nav-items">
+          <a href="#identity">정체성</a>
+          <a href="#current-surface">구현 표면</a>
+          <a href="#core-loop">진행 루프</a>
+        </div>
+      </div>
+      <div class="nav-group" data-section-group="world">
+        <div class="nav-group-title">세계와 시스템</div>
+        <div class="nav-items">
+          <a href="#world-rule">세계 규칙</a>
+          <a href="#martial-arts">무공 체계</a>
+          <a href="#people-records">인물과 기록</a>
+          <a href="#sect-surface">문파 표면</a>
+        </div>
+      </div>
+      <div class="nav-group" data-section-group="art">
+        <div class="nav-group-title">아트 컨셉</div>
+        <div class="nav-items">
+          <a href="#background-art">배경 기준</a>
+          <a href="#character-art">캐릭터 기준</a>
+          <a href="#disciple-art">제자 연령셋</a>
+        </div>
+      </div>
+      <div class="nav-group" data-section-group="next">
+        <div class="nav-group-title">미결정</div>
+        <div class="nav-items">
+          <a href="#pending-design">기획 미결정</a>
+          <a href="#pending-art">아트 미결정</a>
+        </div>
+      </div>
     </nav>
+    <div class="nav-resizer" role="separator" aria-label="메뉴 너비 조절" aria-orientation="vertical" aria-valuemin="220" aria-valuemax="480" aria-valuenow="280" tabindex="0"></div>
 
     <main>
-      <section id="direction">
-        <div class="section-head">
-          <h2>방향</h2>
-          <p>고전 무협 스킨이 아니라 현대 사회에서 무공과 문파가 살아남는 이유를 다루는 게임.</p>
-        </div>
-        <div class="section-body">
-          <div class="data-grid">
-            <div class="fact"><b>현재 앱</b><span>v80</span><small>웹 앱, 서비스워커, 로컬 저장, 기록 화면까지 존재한다.</small></div>
-            <div class="fact"><b>시작점</b><span>18세 무명 무인</span><small>개파조사가 아니라 입문 무공을 고른 개인에서 출발한다.</small></div>
-            <div class="fact"><b>시간</b><span>계절 단위</span><small>봄, 여름, 가을, 겨울을 넘기며 나이와 수명이 움직인다.</small></div>
-            <div class="fact"><b>끝</b><span>여정 종료 / 문파 멸망</span><small>죽음과 실패는 삭제되지 않고 플레이 기록으로 남는다.</small></div>
-          </div>
-          <p class="lead">핵심 재미는 “기가 있는 현대라면 무공, 총기, 훈련, 사회 비용, 조직 운영이 어떻게 다시 배치되는가”를 플레이어가 회차 기록으로 확인하는 데 있다.</p>
-        </div>
-      </section>
+      <details class="section-group" data-section-group="basis">
+        <summary>현재 기준</summary>
+        <div class="section-group-body">
+          <details id="identity">
+            <summary>정체성</summary>
+            <div class="details-body">
+              <p class="lead">MunpaWeb은 한 무인의 생애에서 출발해 문파, 계보, 기록으로 확장되는 현대 무협 생존 시뮬레이션이다.</p>
+              <p>핵심은 옛 시대의 복식만 가져오는 무협이 아니라, 현대 도시와 제도 위에 무공이 실제 경쟁력으로 남아 있는 세계다. 플레이어는 처음부터 거대한 조직을 소유하지 않는다. 첫 무인의 수명, 성장, 사망, 후대의 기억이 누적되며 문파라는 이름이 점점 생긴다.</p>
+              <ul class="rule">
+                <li><strong>주제:</strong> 개인의 무공이 세대를 지나 문파의 관습과 기록으로 굳어지는 과정.</li>
+                <li><strong>톤:</strong> 모바일 게임식 밝은 판타지보다 건조한 현대 도시, 폐건물 수련장, 옥상 도장, 밤거리의 충돌에 가깝다.</li>
+                <li><strong>플레이 감정:</strong> 효율적 육성보다 “이번 생애가 어디까지 버텼는가”를 회고하게 만드는 기록형 흐름.</li>
+              </ul>
+              <p class="section-rationale">기획서는 이 정체성에서 벗어나는 장식적 설명을 줄이고, 실제 화면과 에셋이 따라야 할 기준을 우선한다.</p>
+            </div>
+          </details>
 
-      <details id="implementation" class="doc-section">
-        <summary>
-          <h2>구현 표면</h2>
-          <p>문서의 기준은 실제 앱에 이미 있는 화면과 저장 구조다.</p>
-        </summary>
-        <div class="section-body">
-          <table>
-            <thead><tr><th>표면</th><th>현재 구현</th><th>기획상 의미</th></tr></thead>
-            <tbody>
-              <tr><td>첫 화면</td><td><code>welcomeView</code>, 새 게임, 이어하기, 기록 보기</td><td>회차와 기록이 남는 운영 게임임을 첫 진입부터 보여준다.</td></tr>
-              <tr><td>캐릭터 생성</td><td><code>characterCreationView</code>, 초상, 이름, 입문 무공</td><td>문파보다 먼저 한 사람의 생존과 무공 선택을 세운다.</td></tr>
-              <tr><td>플레이</td><td><code>gameView</code>, 현재 여정/문파, 시간 카드, 인물 카드, 턴 종료</td><td>시간 진행과 인물 상태 변화가 가장 작은 플레이 단위다.</td></tr>
-              <tr><td>종료</td><td><code>endingView</code>, 여정 종료 또는 문파 멸망</td><td>사망, 멸망, 계보가 다음 회차의 맥락이 된다.</td></tr>
-              <tr><td>기록</td><td><code>recordsView</code>, <code>localStorage</code> 저장</td><td>실패한 문파도 플레이어의 세계사에 남는다.</td></tr>
-              <tr><td>오프라인 표면</td><td><code>munpaweb-shell-v80</code></td><td>K/N 캐릭터와 남녀 제자 01 성장 초상이 앱 셸에 포함된다.</td></tr>
-            </tbody>
-          </table>
-          <table>
-            <thead><tr><th>입문 무공</th><th>상태</th><th>성격</th><th>연결 스탯</th></tr></thead>
-            <tbody>
-              <tr><td>검</td><td><span class="pill live">열림</span></td><td>균형</td><td>완력, 반응성, 집중력</td></tr>
-              <tr><td>권법</td><td><span class="pill live">열림</span></td><td>근접</td><td>생명력, 완력, 순발력</td></tr>
-              <tr><td>봉</td><td><span class="pill live">열림</span></td><td>제어</td><td>기동성, 집중력, 완력</td></tr>
-              <tr><td>도</td><td><span class="pill todo">잠김</span></td><td>폭발</td><td>완력, 순발력</td></tr>
-              <tr><td>창</td><td><span class="pill todo">잠김</span></td><td>거리</td><td>기동성, 반응성</td></tr>
-              <tr><td>암기</td><td><span class="pill todo">잠김</span></td><td>변칙</td><td>집중력, 매력, 순발력</td></tr>
-            </tbody>
-          </table>
+          <details id="current-surface">
+            <summary>구현 표면</summary>
+            <div class="details-body">
+              <p>현재 앱은 로컬 웹앱으로 동작하며, 새 인물 생성부터 기록 조회까지 한 흐름이 연결되어 있다. 기준 버전은 앱 내부 상수 기준 <span class="state-pill">v80</span>이다.</p>
+              <div class="two-col">
+                <ul class="fact-list">
+                  <li><strong>첫 화면:</strong> 시작, 기록 보기, 이어하기 진입.</li>
+                  <li><strong>인물 생성:</strong> 이름, 입문 무공, 첫 능력치 선택.</li>
+                  <li><strong>초기 상태:</strong> 18세 무명 무인으로 시작.</li>
+                  <li><strong>진행 단위:</strong> 봄, 여름, 가을, 겨울의 계절 턴.</li>
+                </ul>
+                <ul class="fact-list">
+                  <li><strong>저장:</strong> 로컬 저장 기반 기록과 진행 상태.</li>
+                  <li><strong>종료:</strong> 수명, 건강, 후계 흐름에 따라 여정 종료 또는 문파 멸망.</li>
+                  <li><strong>확장:</strong> 개파, 모집, 후계, 계보 표면이 존재한다.</li>
+                  <li><strong>우선순위:</strong> 당장은 첫 무인의 생애 루프가 가장 선명해야 한다.</li>
+                </ul>
+              </div>
+            </div>
+          </details>
+
+          <details id="core-loop">
+            <summary>진행 루프</summary>
+            <div class="details-body">
+              <p>플레이는 “무명 무인으로 시작한다 → 무공과 능력치로 생애를 버틴다 → 기록을 남긴다 → 문파와 후대로 확장한다”의 순서가 기본이다.</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>단계</th>
+                      <th>화면 감각</th>
+                      <th>기획 기준</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>입문</td>
+                      <td>첫 무인 생성, 입문 무공 선택</td>
+                      <td>플레이어가 처음 쥐는 것은 문파가 아니라 한 사람의 가능성이다.</td>
+                    </tr>
+                    <tr>
+                      <td>생애</td>
+                      <td>계절 턴, 수련, 상태 변화, 사건</td>
+                      <td>매 턴은 큰 전략보다 나이와 몸 상태의 압박을 느끼게 한다.</td>
+                    </tr>
+                    <tr>
+                      <td>문파화</td>
+                      <td>개파, 제자 모집, 후계와 계보</td>
+                      <td>문파는 초반 보상이 아니라 생존한 삶의 결과물이다.</td>
+                    </tr>
+                    <tr>
+                      <td>기록</td>
+                      <td>종료 화면과 기록 목록</td>
+                      <td>실패도 삭제되지 않고 다음 설계 판단의 재료가 된다.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
         </div>
       </details>
 
-      <details id="world" class="doc-section">
-        <summary>
-          <h2>세계 규칙</h2>
-          <p>현대 기술이 있는 세계에서도 무공이 게임의 주력 해법으로 남아야 한다.</p>
-        </summary>
-        <div class="section-body">
-          <div class="grid three">
-            <div class="rule"><strong>현대 기술은 존재한다</strong><p>자동차, 비행기, 통신망, 의료 장비, 감시 장비는 문파 운영의 기본 환경이다.</p></div>
-            <div class="rule"><strong>총기는 절대 대체재가 아니다</strong><p>소음, 추적, 법적 비용, 탄약, 장비 신뢰도 때문에 모든 충돌을 총기로 해결하지 못한다.</p></div>
-            <div class="rule"><strong>무공은 조직 기술이다</strong><p>공격뿐 아니라 감지, 회피, 제압, 치료 보조, 기세 압박, 장거리 생존을 포괄한다.</p></div>
-          </div>
-          <p class="lead">무공은 과학보다 강한 마법이 아니라, 기가 실재하는 사회에서 반복 가능한 문제 해결 범위가 넓은 신체 기술이다.</p>
+      <details class="section-group" data-section-group="world">
+        <summary>세계와 시스템</summary>
+        <div class="section-group-body">
+          <details id="world-rule">
+            <summary>세계 규칙</summary>
+            <div class="details-body">
+              <p>현대 기술은 사라지지 않았다. 스마트폰, 감시망, 경찰, 총기, 대기업, 체육관, 사설 경호 시장이 존재한다. 다만 무공은 그 사회 안에서 여전히 사람이 몸으로 다루는 고급 기술이자 조직 자산이다.</p>
+              <ul class="rule">
+                <li><strong>기:</strong> 신비한 장식이 아니라 체력, 반응, 집중, 회복, 위압을 설명하는 세계의 실제 변수다.</li>
+                <li><strong>총기와 무공:</strong> 총이 무공을 없애지 않는다. 거리, 법, 은폐, 탄약, 훈련, 신체 반응이 충돌하며 우열이 바뀐다.</li>
+                <li><strong>문파:</strong> 종교나 고대 길드보다 현대의 사설 조직, 체육관, 경호 회사, 지역 네트워크가 섞인 형태다.</li>
+                <li><strong>비주얼:</strong> 고대 궁궐보다 옥상, 지하 수련실, 재개발 지역, 네온, 사무실, 체육관이 먼저 온다.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details id="martial-arts">
+            <summary>무공 체계</summary>
+            <div class="details-body">
+              <p>초기 무공은 무기의 종류가 아니라 플레이 방향을 정하는 몸의 언어다. 현재는 세 가지 입문 무공이 열려 있고, 세 가지 계열은 잠금 상태로 남아 있다.</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>무공</th>
+                      <th>상태</th>
+                      <th>핵심 감각</th>
+                      <th>중심 능력</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>검</td>
+                      <td><span class="state-pill">개방</span></td>
+                      <td>균형, 절제, 기본기의 왕도</td>
+                      <td>완력, 반응성, 집중력</td>
+                    </tr>
+                    <tr>
+                      <td>권법</td>
+                      <td><span class="state-pill">개방</span></td>
+                      <td>근접 압박, 몸으로 버티는 생존력</td>
+                      <td>생명력, 완력, 순발력</td>
+                    </tr>
+                    <tr>
+                      <td>봉</td>
+                      <td><span class="state-pill">개방</span></td>
+                      <td>거리 제어, 수련장과 실전 사이의 연결</td>
+                      <td>기동성, 집중력, 완력</td>
+                    </tr>
+                    <tr>
+                      <td>도</td>
+                      <td>잠금</td>
+                      <td>폭발력, 위험한 결단</td>
+                      <td>완력, 순발력</td>
+                    </tr>
+                    <tr>
+                      <td>창</td>
+                      <td>잠금</td>
+                      <td>긴 거리, 진형, 돌파</td>
+                      <td>기동성, 반응성</td>
+                    </tr>
+                    <tr>
+                      <td>암기</td>
+                      <td>잠금</td>
+                      <td>변칙, 집중, 매력과 기만</td>
+                      <td>집중력, 매력, 순발력</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details id="people-records">
+            <summary>인물과 기록</summary>
+            <div class="details-body">
+              <p>인물은 능력치 묶음이 아니라 나이와 몸 상태를 가진 수명체다. 성장의 재미는 언젠가 끝나기 때문에 생긴다.</p>
+              <div class="three-col">
+                <ul class="fact-list">
+                  <li><strong>나이:</strong> 18세 시작, 계절 턴으로 세월이 흐른다.</li>
+                  <li><strong>수명:</strong> 후보 수명은 생애 종료 압박을 만든다.</li>
+                  <li><strong>건강:</strong> 죽음과 회복, 노화를 연결하는 핵심 상태다.</li>
+                </ul>
+                <ul class="fact-list">
+                  <li><strong>계보:</strong> 창시자, 후계자, 지도자 계승 흐름이 문파의 기억을 만든다.</li>
+                  <li><strong>제자:</strong> 모집과 성장, 연령 변화가 문파 지속성을 담당한다.</li>
+                  <li><strong>기록:</strong> 끝난 삶도 로컬 기록에 남아 다음 플레이의 맥락이 된다.</li>
+                </ul>
+                <ul class="fact-list">
+                  <li><strong>성공:</strong> 단일 승리 조건보다 오래 남는 문파와 이름.</li>
+                  <li><strong>실패:</strong> 사망과 멸망도 기록으로 남는 결과.</li>
+                  <li><strong>회고:</strong> 숫자 요약보다 한 생애의 흔적을 읽게 해야 한다.</li>
+                </ul>
+              </div>
+            </div>
+          </details>
+
+          <details id="sect-surface">
+            <summary>문파 표면</summary>
+            <div class="details-body">
+              <p>문파는 처음부터 완성된 경영판이 아니다. 지금의 구조에서는 개인 여정이 먼저 열리고, 개파 이후에 모집과 후계, 지도자 계보가 확장된다.</p>
+              <ul class="rule">
+                <li><strong>무명 여정:</strong> 초반은 혼자 살아남는 화면이어야 한다. 문파 UI가 초반 감정을 덮지 않는다.</li>
+                <li><strong>개파:</strong> 창시자가 살아남아 이름과 규칙을 세우는 순간부터 조직의 표면이 열린다.</li>
+                <li><strong>모집:</strong> 제자는 단순 자원이 아니라 미래 지도자 후보와 문파 분위기의 원천이다.</li>
+                <li><strong>계승:</strong> 사망이 끝이 아니라 다음 지도자에게 규칙과 기록이 넘어가는 사건이어야 한다.</li>
+              </ul>
+            </div>
+          </details>
         </div>
       </details>
 
-      <details id="loop" class="doc-section">
-        <summary>
-          <h2>루프와 인물</h2>
-          <p>성장 수치보다 생애와 기록이 오래 남아야 한다.</p>
-        </summary>
-        <div class="section-body">
-          <div class="grid three">
-            <div class="decision"><strong>선택</strong><p>초상, 이름, 입문 무공을 고르고 한 사람의 여정을 시작한다.</p></div>
-            <div class="decision"><strong>진행</strong><p>계절을 넘기며 나이, 건강, 수명, 모집, 사건 기록을 갱신한다.</p></div>
-            <div class="decision"><strong>기록</strong><p>죽음, 승계, 멸망, 주요 사건을 종료 기록과 계보에 남긴다.</p></div>
-          </div>
-          <table>
-            <thead><tr><th>스탯</th><th>의미</th><th>쓰임</th></tr></thead>
-            <tbody>
-              <tr><td>생명력</td><td>부상과 사망에 대한 저항력</td><td>위험 사건, 장기 원정, 생존 판정</td></tr>
-              <tr><td>기력</td><td>긴 활동을 버티는 힘</td><td>수련, 협행, 회복, 목표 원정</td></tr>
-              <tr><td>완력</td><td>직접적인 힘과 파괴력</td><td>비무, 방어, 물리 충돌</td></tr>
-              <tr><td>집중력</td><td>학습과 판단의 밀도</td><td>무공 습득, 연구, 기연 해석</td></tr>
-              <tr><td>매력</td><td>사람을 끌어들이는 힘</td><td>모집, 교섭, 속가문파, 합병</td></tr>
-              <tr><td>반응성</td><td>돌발 상황 대응력</td><td>기습, 함정, 반격, 초기 피해 감소</td></tr>
-              <tr><td>순발력</td><td>짧은 순간의 폭발력</td><td>구출, 돌파, 탈출, 빠른 초식</td></tr>
-              <tr><td>기동성</td><td>이동과 위치 선정</td><td>원정, 추격, 도주, 경공</td></tr>
-            </tbody>
-          </table>
+      <details class="section-group" data-section-group="art">
+        <summary>아트 컨셉</summary>
+        <div class="section-group-body">
+          <details id="background-art">
+            <summary>배경 기준</summary>
+            <div class="details-body">
+              <p class="lead">배경은 현대 도시 안에서 무공이 실제로 수련되고 충돌하는 장소를 보여준다. 분위기만 있는 추상 배경보다, 플레이어가 “여기서 수련한다”라고 판단할 수 있는 공간이 우선이다.</p>
+              <div class="asset-grid">
+                <figure class="wide-image">
+                  <a class="image-link" href="assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png">
+                    <img src="assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png" alt="현대 도시 옥상 문파 배경">
+                  </a>
+                  <figcaption>도시 상층부에 숨어 있는 옥상 문파. 높은 곳의 고립감과 현대적 조직성을 같이 쓴다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png</code></span>
+                </figure>
+                <figure class="wide-image">
+                  <a class="image-link" href="assets/art-style/backgrounds/background-style-modern-b-training-studio.png">
+                    <img src="assets/art-style/backgrounds/background-style-modern-b-training-studio.png" alt="현대 수련 스튜디오 배경">
+                  </a>
+                  <figcaption>체육관, 도장, 폐공간의 중간 지점. 반복 수련과 생활감이 보여야 한다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/art-style/backgrounds/background-style-modern-b-training-studio.png</code></span>
+                </figure>
+                <figure class="wide-image">
+                  <a class="image-link" href="assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png">
+                    <img src="assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" alt="현대 도시 조우 배경">
+                  </a>
+                  <figcaption>사건과 충돌의 거리. 무협이 사회 밖 환상이 아니라 도시 안 위험으로 느껴져야 한다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png</code></span>
+                </figure>
+              </div>
+            </div>
+          </details>
+
+          <details id="character-art">
+            <summary>캐릭터 기준</summary>
+            <div class="details-body">
+              <p>캐릭터는 전통 무협 복식을 그대로 복원하지 않는다. 현대복, 기능성 복장, 거리의 실루엣 위에 무공 사용자라는 긴장감이 얹혀야 한다.</p>
+              <ul class="rule">
+                <li><strong>금지 방향:</strong> 이유 없는 상투, 고대 중국풍 장식 과잉, 생성 이미지 특유의 비슷한 얼굴과 포즈.</li>
+                <li><strong>허용 방향:</strong> 치파오나 전통 요소는 성인 캐릭터의 의도된 핏, 움직임, 섹시함을 위해 쓸 때만 남긴다.</li>
+                <li><strong>우선 방향:</strong> 현대적인 체형, 옷의 기능, 무기를 다룰 수 있는 자세, 얼굴의 개별성.</li>
+              </ul>
+              <div class="asset-grid">
+                <figure>
+                  <a class="image-link" href="assets/style-exploration/characters/character-style-k-modern-male-street-martial.png">
+                    <img src="assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" alt="현대 남성 거리 무공 캐릭터">
+                  </a>
+                  <figcaption>남성 거리 무공 기준. 평상복과 전투 자세 사이의 설득력이 중요하다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/style-exploration/characters/character-style-k-modern-male-street-martial.png</code></span>
+                </figure>
+                <figure>
+                  <a class="image-link" href="assets/style-exploration/characters/character-style-l-modern-female-fitted.png">
+                    <img src="assets/style-exploration/characters/character-style-l-modern-female-fitted.png" alt="현대 여성 피트 캐릭터">
+                  </a>
+                  <figcaption>성인 여성 핏 기준. 노출보다 선, 자세, 자신감이 먼저 읽혀야 한다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/style-exploration/characters/character-style-l-modern-female-fitted.png</code></span>
+                </figure>
+                <figure>
+                  <a class="image-link" href="assets/style-exploration/characters/character-style-m-modern-female-leader.png">
+                    <img src="assets/style-exploration/characters/character-style-m-modern-female-leader.png" alt="현대 여성 지도자 캐릭터">
+                  </a>
+                  <figcaption>지도자 실루엣. 화려함보다 문파를 이끌 수 있는 압력과 시선이 필요하다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/style-exploration/characters/character-style-m-modern-female-leader.png</code></span>
+                </figure>
+                <figure>
+                  <a class="image-link" href="assets/style-exploration/characters/character-style-n-modern-female-techwear.png">
+                    <img src="assets/style-exploration/characters/character-style-n-modern-female-techwear.png" alt="현대 여성 테크웨어 캐릭터">
+                  </a>
+                  <figcaption>테크웨어 방향. 현대 장비와 무공의 결합을 보여주는 기준점이다.</figcaption>
+                  <span class="image-file-tag-frame"><code class="image-file-tag">assets/style-exploration/characters/character-style-n-modern-female-techwear.png</code></span>
+                </figure>
+              </div>
+            </div>
+          </details>
+
+          <details id="disciple-art">
+            <summary>제자 연령셋</summary>
+            <div class="details-body">
+              <p class="lead">제자는 같은 인물이 시간에 따라 변한다는 믿음이 중요하다. 연령별 초상은 성장, 노화, 계승을 화면에서 바로 읽게 하는 핵심 아트셋이다.</p>
+              <div class="profile-entry-list">
+                <article class="profile-entry-card">
+                  <h3>Female 01</h3>
+                  <div class="age-strip">
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-01/age-08.png"><img src="assets/portraits/disciples/disciple-female-01/age-08.png" alt="Female 01 8세"></a>
+                      <figcaption>8세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-01/age-08.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-01/age-16.png"><img src="assets/portraits/disciples/disciple-female-01/age-16.png" alt="Female 01 16세"></a>
+                      <figcaption>16세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-01/age-16.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-01/age-30s.png"><img src="assets/portraits/disciples/disciple-female-01/age-30s.png" alt="Female 01 30대"></a>
+                      <figcaption>30대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-01/age-30s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-01/age-50s.png"><img src="assets/portraits/disciples/disciple-female-01/age-50s.png" alt="Female 01 50대"></a>
+                      <figcaption>50대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-01/age-50s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-01/age-70s.png"><img src="assets/portraits/disciples/disciple-female-01/age-70s.png" alt="Female 01 70대"></a>
+                      <figcaption>70대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-01/age-70s.png</code></span>
+                    </figure>
+                  </div>
+                </article>
+
+                <article class="profile-entry-card">
+                  <h3>Female 02</h3>
+                  <div class="age-strip">
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-02/age-08.png"><img src="assets/portraits/disciples/disciple-female-02/age-08.png" alt="Female 02 8세"></a>
+                      <figcaption>8세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-02/age-08.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-02/age-16.png"><img src="assets/portraits/disciples/disciple-female-02/age-16.png" alt="Female 02 16세"></a>
+                      <figcaption>16세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-02/age-16.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-02/age-30s.png"><img src="assets/portraits/disciples/disciple-female-02/age-30s.png" alt="Female 02 30대"></a>
+                      <figcaption>30대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-02/age-30s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-02/age-50s.png"><img src="assets/portraits/disciples/disciple-female-02/age-50s.png" alt="Female 02 50대"></a>
+                      <figcaption>50대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-02/age-50s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-female-02/age-70s.png"><img src="assets/portraits/disciples/disciple-female-02/age-70s.png" alt="Female 02 70대"></a>
+                      <figcaption>70대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-female-02/age-70s.png</code></span>
+                    </figure>
+                  </div>
+                </article>
+
+                <article class="profile-entry-card">
+                  <h3>Male 01</h3>
+                  <div class="age-strip">
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-01/age-08.png"><img src="assets/portraits/disciples/disciple-male-01/age-08.png" alt="Male 01 8세"></a>
+                      <figcaption>8세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-01/age-08.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-01/age-16.png"><img src="assets/portraits/disciples/disciple-male-01/age-16.png" alt="Male 01 16세"></a>
+                      <figcaption>16세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-01/age-16.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-01/age-30s.png"><img src="assets/portraits/disciples/disciple-male-01/age-30s.png" alt="Male 01 30대"></a>
+                      <figcaption>30대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-01/age-30s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-01/age-50s.png"><img src="assets/portraits/disciples/disciple-male-01/age-50s.png" alt="Male 01 50대"></a>
+                      <figcaption>50대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-01/age-50s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-01/age-70s.png"><img src="assets/portraits/disciples/disciple-male-01/age-70s.png" alt="Male 01 70대"></a>
+                      <figcaption>70대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-01/age-70s.png</code></span>
+                    </figure>
+                  </div>
+                </article>
+
+                <article class="profile-entry-card">
+                  <h3>Male 02</h3>
+                  <div class="age-strip">
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-02/age-08.png"><img src="assets/portraits/disciples/disciple-male-02/age-08.png" alt="Male 02 8세"></a>
+                      <figcaption>8세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-02/age-08.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-02/age-16.png"><img src="assets/portraits/disciples/disciple-male-02/age-16.png" alt="Male 02 16세"></a>
+                      <figcaption>16세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-02/age-16.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-02/age-30s.png"><img src="assets/portraits/disciples/disciple-male-02/age-30s.png" alt="Male 02 30대"></a>
+                      <figcaption>30대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-02/age-30s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-02/age-50s.png"><img src="assets/portraits/disciples/disciple-male-02/age-50s.png" alt="Male 02 50대"></a>
+                      <figcaption>50대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-02/age-50s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-02/age-70s.png"><img src="assets/portraits/disciples/disciple-male-02/age-70s.png" alt="Male 02 70대"></a>
+                      <figcaption>70대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-02/age-70s.png</code></span>
+                    </figure>
+                  </div>
+                </article>
+
+                <article class="profile-entry-card">
+                  <h3>Male 05</h3>
+                  <div class="age-strip">
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-05/age-08.png"><img src="assets/portraits/disciples/disciple-male-05/age-08.png" alt="Male 05 8세"></a>
+                      <figcaption>8세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-05/age-08.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-05/age-16.png"><img src="assets/portraits/disciples/disciple-male-05/age-16.png" alt="Male 05 16세"></a>
+                      <figcaption>16세</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-05/age-16.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-05/age-30s.png"><img src="assets/portraits/disciples/disciple-male-05/age-30s.png" alt="Male 05 30대"></a>
+                      <figcaption>30대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-05/age-30s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-05/age-50s.png"><img src="assets/portraits/disciples/disciple-male-05/age-50s.png" alt="Male 05 50대"></a>
+                      <figcaption>50대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-05/age-50s.png</code></span>
+                    </figure>
+                    <figure>
+                      <a class="image-link" href="assets/portraits/disciples/disciple-male-05/age-70s.png"><img src="assets/portraits/disciples/disciple-male-05/age-70s.png" alt="Male 05 70대"></a>
+                      <figcaption>70대</figcaption>
+                      <span class="image-file-tag-frame"><code class="image-file-tag">assets/portraits/disciples/disciple-male-05/age-70s.png</code></span>
+                    </figure>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </details>
         </div>
       </details>
 
-      <details id="background-art" class="doc-section">
-        <summary><h2>배경 아트</h2><p>현대성과 문파성을 동시에 보여주는 공간 컨셉 3종.</p></summary>
-        <div class="section-body">
-          <div class="gallery backgrounds">
-            <figure><a href="./assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png" target="_blank" rel="noopener noreferrer"><img src="./assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png" alt="현대 옥상 문파 거점"></a><figcaption><strong>A. 옥상 문파 거점</strong><span>현대 고층과 정제된 문파 본문.</span><span class="asset-name">assets/art-style/backgrounds/background-style-modern-a-rooftop-sect.png</span></figcaption></figure>
-            <figure><a href="./assets/art-style/backgrounds/background-style-modern-b-training-studio.png" target="_blank" rel="noopener noreferrer"><img src="./assets/art-style/backgrounds/background-style-modern-b-training-studio.png" alt="현대 무공 훈련장"></a><figcaption><strong>B. 현대 훈련장</strong><span>기능적이고 정밀한 수련 공간.</span><span class="asset-name">assets/art-style/backgrounds/background-style-modern-b-training-studio.png</span></figcaption></figure>
-            <figure><a href="./assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" target="_blank" rel="noopener noreferrer"><img src="./assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png" alt="현대 도시 무림 사건"></a><figcaption><strong>C. 도시 사건</strong><span>현대 질서 안에서 일어나는 무림 충돌.</span><span class="asset-name">assets/art-style/backgrounds/background-style-modern-c-urban-encounter.png</span></figcaption></figure>
-          </div>
-        </div>
-      </details>
+      <details class="section-group" data-section-group="next">
+        <summary>미결정</summary>
+        <div class="section-group-body">
+          <details id="pending-design">
+            <summary>기획 미결정</summary>
+            <div class="details-body">
+              <ul class="rule">
+                <li><strong>전투 계산:</strong> 무공별 능력치가 실제 턴 결과에 어떻게 반영되는지 아직 더 구체화해야 한다.</li>
+                <li><strong>시설과 경제:</strong> 문파가 커진 뒤 필요한 공간, 돈, 평판, 위험의 연결 방식이 남아 있다.</li>
+                <li><strong>사건:</strong> 현대 도시에서 발생하는 조우, 의뢰, 습격, 제자 문제의 문장 톤을 확정해야 한다.</li>
+                <li><strong>후계 판단:</strong> 다음 지도자를 고르는 조건이 능력치 중심인지, 관계와 기록 중심인지 정해야 한다.</li>
+              </ul>
+            </div>
+          </details>
 
-      <details id="character-art" class="doc-section">
-        <summary><h2>캐릭터 아트</h2><p>K/N은 현재 앱 사용 후보, L/M은 같은 방향을 보강하는 스타일 후보.</p></summary>
-        <div class="section-body">
-          <div class="gallery characters">
-            <figure><a href="./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-k-modern-male-street-martial.png" alt="현대 숏헤어 스트리트 무협 남성 캐릭터"></a><figcaption><strong>K. 숏헤어 스트리트 무협</strong><span>상투형 실루엣을 뺀 남성 기준 후보.</span><span class="asset-name">assets/style-exploration/characters/character-style-k-modern-male-street-martial.png</span></figcaption></figure>
-            <figure><a href="./assets/style-exploration/characters/character-style-n-modern-female-techwear.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-n-modern-female-techwear.png" alt="현대 테크웨어 무협 여성 캐릭터"></a><figcaption><strong>N. 테크웨어 무협</strong><span>현재 앱 여성 기본 후보.</span><span class="asset-name">assets/style-exploration/characters/character-style-n-modern-female-techwear.png</span></figcaption></figure>
-            <figure><a href="./assets/style-exploration/characters/character-style-l-modern-female-fitted.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-l-modern-female-fitted.png" alt="현대 피티드 복식 여성 캐릭터"></a><figcaption><strong>L. 단발 피티드 복식</strong><span>건강한 핏과 얼굴상 다양성 보조 후보.</span><span class="asset-name">assets/style-exploration/characters/character-style-l-modern-female-fitted.png</span></figcaption></figure>
-            <figure><a href="./assets/style-exploration/characters/character-style-m-modern-female-leader.png" target="_blank" rel="noopener noreferrer"><img src="./assets/style-exploration/characters/character-style-m-modern-female-leader.png" alt="현대 문파 리더 여성 캐릭터"></a><figcaption><strong>M. 현대 문파 리더</strong><span>문파 소속감과 지휘자 인상 후보.</span><span class="asset-name">assets/style-exploration/characters/character-style-m-modern-female-leader.png</span></figcaption></figure>
-          </div>
-          <div class="grid two">
-            <div class="rule"><strong>좋지만 같지 않은 얼굴</strong><p>잘생기고 예쁜 방향은 유지하되, 날렵한 AI 미형 한 종류로 수렴하면 실패다.</p></div>
-            <div class="rule"><strong>복식 논리</strong><p>기능성 재킷, 테크웨어, 현대 무도복, 스트리트웨어, 무대의상 감각을 우선한다.</p></div>
-            <div class="rule"><strong>남성 헤어</strong><p>뒤로 묶은 상투형 실루엣, 시대극 무사 머리, 매듭은 현대화 기준에서 제외한다.</p></div>
-            <div class="rule"><strong>치파오 예외</strong><p>성인 캐릭터의 섹시함과 핏을 위한 의도적 선택이면 허용한다. 중국풍 무협 기호로만 쓰면 제외한다.</p></div>
-            <div class="rule"><strong>장식 금지선</strong><p>실전 착용성과 옷장 논리 없이 형태감만 노리는 비대칭 하네스류는 쓰지 않는다.</p></div>
-            <div class="rule"><strong>고전 스킨 제외</strong><p>장포, 도사복, 원형 후광, 산수화 배경, 장르 기호뿐인 전통 장식은 기준이 아니다.</p></div>
-          </div>
-        </div>
-      </details>
-
-      <details id="disciple-art" class="doc-section">
-        <summary><h2>제자 초상</h2><p>나이 변화가 보이는 성장 초상을 남긴다.</p></summary>
-        <div class="section-body">
-          <h3>남성 01 성장 세트 <span class="pill live">앱 셸 포함</span></h3>
-          <div class="stage-strip">
-            <figure><a href="./assets/portraits/disciples/disciple-male-01/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-08.png" alt="남성 제자 01 8세"></a><figcaption><strong>8세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-01/age-08.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-01/age-16.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-16.png" alt="남성 제자 01 16세"></a><figcaption><strong>16세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-01/age-16.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-01/age-30s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-30s.png" alt="남성 제자 01 30대"></a><figcaption><strong>30대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-01/age-30s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-01/age-50s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-50s.png" alt="남성 제자 01 50대"></a><figcaption><strong>50대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-01/age-50s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-01/age-70s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-01/age-70s.png" alt="남성 제자 01 70대"></a><figcaption><strong>70대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-01/age-70s.png</span></figcaption></figure>
-          </div>
-          <h3>여성 01 성장 세트 <span class="pill live">앱 셸 포함</span></h3>
-          <div class="stage-strip">
-            <figure><a href="./assets/portraits/disciples/disciple-female-01/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-01/age-08.png" alt="여성 제자 01 8세"></a><figcaption><strong>8세</strong><span class="asset-name">assets/portraits/disciples/disciple-female-01/age-08.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-01/age-16.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-01/age-16.png" alt="여성 제자 01 16세"></a><figcaption><strong>16세</strong><span class="asset-name">assets/portraits/disciples/disciple-female-01/age-16.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-01/age-30s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-01/age-30s.png" alt="여성 제자 01 30대"></a><figcaption><strong>30대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-01/age-30s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-01/age-50s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-01/age-50s.png" alt="여성 제자 01 50대"></a><figcaption><strong>50대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-01/age-50s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-01/age-70s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-01/age-70s.png" alt="여성 제자 01 70대"></a><figcaption><strong>70대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-01/age-70s.png</span></figcaption></figure>
-          </div>
-          <h3>추가 성장 세트</h3>
-          <div class="stage-strip">
-            <figure><a href="./assets/portraits/disciples/disciple-male-02/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-02/age-08.png" alt="남성 제자 02 8세"></a><figcaption><strong>남성 02 · 8세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-02/age-08.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-02/age-16.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-02/age-16.png" alt="남성 제자 02 16세"></a><figcaption><strong>남성 02 · 16세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-02/age-16.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-02/age-30s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-02/age-30s.png" alt="남성 제자 02 30대"></a><figcaption><strong>남성 02 · 30대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-02/age-30s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-02/age-50s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-02/age-50s.png" alt="남성 제자 02 50대"></a><figcaption><strong>남성 02 · 50대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-02/age-50s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-02/age-70s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-02/age-70s.png" alt="남성 제자 02 70대"></a><figcaption><strong>남성 02 · 70대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-02/age-70s.png</span></figcaption></figure>
-          </div>
-          <div class="stage-strip">
-            <figure><a href="./assets/portraits/disciples/disciple-male-05/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-05/age-08.png" alt="남성 제자 05 8세"></a><figcaption><strong>남성 05 · 8세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-05/age-08.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-05/age-16.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-05/age-16.png" alt="남성 제자 05 16세"></a><figcaption><strong>남성 05 · 16세</strong><span class="asset-name">assets/portraits/disciples/disciple-male-05/age-16.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-05/age-30s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-05/age-30s.png" alt="남성 제자 05 30대"></a><figcaption><strong>남성 05 · 30대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-05/age-30s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-05/age-50s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-05/age-50s.png" alt="남성 제자 05 50대"></a><figcaption><strong>남성 05 · 50대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-05/age-50s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-male-05/age-70s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-male-05/age-70s.png" alt="남성 제자 05 70대"></a><figcaption><strong>남성 05 · 70대</strong><span class="asset-name">assets/portraits/disciples/disciple-male-05/age-70s.png</span></figcaption></figure>
-          </div>
-          <div class="stage-strip">
-            <figure><a href="./assets/portraits/disciples/disciple-female-02/age-08.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-02/age-08.png" alt="여성 제자 02 8세"></a><figcaption><strong>여성 02 · 8세</strong><span class="asset-name">assets/portraits/disciples/disciple-female-02/age-08.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-02/age-16.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-02/age-16.png" alt="여성 제자 02 16세"></a><figcaption><strong>여성 02 · 16세</strong><span class="asset-name">assets/portraits/disciples/disciple-female-02/age-16.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-02/age-30s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-02/age-30s.png" alt="여성 제자 02 30대"></a><figcaption><strong>여성 02 · 30대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-02/age-30s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-02/age-50s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-02/age-50s.png" alt="여성 제자 02 50대"></a><figcaption><strong>여성 02 · 50대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-02/age-50s.png</span></figcaption></figure>
-            <figure><a href="./assets/portraits/disciples/disciple-female-02/age-70s.png" target="_blank" rel="noopener noreferrer"><img src="./assets/portraits/disciples/disciple-female-02/age-70s.png" alt="여성 제자 02 70대"></a><figcaption><strong>여성 02 · 70대</strong><span class="asset-name">assets/portraits/disciples/disciple-female-02/age-70s.png</span></figcaption></figure>
-          </div>
-        </div>
-      </details>
-
-      <details id="decisions" class="doc-section">
-        <summary><h2>결정과 미결정</h2><p>앞쪽에 올릴 만큼 결정된 것과 아직 확정하지 않을 것을 분리한다.</p></summary>
-        <div class="section-body">
-          <div class="grid two">
-            <div class="decision"><strong>결정: 현대 무협</strong><span class="pill live">유지</span><p>옛 무협 복장을 현대 배경에 얹는 방식이 아니라, 현대 사회에서 무공과 문파가 작동하는 이유를 세운다.</p></div>
-            <div class="decision"><strong>결정: 무명 무인 시작</strong><span class="pill live">구현</span><p>18세 개인이 입문 무공을 고르며 시작하고, 문파 운영은 이후 확장 표면으로 둔다.</p></div>
-            <div class="decision"><strong>결정: 아트 다양성</strong><span class="pill live">유지</span><p>미형은 가능하지만 얼굴형, 체형, 나이, 분위기가 한 방향으로 합쳐지면 안 된다.</p></div>
-            <div class="decision"><strong>결정: 기록 보존</strong><span class="pill live">구현</span><p>실패와 죽음은 리셋으로 버리지 않고 로컬 기록과 계보에 남긴다.</p></div>
-            <div class="decision"><strong>미결정: 전투 산식</strong><span class="pill todo">후속</span><p>검, 권법, 봉, 도, 창, 암기가 사건과 전투 결과를 어떻게 갈라놓을지 정해야 한다.</p></div>
-            <div class="decision"><strong>미결정: 시설과 연구</strong><span class="pill todo">후속</span><p>숙소, 연무장, 장서각, 자원, 회복, 연구는 코어 루프가 안정된 뒤 붙인다.</p></div>
-            <div class="decision"><strong>제외: AI 미형 수렴</strong><span class="pill no">제외</span><p>날렵하고 날카로운 한 종류의 얼굴로 모든 인물을 통일하지 않는다.</p></div>
-            <div class="decision"><strong>제외: 고전 무협 스킨</strong><span class="pill no">제외</span><p>장르 기호만 얹은 고대풍 복장과 배경은 이 프로젝트의 기준이 아니다.</p></div>
-          </div>
+          <details id="pending-art">
+            <summary>아트 미결정</summary>
+            <div class="details-body">
+              <ul class="rule">
+                <li><strong>초상 일관성:</strong> 같은 인물의 8세, 16세, 30대, 50대, 70대가 어느 정도 닮아야 하는지 기준선이 필요하다.</li>
+                <li><strong>성인 여성 실루엣:</strong> 현대 무협의 매력과 기능성을 같이 살리는 의상 기준을 더 좁혀야 한다.</li>
+                <li><strong>남성 후보군:</strong> 현재 기준 이미지는 남아 있으나, 문파 내 역할별 인상 차이가 더 필요하다.</li>
+                <li><strong>배경 확장:</strong> 옥상, 수련장, 거리 이후에 병원, 회사, 지하 격투장, 외곽 폐공장 같은 장소가 필요하다.</li>
+              </ul>
+            </div>
+          </details>
         </div>
       </details>
     </main>
   </div>
 
-  <dialog id="imageLightbox" class="image-lightbox" aria-label="원본 이미지 보기">
-    <div class="image-lightbox-toolbar">
-      <span id="imageLightboxTitle" class="image-lightbox-title"></span>
-      <button type="button" class="image-lightbox-close" aria-label="닫기">&times;</button>
-    </div>
-    <div class="image-lightbox-stage"><img id="imageLightboxImage" alt=""></div>
-    <div class="image-lightbox-actions"><a id="imageLightboxOriginal" class="image-lightbox-original" target="_blank" rel="noopener noreferrer">원본 열기</a></div>
-  </dialog>
+  <div class="lightbox" id="imageLightbox" aria-hidden="true">
+    <button type="button" aria-label="이미지 닫기">×</button>
+    <img src="" alt="">
+  </div>
 
   <script>
     (() => {
-      const dialog = document.getElementById("imageLightbox");
-      if (!dialog || typeof dialog.showModal !== "function") return;
-      const image = document.getElementById("imageLightboxImage");
-      const title = document.getElementById("imageLightboxTitle");
-      const original = document.getElementById("imageLightboxOriginal");
-      const closeButton = dialog.querySelector(".image-lightbox-close");
-      const imagePattern = /\.(avif|bmp|gif|jpe?g|png|svg|webp)([?#].*)?$/i;
-      const getLabel = (link, sourceImage) => {
-        const alt = sourceImage?.getAttribute("alt")?.trim();
-        if (alt) return alt;
-        const href = link.getAttribute("href") || "";
-        const fileName = href.split(/[?#]/)[0].split("/").pop();
-        return fileName ? decodeURIComponent(fileName) : "이미지";
-      };
-      document.addEventListener("click", event => {
-        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        const link = event.target.closest("a[href]");
-        if (!link || !link.querySelector("img")) return;
-        const href = link.getAttribute("href");
-        if (!href || !imagePattern.test(href)) return;
-        event.preventDefault();
-        const sourceImage = event.target.closest("img") || link.querySelector("img");
-        const label = getLabel(link, sourceImage);
-        image.src = href;
-        image.alt = label;
-        title.textContent = label;
-        original.href = href;
-        dialog.showModal();
+      const navLinks = [...document.querySelectorAll(".nav-items a")];
+      const groups = [...document.querySelectorAll(".section-group")];
+      const navGroups = [...document.querySelectorAll(".nav-group")];
+      const navResizer = document.querySelector(".nav-resizer");
+      const defaultHash = navLinks[0]?.hash || "";
+      const navWidthStorageKey = "munpaweb:design-nav-width";
+      const navWidthMin = 220;
+      const navWidthMax = 480;
+
+      function clampNavWidth(width) {
+        return Math.min(navWidthMax, Math.max(navWidthMin, Math.round(width)));
+      }
+
+      function applyNavWidth(width) {
+        const nextWidth = clampNavWidth(width);
+        document.documentElement.style.setProperty("--nav-width", `${nextWidth}px`);
+        navResizer?.setAttribute("aria-valuenow", String(nextWidth));
+        return nextWidth;
+      }
+
+      function getCurrentNavWidth() {
+        const value = getComputedStyle(document.documentElement).getPropertyValue("--nav-width");
+        return Number.parseFloat(value) || 280;
+      }
+
+      const savedNavWidth = Number.parseFloat(localStorage.getItem(navWidthStorageKey) || "");
+      if (Number.isFinite(savedNavWidth)) {
+        applyNavWidth(savedNavWidth);
+      }
+
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
+      if (navResizer) {
+        navResizer.addEventListener("pointerdown", (event) => {
+          if (event.button !== 0) return;
+          const startX = event.clientX;
+          const startWidth = getCurrentNavWidth();
+
+          navResizer.setPointerCapture(event.pointerId);
+          document.body.classList.add("is-resizing-nav");
+
+          const onPointerMove = (moveEvent) => {
+            applyNavWidth(startWidth + moveEvent.clientX - startX);
+          };
+
+          const onPointerUp = () => {
+            const nextWidth = applyNavWidth(getCurrentNavWidth());
+            localStorage.setItem(navWidthStorageKey, String(nextWidth));
+            document.body.classList.remove("is-resizing-nav");
+            navResizer.removeEventListener("pointermove", onPointerMove);
+            navResizer.removeEventListener("pointerup", onPointerUp);
+            navResizer.removeEventListener("pointercancel", onPointerUp);
+          };
+
+          navResizer.addEventListener("pointermove", onPointerMove);
+          navResizer.addEventListener("pointerup", onPointerUp);
+          navResizer.addEventListener("pointercancel", onPointerUp);
+        });
+
+        navResizer.addEventListener("keydown", (event) => {
+          let nextWidth = getCurrentNavWidth();
+          if (event.key === "ArrowLeft") nextWidth -= 16;
+          else if (event.key === "ArrowRight") nextWidth += 16;
+          else if (event.key === "Home") nextWidth = navWidthMin;
+          else if (event.key === "End") nextWidth = navWidthMax;
+          else return;
+
+          event.preventDefault();
+          nextWidth = applyNavWidth(nextWidth);
+          localStorage.setItem(navWidthStorageKey, String(nextWidth));
+        });
+      }
+
+      function activatePage(hash) {
+        const id = (hash || defaultHash).replace(/^#/, "");
+        const target = document.getElementById(id) || document.querySelector(".section-group-body > details[id]");
+        if (!target) return;
+
+        const activeGroup = target.closest(".section-group");
+        const activeKey = activeGroup?.dataset.sectionGroup || "";
+
+        groups.forEach((group) => {
+          const isActiveGroup = group === activeGroup;
+          group.open = isActiveGroup;
+          group.classList.toggle("is-page-active", isActiveGroup);
+
+          group.querySelectorAll(".section-group-body > details[id]").forEach((details) => {
+            const isActivePage = isActiveGroup && details === target;
+            details.open = isActivePage;
+            details.classList.toggle("is-page-active", isActivePage);
+          });
+        });
+
+        navGroups.forEach((group) => {
+          group.classList.toggle("is-page-active", group.dataset.sectionGroup === activeKey);
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.toggle("is-active", link.hash === `#${target.id}`);
+        });
+      }
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          history.pushState(null, "", link.hash);
+          activatePage(link.hash);
+        });
       });
-      closeButton?.addEventListener("click", () => dialog.close());
-      dialog.addEventListener("click", event => {
-        if (event.target === dialog) dialog.close();
+
+      document.querySelectorAll(".section-group > summary, .section-group-body > details > summary").forEach((summary) => {
+        summary.addEventListener("click", (event) => {
+          if (document.documentElement.classList.contains("page-mode")) {
+            event.preventDefault();
+          }
+        });
       });
-      dialog.addEventListener("close", () => {
-        image.removeAttribute("src");
-        image.alt = "";
-        title.textContent = "";
-        original.removeAttribute("href");
+
+      window.addEventListener("hashchange", () => activatePage(window.location.hash));
+      activatePage(window.location.hash || defaultHash);
+
+      const lightbox = document.getElementById("imageLightbox");
+      const lightboxImage = lightbox.querySelector("img");
+      const closeButton = lightbox.querySelector("button");
+
+      function closeLightbox() {
+        lightbox.classList.remove("is-open");
+        lightbox.setAttribute("aria-hidden", "true");
+        lightboxImage.removeAttribute("src");
+        lightboxImage.removeAttribute("alt");
+      }
+
+      document.querySelectorAll(".image-link").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const image = link.querySelector("img");
+          if (!image) return;
+          event.preventDefault();
+          lightboxImage.src = link.href;
+          lightboxImage.alt = image.alt || "";
+          lightbox.classList.add("is-open");
+          lightbox.setAttribute("aria-hidden", "false");
+        });
+      });
+
+      closeButton.addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", (event) => {
+        if (event.target === lightbox) closeLightbox();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+          closeLightbox();
+        }
       });
     })();
   </script>
